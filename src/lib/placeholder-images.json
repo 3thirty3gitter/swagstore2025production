@@ -1,0 +1,40 @@
+{
+  "placeholderImages": [
+    {
+      "id": "1",
+      "description": "Classic Google Tee",
+      "imageUrl": "https://picsum.photos/seed/1/600/400",
+      "imageHint": "logo t-shirt"
+    },
+    {
+      "id": "2",
+      "description": "Firebase Hoodie",
+      "imageUrl": "https://picsum.photos/seed/2/600/400",
+      "imageHint": "orange hoodie"
+    },
+    {
+      "id": "3",
+      "description": "Next.js Water Bottle",
+      "imageUrl": "https://picsum.photos/seed/3/600/400",
+      "imageHint": "metal water-bottle"
+    },
+    {
+      "id": "4",
+      "description": "Android-Bot Figurine",
+      "imageUrl": "https://picsum.photos/seed/4/600/400",
+      "imageHint": "green robot"
+    },
+    {
+      "id": "5",
+      "description": "Vercel Mug",
+      "imageUrl": "https://picsum.photos/seed/5/600/400",
+      "imageHint": "black mug"
+    },
+    {
+      "id": "a",
+      "description": "Black Google Tee",
+      "imageUrl": "https://picsum.photos/seed/a/600/400",
+      "imageHint": "logo t-shirt black"
+    }
+  ]
+}

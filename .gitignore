@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.env.local
+.env
+serviceAccountKey.json
+.firebase/
+.idx/
+.DS_Store
+*.pem
+*.key
+.modified
