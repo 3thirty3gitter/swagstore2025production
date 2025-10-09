@@ -42,7 +42,7 @@ export default function TenantLayout({
   const tenantSlug = params.tenantSlug as string;
   const { firestore } = useFirebase();
 
-  const tenantsQuery = firestore ? query(collection(firestore, 'tenants'), where('slug', '==', tenantSlug)) : null;
+  const tenantsQuery = firestore ? query(collection(firestore, 'tenants'), where('slug', '==', tenantSlug)) as any : null;
   const { data: tenants, isLoading } = useCollection<Tenant>(tenantsQuery);
   const tenant = tenants?.[0];
   
