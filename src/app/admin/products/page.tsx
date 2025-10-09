@@ -11,7 +11,7 @@ export default function ProductsPage() {
   const { firestore } = useFirebase();
 
   const { data: allProducts, isLoading: productsLoading } = useCollection<Product>(
-    firestore ? collection(firestore, 'products') : null
+    firestore ? collection(firestore, 'products') as any : null
   );
 
   const { data: allTenants, isLoading: tenantsLoading } = useCollection<Tenant>(

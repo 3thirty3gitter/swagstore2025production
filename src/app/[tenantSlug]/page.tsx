@@ -17,7 +17,7 @@ export default function TenantPage() {
   const tenantSlug = params.tenantSlug as string;
   const { firestore } = useFirebase();
 
-  const tenantsQuery = firestore ? query(collection(firestore, 'tenants'), where('slug', '==', tenantSlug)) : null;
+  const tenantsQuery = firestore ? query(collection(firestore, 'tenants') as any, where('slug', '==', tenantSlug)) : null;
   const { data: tenants, isLoading: tenantLoading } = useCollection<Tenant>(tenantsQuery);
   const tenant = tenants?.[0];
   

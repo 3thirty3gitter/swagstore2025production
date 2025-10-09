@@ -12,7 +12,7 @@ import type { Tenant } from '@/lib/types';
 export default function TenantsPage() {
   const { firestore } = useFirebase();
   const { data: tenants, isLoading, error } = useCollection<Tenant>(
-    firestore ? collection(firestore, 'tenants') : null
+    firestore ? collection(firestore, 'tenants') as any : null
   );
   
   if (isLoading) {
