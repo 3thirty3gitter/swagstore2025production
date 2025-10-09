@@ -1,5 +1,4 @@
-
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,6 +18,7 @@ import {
   Store,
   LogOut,
   Brush,
+  Settings,
 } from "lucide-react";
 import { useFirebase } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -34,7 +34,6 @@ export function AdminSidebar() {
       try {
         await signOut(auth);
         toast({ title: "Logged out successfully." });
-        // The layout's effect will handle the redirect.
       } catch (error) {
         console.error("Error signing out: ", error);
         toast({
@@ -45,7 +44,6 @@ export function AdminSidebar() {
       }
     }
   };
-
 
   const menuItems = [
     {
@@ -76,7 +74,12 @@ export function AdminSidebar() {
       label: "Website",
       icon: Brush,
     },
-  ]
+    {
+      href: "/admin/settings",
+      label: "Settings",
+      icon: Settings,
+    },
+  ];
 
   return (
     <Sidebar>

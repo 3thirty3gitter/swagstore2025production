@@ -11,6 +11,9 @@ import { LogIn } from 'lucide-react';
 import { Alert, AlertDescription } from '../ui/alert';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
+import { firebaseApp } from '@/firebase/config';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -28,9 +31,16 @@ export function LoginForm() {
   const router = useRouter();
 
   useEffect(() => {
-    if (state?.success) {
-      toast({ title: 'Login Successful', description: "Redirecting to dashboard..."});
-      // The redirect is now handled by the root page's useUser hook
+    if (state?.success && state?.email && state?.password) {
+      const auth = getAuth(firebaseApp);
+      signInWithEmailAndPassword(auth, state.email, state.password)
+        .then(() => {
+          toast({ title: 'Login Successful', description: "Redirecting to dashboard..."});
+          router.push('/admin/dashboard');
+        })
+        .catch((error) => {
+          toast({ title: 'Login Failed', description: error.message, variant: 'destructive' });
+        });
     }
   }, [state, router, toast]);
 

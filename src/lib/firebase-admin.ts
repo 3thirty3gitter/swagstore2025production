@@ -1,26 +1,19 @@
-
-import { App, cert, getApp, getApps, initializeApp } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
+﻿import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { getStorage } from 'firebase-admin/storage';
 
-let app: App;
+const firebaseAdminConfig = {
+  credential: cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  }),
+};
 
-if (getApps().length === 0) {
-  app = initializeApp({
-    credential: cert(require('../../serviceAccountKey.json')),
-    storageBucket: `store-hub-1ty89.firebasestorage.app`
-  });
-} else {
-  app = getApp();
+export function getAdminApp() {
+  if (getApps().length === 0) {
+    return initializeApp(firebaseAdminConfig);
+  }
+  return getApps()[0];
 }
 
-const db = getFirestore(app);
-const adminAuth = getAuth(app);
-const storage = getStorage(app);
-
-export const getAdminApp = () => ({
-    db,
-    adminAuth,
-    storage,
-});
+export const adminDb = getFirestore(getAdminApp());

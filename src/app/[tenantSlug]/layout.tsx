@@ -1,7 +1,6 @@
+﻿'use client';
 
-'use client';
-
-import { Store } from "lucide-react";
+import { Store, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useParams } from 'next/navigation';
 import Image from "next/image";
@@ -12,6 +11,27 @@ import { useFirebase } from "@/firebase";
 import { Loader2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { CartProvider, useCart } from '@/contexts/cart-context';
+import { Button } from "@/components/ui/button";
+
+function CartIcon() {
+  const { itemCount } = useCart();
+  const params = useParams();
+  const tenantSlug = params.tenantSlug as string;
+
+  return (
+    <Link href={`/${tenantSlug}/cart`}>
+      <Button variant="ghost" size="icon" className="relative">
+        <ShoppingCart className="h-5 w-5" />
+        {itemCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+            {itemCount}
+          </span>
+        )}
+      </Button>
+    </Link>
+  );
+}
 
 export default function TenantLayout({
   children,
@@ -33,7 +53,6 @@ export default function TenantLayout({
   const isDragging = useRef(false);
 
   useEffect(() => {
-    // Check if inside an iframe (the editor)
     if (window.self !== window.top) {
       setIsEditor(true);
     }
@@ -75,7 +94,6 @@ export default function TenantLayout({
         e.stopPropagation();
         isDragging.current = false;
         document.body.style.cursor = 'default';
-        // Send final update to parent
         window.parent.postMessage({ type: 'logo-width-final-update', width: logoWidth }, '*');
       }
     };
@@ -87,11 +105,9 @@ export default function TenantLayout({
         const logoRect = logoRef.current.getBoundingClientRect();
         const newWidth = e.clientX - logoRect.left;
         
-        // Clamp the width between reasonable values
         const clampedWidth = Math.max(32, Math.min(newWidth, 300));
 
         setLogoWidth(clampedWidth);
-        // Send live update to parent
         window.parent.postMessage({ type: 'logo-width-live-update', width: clampedWidth }, '*');
       }
     };
@@ -119,8 +135,6 @@ export default function TenantLayout({
   }
 
   if (!tenant) {
-    // If no tenant is found for the slug, display a simple not found message.
-    // This will be shown in the iframe if the slug is invalid.
     return (
       <div className="min-h-screen bg-background text-foreground">
         <header className="border-b bg-card sticky top-0 z-50">
@@ -148,6 +162,7 @@ export default function TenantLayout({
   const logoAlignment = headerLayout === 'centered' ? 'absolute left-1/2 -translate-x-1/2' : '';
 
   return (
+    <CartProvider>
     <div className={cn(isEditor && 'pointer-events-none')}>
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b bg-card sticky top-0 z-50 backdrop-blur-sm bg-background/80">
@@ -193,7 +208,9 @@ export default function TenantLayout({
               </nav>
             )}
 
-            {headerLayout === 'left-aligned' && <div className="w-auto"></div>}
+            <div className="flex items-center ml-auto">
+              <CartIcon />
+            </div>
           </div>
         </div>
       </header>
@@ -207,5 +224,6 @@ export default function TenantLayout({
       </footer>
     </div>
     </div>
+    </CartProvider>
   );
 }

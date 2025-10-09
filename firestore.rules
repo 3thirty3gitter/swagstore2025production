@@ -1,33 +1,7 @@
-/**
- * @description This ruleset enforces a public read policy for tenants and products, but restricts write access to authenticated users.
- * All tenants and products are readable by anyone, including unauthenticated users.
- * Only authenticated users are allowed to create, update, or delete tenants and products.
- *
- * @data_structure
- * /tenants/{tenantId} - Stores individual tenant information.
- * /products/{productId} - Stores all products for all tenants.
- *
- * @key_security_decisions
- * - Tenants and Products are publicly readable.
- * - Write operations on Tenants and Products are only allowed for authenticated users.
- * - No schema validation is performed in this prototype beyond authentication.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * @description Allows anyone to read tenants, but only authenticated users to create, update, or delete them.
-     * @path /tenants/{tenantId}
-     * @allow (get, list) - Any user can read any tenant.
-     * @allow (create) - Authenticated user can create tenant.
-     * @allow (update) - Authenticated user can update tenant.
-     * @allow (delete) - Authenticated user can delete tenant.
-     * @deny (create) - Unauthenticated user cannot create tenant.
-     * @deny (update) - Unauthenticated user cannot update tenant.
-     * @deny (delete) - Unauthenticated user cannot delete tenant.
-     * @principle Allows public read access but requires authentication for write access.
-     */
     match /tenants/{tenantId} {
       allow get, list: if true;
       allow create: if isSignedIn();
@@ -35,18 +9,6 @@ service cloud.firestore {
       allow delete: if isSignedIn() && resource != null;
     }
 
-    /**
-     * @description Allows anyone to read products, but only authenticated users to create, update, or delete them.
-     * @path /products/{productId}
-     * @allow (get, list) - Any user can read any product.
-     * @allow (create) - Authenticated user can create product.
-     * @allow (update) - Authenticated user can update product.
-     * @allow (delete) - Authenticated user can delete product.
-     * @deny (create) - Unauthenticated user cannot create product.
-     * @deny (update) - Unauthenticated user cannot update product.
-     * @deny (delete) - Unauthenticated user cannot delete product.
-     * @principle Allows public read access but requires authentication for write access.
-     */
     match /products/{productId} {
       allow get, list: if true;
       allow create: if isSignedIn();
@@ -54,7 +16,16 @@ service cloud.firestore {
       allow delete: if isSignedIn() && resource != null;
     }
 
-    // Helper function to determine if a user is signed in
+    match /orders/{orderId} {
+      allow create: if true;
+      allow get, list: if isSignedIn();
+      allow update, delete: if isSignedIn() && resource != null;
+    }
+
+    match /settings/{document=**} {
+      allow read, write: if isSignedIn();
+    }
+
     function isSignedIn() {
       return request.auth != null;
     }

@@ -1,7 +1,7 @@
-
+﻿
 'use client';
 
-import { ProductCard } from "@/components/store/product-card";
+import ProductCard from "@/components/store/product-card";
 import type { Product } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 import { useCollection } from "@/firebase/firestore/use-collection";
@@ -60,3 +60,4 @@ export function ProductListSection({ tenantId, title, selectedProductIds }: Prod
       </div>
     )
 }
+
