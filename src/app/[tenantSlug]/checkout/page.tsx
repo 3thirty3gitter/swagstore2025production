@@ -287,7 +287,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-1">
                     <span className="text-muted-foreground">Tax</span>
-                    <Info className="h-3 w-3 text-muted-foreground" title={taxCalculation.taxBreakdown} />
+                    <Info className="h-3 w-3 text-muted-foreground" />
                   </div>
                   <div className="text-right">
                     <div className="font-semibold">{formatCurrency(taxCalculation.totalTax)}</div>
