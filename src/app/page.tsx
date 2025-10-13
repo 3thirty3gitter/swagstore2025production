@@ -18,7 +18,7 @@ export default function Home() {
           Sell branded merchandise and earn SwagBucks for free gear
         </p>
         <div className="flex gap-4">
-          <Link href="#how-it-works">
+          <Link href="/request-store">
             <Button size="lg" className="text-lg px-8">Get Started Free</Button>
           </Link>
           <Link href="/admin/login">
@@ -99,7 +99,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-4">Ready to Start Earning?</h2>
           <p className="text-xl mb-8 opacity-90">Join hundreds of teams already raising funds through SwagStore</p>
-          <Link href="#how-it-works">
+          <Link href="/request-store">
             <Button size="lg" variant="secondary" className="text-lg px-8">
               Launch Your Free Store
             </Button>
