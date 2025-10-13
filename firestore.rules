@@ -8,10 +8,6 @@ service cloud.firestore {
              get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
     }
     
-    function isSignedIn() {
-      return request.auth != null;
-    }
-    
     function isValidOrder(orderData) {
       return orderData.keys().hasAll(['tenantId', 'total', 'customerName']) &&
              orderData.total is number &&
