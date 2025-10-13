@@ -10,8 +10,8 @@ import { Store, LogIn } from 'lucide-react';
 import { firebaseApp } from '@/firebase/config';
 
 export default function LoginAdmin() {
-  const [email, setEmail] = useState('admin@example.com');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('trent@3thrity3.ca');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -42,18 +42,18 @@ export default function LoginAdmin() {
         <div className="flex flex-col items-center mb-8">
           <Store className="w-16 h-16 text-primary mb-4" />
           <h1 className="text-3xl font-bold">SwagStore Admin</h1>
-          <p className="text-muted-foreground">Canadian Edition 🍁</p>
+          <p className="text-muted-foreground">Platform Administrator Login 🍁</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Admin Login</CardTitle>
+            <CardTitle>Platform Admin Login</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium mb-1">
-                  Email
+                  Admin Email
                 </label>
                 <Input
                   id="email"
@@ -61,6 +61,7 @@ export default function LoginAdmin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  placeholder="trent@3thrity3.ca"
                 />
               </div>
               <div>
@@ -73,6 +74,7 @@ export default function LoginAdmin() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  placeholder="Enter your admin password"
                 />
               </div>
               {error && (
@@ -82,9 +84,14 @@ export default function LoginAdmin() {
               )}
               <Button type="submit" className="w-full" disabled={loading}>
                 <LogIn className="w-4 h-4 mr-2" />
-                {loading ? 'Signing In...' : 'Sign In'}
+                {loading ? 'Signing In...' : 'Access Admin Platform'}
               </Button>
             </form>
+            
+            <div className="mt-4 text-center text-xs text-gray-500">
+              <p>Platform Administrator Access Only</p>
+              <p>Teams use their custom store URLs</p>
+            </div>
           </CardContent>
         </Card>
       </div>

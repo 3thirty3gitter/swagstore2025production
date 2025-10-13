@@ -5,9 +5,9 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { useUser } from "@/firebase/auth/use-user";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, Shield } from "lucide-react";
+import { Loader2, AlertCircle, Lock } from "lucide-react";
 import { AdminLayoutClientWrapper } from "./client-wrapper";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { useFirebase } from "@/firebase";
 import { Button } from "@/components/ui/button";
 
@@ -21,44 +21,13 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [authError, setAuthError] = useState<string | null>(null);
-  const [registering, setRegistering] = useState(false);
   
   // Allow access to login page without auth
   const isLoginPage = pathname === '/admin/login';
 
-  // Admin registration function
-  async function registerAsAdmin() {
-    if (!user || !firestore) return;
-    
-    setRegistering(true);
-    try {
-      await setDoc(doc(firestore, 'admins', user.uid), {
-        email: user.email,
-        role: 'admin',
-        createdAt: new Date(),
-        permissions: {
-          manageProducts: true,
-          manageTenants: true,
-          manageOrders: true,
-          manageSwagBucks: true,
-          viewAnalytics: true
-        }
-      });
-      
-      // Refresh the page to reload with admin permissions
-      window.location.reload();
-    } catch (error) {
-      console.error('Admin registration failed:', error);
-      setAuthError('Failed to register as admin. Please try again.');
-    } finally {
-      setRegistering(false);
-    }
-  }
-
-  // Check admin status
+  // Check if user is YOUR admin (not tenant registration)
   useEffect(() => {
-    async function verifyAdminAccess() {
+    async function verifyPlatformAdmin() {
       if (userLoading || isLoginPage) return;
       
       if (!user) {
@@ -69,69 +38,61 @@ export default function AdminLayout({
       if (!firestore) return;
 
       try {
+        // Only check if user is in admin collection (no self-registration)
         const adminDoc = await getDoc(doc(firestore, 'admins', user.uid));
-        
-        if (!adminDoc.exists() || adminDoc.data()?.role !== 'admin') {
-          setAuthError('Admin registration required to access this area.');
-          setIsAdmin(false);
-          return;
-        }
-        
-        setIsAdmin(true);
+        setIsAdmin(adminDoc.exists() && adminDoc.data()?.role === 'admin');
       } catch (error) {
         console.error('Admin verification failed:', error);
-        setAuthError('Unable to verify admin permissions.');
         setIsAdmin(false);
       }
     }
 
-    verifyAdminAccess();
+    verifyPlatformAdmin();
   }, [user, userLoading, firestore, router, isLoginPage]);
 
-  // For login page, just show the content without any layout
+  // For login page, just show the content
   if (isLoginPage) {
     return <>{children}</>;
   }
 
-  // Show loading while checking authentication - NO SIDEBAR
+  // Show loading while checking authentication
   if (userLoading || isAdmin === null) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Verifying admin access...</p>
+          <p className="text-muted-foreground">Verifying platform admin access...</p>
         </div>
       </div>
     );
   }
 
-  // Show access denied WITHOUT SIDEBAR - FULL SCREEN
+  // Show access denied - NO REGISTRATION OPTION
   if (isAdmin === false) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="max-w-md mx-auto text-center p-8">
-          <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-red-600 mb-4">Admin Access Required</h1>
+          <Lock className="h-16 w-16 text-red-500 mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-red-600 mb-4">Platform Admin Only</h1>
           <p className="text-gray-600 mb-6">
-            {authError || 'You need to register as an admin to access this area.'}
+            This area is restricted to the platform administrator.
           </p>
           
           {user && (
-            <div className="bg-gray-100 p-4 rounded-lg mb-6">
-              <p className="text-sm text-gray-600 mb-2">Current user:</p>
-              <p className="font-semibold">{user.email}</p>
+            <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-6">
+              <p className="text-sm text-red-700 mb-2">Logged in as:</p>
+              <p className="font-semibold text-red-800">{user.email}</p>
+              <p className="text-xs text-red-600 mt-2">Not authorized for admin access</p>
             </div>
           )}
 
           <div className="space-y-3">
             <Button 
-              onClick={registerAsAdmin}
-              disabled={registering}
+              onClick={() => router.push('/')}
               className="w-full"
               variant="default"
             >
-              <Shield className="w-4 h-4 mr-2" />
-              {registering ? 'Registering...' : 'Register as Admin'}
+              Go to SwagStore Home
             </Button>
             
             <Button 
@@ -139,28 +100,25 @@ export default function AdminLayout({
               variant="outline"
               className="w-full"
             >
-              Back to Login
+              Different Admin Login
             </Button>
           </div>
+          
+          <p className="text-xs text-gray-500 mt-4">
+            For team store access, visit your team's custom store URL
+          </p>
         </div>
       </div>
     );
   }
 
-  // If not authenticated at all, redirect - NO SIDEBAR  
+  // Only redirect if not authenticated
   if (!user) {
     router.push('/login-admin');
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Redirecting to login...</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
-  // ONLY show sidebar and admin layout if user is verified admin
+  // ONLY show admin interface if verified platform admin
   return (
     <SidebarProvider>
       <AdminSidebar />
