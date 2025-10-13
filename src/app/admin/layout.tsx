@@ -3,11 +3,10 @@
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { useUser } from "@/firebase/auth/use-user";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { AdminLayoutClientWrapper } from "./client-wrapper";
-
 
 export default function AdminLayout({
   children,
@@ -16,14 +15,19 @@ export default function AdminLayout({
 }) {
   const { user, isLoading } = useUser();
   const router = useRouter();
+  const pathname = usePathname();
+  
+  // Allow access to login page without auth
+  const isLoginPage = pathname === '/admin/login';
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      // router.push('/');
+    if (!isLoading && !user && !isLoginPage) {
+      router.push('/login-admin');
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, router, isLoginPage]);
 
-  if (isLoading || !user) {
+  // Show loading for non-login pages when checking auth
+  if ((isLoading || !user) && !isLoginPage) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -31,6 +35,12 @@ export default function AdminLayout({
     );
   }
 
+  // For login page, just show the content without sidebar
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+
+  // For authenticated users, show full admin layout
   return (
     <SidebarProvider>
       <AdminSidebar />
