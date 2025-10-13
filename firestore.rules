@@ -1,33 +1,71 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    match /tenants/{tenantId} {
-      allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && resource != null;
-      allow delete: if isSignedIn() && resource != null;
+    
+    // Admin role validation
+    function isAdmin() {
+      return request.auth != null && 
+             get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
     }
-
-    match /products/{productId} {
-      allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && resource != null;
-      allow delete: if isSignedIn() && resource != null;
-    }
-
-    match /orders/{orderId} {
-      allow create: if true;
-      allow get, list: if isSignedIn();
-      allow update, delete: if isSignedIn() && resource != null;
-    }
-
-    match /settings/{document=**} {
-      allow read, write: if isSignedIn();
-    }
-
+    
     function isSignedIn() {
       return request.auth != null;
+    }
+    
+    function isValidOrder(orderData) {
+      return orderData.keys().hasAll(['tenantId', 'total', 'customerName']) &&
+             orderData.total is number &&
+             orderData.total > 0 &&
+             orderData.total < 10000; // Max $10,000 CAD per order
+    }
+
+    // Tenants - Public read, admin write
+    match /tenants/{tenantId} {
+      allow read: if true; // Needed for storefront
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Products - Public read, admin write  
+    match /products/{productId} {
+      allow read: if true; // Needed for storefront
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Orders - Controlled creation, admin read/write
+    match /orders/{orderId} {
+      allow create: if isValidOrder(request.resource.data);
+      allow read, list, update, delete: if isAdmin();
+    }
+
+    // SwagBucks Collections - Admin only
+    match /swagbucks_balances/{tenantId} {
+      allow read, write: if isAdmin();
+    }
+    
+    match /swagbucks_transactions/{transactionId} {
+      allow read, write: if isAdmin();
+    }
+    
+    match /swagbucks_redemptions/{redemptionId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Admin users collection
+    match /admins/{userId} {
+      allow read, write: if isAdmin();
+      allow create: if request.auth.uid == userId; // Self-registration
+    }
+
+    // Settings - Admin only
+    match /settings/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Store requests - Public create, admin manage
+    match /store_requests/{requestId} {
+      allow create: if request.resource.data.keys().hasAll(['teamName', 'contactEmail', 'province']) &&
+                       request.resource.data.contactEmail.matches('.*@.*\\..*'); // Basic email validation
+      allow read, list, update, delete: if isAdmin();
     }
   }
 }
