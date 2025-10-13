@@ -1,9 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Gift, TrendingUp, Users, DollarSign, MapleLeaf } from 'lucide-react';
 
 interface TenantBalance {
@@ -106,140 +103,124 @@ export default function SwagBucksAdminPage() {
 
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-red-700">Active SwagBucks</CardTitle>
+        <div className="border border-red-200 bg-gradient-to-br from-red-50 to-white rounded-lg p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-red-700">Active SwagBucks</h3>
             <Gift className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-800">{totalSwagBucksInCirculation}</div>
-            <p className="text-xs text-red-600">
-              {formatCAD(totalSwagBucksInCirculation)} value in circulation
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold text-red-800">{totalSwagBucksInCirculation}</div>
+          <p className="text-xs text-red-600">
+            {formatCAD(totalSwagBucksInCirculation)} value in circulation
+          </p>
+        </div>
 
-        <Card className="border-green-200 bg-gradient-to-br from-green-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-green-700">Total Earned</CardTitle>
+        <div className="border border-green-200 bg-gradient-to-br from-green-50 to-white rounded-lg p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-green-700">Total Earned</h3>
             <TrendingUp className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-800">{totalEarnedAllTime}</div>
-            <p className="text-xs text-green-600">
-              {formatCAD(totalEarnedAllTime)} earned by all teams
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold text-green-800">{totalEarnedAllTime}</div>
+          <p className="text-xs text-green-600">
+            {formatCAD(totalEarnedAllTime)} earned by all teams
+          </p>
+        </div>
 
-        <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-blue-700">Active Teams</CardTitle>
+        <div className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white rounded-lg p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-blue-700">Active Teams</h3>
             <Users className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-800">{tenantBalances.length}</div>
-            <p className="text-xs text-blue-600">
-              Canadian teams with SwagBucks
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold text-blue-800">{tenantBalances.length}</div>
+          <p className="text-xs text-blue-600">
+            Canadian teams with SwagBucks
+          </p>
+        </div>
 
-        <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-orange-700">Pending Requests</CardTitle>
+        <div className="border border-orange-200 bg-gradient-to-br from-orange-50 to-white rounded-lg p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-orange-700">Pending Requests</h3>
             <DollarSign className="h-4 w-4 text-orange-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-800">{pendingRequests}</div>
-            <p className="text-xs text-orange-600">
-              Redemption requests awaiting approval
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="text-2xl font-bold text-orange-800">{pendingRequests}</div>
+          <p className="text-xs text-orange-600">
+            Redemption requests awaiting approval
+          </p>
+        </div>
       </div>
 
       {/* Team Balances */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Gift className="w-5 h-5 text-red-500" />
-            Canadian Team SwagBucks Balances
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {tenantBalances.map((tenant) => (
-              <div key={tenant.id} className="flex items-center justify-between p-4 border border-red-100 rounded-lg bg-red-50/50">
-                <div>
-                  <h3 className="font-semibold text-red-800">{tenant.name}</h3>
-                  <p className="text-sm text-red-600">
-                    Earned: {tenant.totalEarned} SB • Redeemed: {tenant.totalRedeemed} SB
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-red-700">{tenant.balance}</div>
-                  <div className="text-sm text-red-600">
-                    {formatCAD(tenant.balance)} CAD value
-                  </div>
+      <div className="border rounded-lg bg-white p-6">
+        <div className="flex items-center gap-2 mb-6">
+          <Gift className="w-5 h-5 text-red-500" />
+          <h2 className="text-xl font-semibold">Canadian Team SwagBucks Balances</h2>
+        </div>
+        <div className="space-y-4">
+          {tenantBalances.map((tenant) => (
+            <div key={tenant.id} className="flex items-center justify-between p-4 border border-red-100 rounded-lg bg-red-50/50">
+              <div>
+                <h3 className="font-semibold text-red-800">{tenant.name}</h3>
+                <p className="text-sm text-red-600">
+                  Earned: {tenant.totalEarned} SB • Redeemed: {tenant.totalRedeemed} SB
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-red-700">{tenant.balance}</div>
+                <div className="text-sm text-red-600">
+                  {formatCAD(tenant.balance)} CAD value
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Redemption Requests */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-orange-500" />
-            Redemption Requests
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {redemptionRequests.map((request) => (
-              <div key={request.id} className="flex items-center justify-between p-4 border border-orange-100 rounded-lg bg-orange-50/50">
-                <div>
-                  <h3 className="font-semibold text-orange-800">{request.tenantName}</h3>
-                  <p className="text-sm text-orange-600">{request.description}</p>
-                  <p className="text-xs text-orange-500">
-                    Requested: {request.requestedAt.toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <div className="text-lg font-semibold text-orange-700">{request.amount} SwagBucks</div>
-                    <div className="text-sm text-orange-600">
-                      {formatCAD(request.amount)} CAD value
-                    </div>
-                  </div>
-                  <Badge variant={request.status === 'pending' ? 'default' : 'secondary'}>
-                    {request.status}
-                  </Badge>
-                  {request.status === 'pending' && (
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700">
-                        Approve
-                      </Button>
-                      <Button size="sm" variant="destructive">
-                        Reject
-                      </Button>
-                    </div>
-                  )}
-                </div>
+      <div className="border rounded-lg bg-white p-6">
+        <div className="flex items-center gap-2 mb-6">
+          <DollarSign className="w-5 h-5 text-orange-500" />
+          <h2 className="text-xl font-semibold">Redemption Requests</h2>
+        </div>
+        <div className="space-y-4">
+          {redemptionRequests.map((request) => (
+            <div key={request.id} className="flex items-center justify-between p-4 border border-orange-100 rounded-lg bg-orange-50/50">
+              <div>
+                <h3 className="font-semibold text-orange-800">{request.tenantName}</h3>
+                <p className="text-sm text-orange-600">{request.description}</p>
+                <p className="text-xs text-orange-500">
+                  Requested: {request.requestedAt.toLocaleDateString()}
+                </p>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <div className="text-lg font-semibold text-orange-700">{request.amount} SwagBucks</div>
+                  <div className="text-sm text-orange-600">
+                    {formatCAD(request.amount)} CAD value
+                  </div>
+                </div>
+                <span className="px-2 py-1 rounded-full bg-gray-200 text-gray-800 text-sm">
+                  {request.status}
+                </span>
+                {request.status === 'pending' && (
+                  <div className="flex gap-2">
+                    <button className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700">
+                      Approve
+                    </button>
+                    <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="text-center text-sm text-gray-500 border-t pt-6">
         <p className="flex items-center justify-center gap-2">
-          <MapleLeaf className="w-4 w-4 text-red-500" />
+          <MapleLeaf className="w-4 h-4 text-red-500" />
           SwagStore Canada • Serving teams coast to coast • 10% earning rate on all sales
-          <MapleLeaf className="w-4 w-4 text-red-500" />
+          <MapleLeaf className="w-4 h-4 text-red-500" />
         </p>
       </div>
     </div>
