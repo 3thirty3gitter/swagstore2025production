@@ -9,3 +9,4 @@ serviceAccountKey.json
 *.pem
 *.key
 .modified
+.vercel
