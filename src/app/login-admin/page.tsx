@@ -27,7 +27,7 @@ export default function LoginAdmin() {
       console.log('Login successful:', userCredential.user);
       
       // Force navigation to admin dashboard
-      window.location.href = '/admin-temp';
+      window.location.href = '/admin/dashboard';
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.message || 'Login failed');
