@@ -26,7 +26,7 @@ export default function LoginAdmin() {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log('Login successful:', userCredential.user);
       
-      // Force navigation to admin dashboard
+      // Redirect to admin dashboard
       window.location.href = '/admin/dashboard';
     } catch (err: any) {
       console.error('Login error:', err);
@@ -84,18 +84,6 @@ export default function LoginAdmin() {
                 <LogIn className="w-4 h-4 mr-2" />
                 {loading ? 'Signing In...' : 'Sign In'}
               </Button>
-              
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">Or</p>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="w-full mt-2"
-                  onClick={() => window.location.href = '/admin-temp'}
-                >
-                  Direct Admin Access (Bypass)
-                </Button>
-              </div>
             </form>
           </CardContent>
         </Card>
