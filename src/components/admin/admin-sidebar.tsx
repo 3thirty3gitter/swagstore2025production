@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,6 +19,7 @@ import {
   LogOut,
   Brush,
   Settings,
+  Gift,
 } from "lucide-react";
 import { useFirebase } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -50,6 +51,12 @@ export function AdminSidebar() {
       href: "/admin/dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
+    },
+    {
+      href: "/admin/swagbucks",
+      label: "SwagBucks",
+      icon: Gift,
+      isNew: true,
     },
     {
       href: "/admin/products",
@@ -98,9 +105,17 @@ export function AdminSidebar() {
               <SidebarMenuButton
                 isActive={pathname.startsWith(item.href)}
                 tooltip={item.label}
+                className={item.isNew ? "bg-green-50 hover:bg-green-100 border-l-2 border-l-green-500" : ""}
               >
-                <item.icon />
-                <span>{item.label}</span>
+                <item.icon className={item.isNew ? "text-green-600" : ""} />
+                <div className="flex items-center gap-2">
+                  <span className={item.isNew ? "text-green-700 font-medium" : ""}>{item.label}</span>
+                  {item.isNew && (
+                    <span className="bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                      NEW
+                    </span>
+                  )}
+                </div>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
