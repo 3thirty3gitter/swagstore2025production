@@ -4,6 +4,7 @@ export type Tenant = {
   id: string;
   name: string;
   slug: string;
+  subdomain: string;
   storeName: string;
   website?: Website;
 };
@@ -106,4 +107,10 @@ export type Order = {
   customerName: string;
   orderDate: string;
   status: 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+};
+
+// Add subdomain field to Tenant type (add this to existing Tenant type)
+// Update the existing Tenant type to include subdomain
+export type TenantWithSubdomain = Tenant & {
+  subdomain: string; // e.g., "vohon" for vohon.swagstore.ca
 };
