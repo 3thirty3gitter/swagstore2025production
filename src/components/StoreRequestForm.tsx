@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2, Send, CheckCircle } from "lucide-react";
 import { db } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { CANADIAN_PROVINCES, validateCanadianPostalCode, formatCanadianPostalCode } from '@/lib/canadaData';
 
 interface StoreRequestData {
   teamName: string;
@@ -19,6 +20,8 @@ interface StoreRequestData {
   teamType: string;
   organizationType: string;
   location: string;
+  province: string;
+  postalCode: string;
   teamSize: number;
   expectedOrderVolume: string;
   description: string;
@@ -35,6 +38,8 @@ export default function StoreRequestForm() {
     teamType: '',
     organizationType: '',
     location: '',
+    province: '',
+    postalCode: '',
     teamSize: 0,
     expectedOrderVolume: '',
     description: '',
@@ -45,12 +50,25 @@ export default function StoreRequestForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [postalCodeError, setPostalCodeError] = useState('');
 
   const handleInputChange = (field: keyof StoreRequestData, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
+
+    // Validate postal code on change
+    if (field === 'postalCode') {
+      const formatted = formatCanadianPostalCode(value);
+      setFormData(prev => ({ ...prev, postalCode: formatted }));
+      
+      if (value && !validateCanadianPostalCode(formatted)) {
+        setPostalCodeError('Please enter a valid Canadian postal code (e.g., K1A 0A9)');
+      } else {
+        setPostalCodeError('');
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,11 +76,19 @@ export default function StoreRequestForm() {
     setIsSubmitting(true);
     setError('');
 
+    // Validate postal code before submission
+    if (formData.postalCode && !validateCanadianPostalCode(formData.postalCode)) {
+      setError('Please enter a valid Canadian postal code.');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       // Add to Firestore
       await addDoc(collection(db, 'storeRequests'), {
         ...formData,
         status: 'pending',
+        country: 'Canada',
         createdAt: new Date(),
         updatedAt: new Date()
       });
@@ -98,7 +124,7 @@ export default function StoreRequestForm() {
       <CardHeader>
         <CardTitle>Request Your Free SwagStore</CardTitle>
         <CardDescription>
-          Fill out this form and we'll set up your custom merchandise store within 24 hours.
+          Fill out this form and we'll set up your custom merchandise store within 24 hours. Serving teams across Canada! 🍁
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -114,7 +140,7 @@ export default function StoreRequestForm() {
                   id="teamName"
                   value={formData.teamName}
                   onChange={(e) => handleInputChange('teamName', e.target.value)}
-                  placeholder="Eagles Soccer Club"
+                  placeholder="Maple Leafs Hockey Club"
                   required
                 />
               </div>
@@ -126,6 +152,7 @@ export default function StoreRequestForm() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="sports">Sports Team</SelectItem>
+                    <SelectItem value="hockey">Hockey Team</SelectItem>
                     <SelectItem value="school">School Club</SelectItem>
                     <SelectItem value="nonprofit">Non-Profit</SelectItem>
                     <SelectItem value="community">Community Group</SelectItem>
@@ -138,13 +165,14 @@ export default function StoreRequestForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="organizationType">Organization Type</Label>
+                <Label htmlFor="organizationType">Organization Level</Label>
                 <Select onValueChange={(value) => handleInputChange('organizationType', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select organization" />
+                    <SelectValue placeholder="Select level" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="youth">Youth League</SelectItem>
+                    <SelectItem value="junior">Junior League</SelectItem>
                     <SelectItem value="highschool">High School</SelectItem>
                     <SelectItem value="college">College/University</SelectItem>
                     <SelectItem value="adult">Adult League</SelectItem>
@@ -153,14 +181,45 @@ export default function StoreRequestForm() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="location">Location (City, State) *</Label>
+                <Label htmlFor="location">City *</Label>
                 <Input
                   id="location"
                   value={formData.location}
                   onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="Denver, CO"
+                  placeholder="Toronto, Calgary, Vancouver..."
                   required
                 />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="province">Province/Territory *</Label>
+                <Select onValueChange={(value) => handleInputChange('province', value)} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select province" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CANADIAN_PROVINCES.map((province) => (
+                      <SelectItem key={province.code} value={province.code}>
+                        {province.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="postalCode">Postal Code</Label>
+                <Input
+                  id="postalCode"
+                  value={formData.postalCode}
+                  onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                  placeholder="K1A 0A9"
+                  className={postalCodeError ? 'border-red-500' : ''}
+                />
+                {postalCodeError && (
+                  <p className="text-sm text-red-600 mt-1">{postalCodeError}</p>
+                )}
               </div>
             </div>
           </div>
@@ -187,7 +246,7 @@ export default function StoreRequestForm() {
                   type="email"
                   value={formData.contactEmail}
                   onChange={(e) => handleInputChange('contactEmail', e.target.value)}
-                  placeholder="john@eaglessoccer.com"
+                  placeholder="john@mapleleafs.ca"
                   required
                 />
               </div>
@@ -200,7 +259,7 @@ export default function StoreRequestForm() {
                 type="tel"
                 value={formData.contactPhone}
                 onChange={(e) => handleInputChange('contactPhone', e.target.value)}
-                placeholder="(555) 123-4567"
+                placeholder="(416) 123-4567"
               />
             </div>
           </div>
@@ -259,7 +318,7 @@ export default function StoreRequestForm() {
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="What types of products are you most interested in? Any special requirements or customization needs?"
+                placeholder="What types of products are you most interested in? Hockey jerseys, team hoodies, custom gear? Any special requirements?"
                 rows={4}
               />
             </div>
@@ -271,7 +330,7 @@ export default function StoreRequestForm() {
             </div>
           )}
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
+          <Button type="submit" disabled={isSubmitting || !!postalCodeError} className="w-full">
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
