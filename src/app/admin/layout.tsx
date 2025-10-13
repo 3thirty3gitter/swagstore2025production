@@ -7,7 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2, AlertCircle, Shield } from "lucide-react";
 import { AdminLayoutClientWrapper } from "./client-wrapper";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useFirebase } from "@/firebase";
 import { Button } from "@/components/ui/button";
 
@@ -22,9 +22,39 @@ export default function AdminLayout({
   const pathname = usePathname();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [registering, setRegistering] = useState(false);
   
   // Allow access to login page without auth
   const isLoginPage = pathname === '/admin/login';
+
+  // Admin registration function
+  async function registerAsAdmin() {
+    if (!user || !firestore) return;
+    
+    setRegistering(true);
+    try {
+      await setDoc(doc(firestore, 'admins', user.uid), {
+        email: user.email,
+        role: 'admin',
+        createdAt: new Date(),
+        permissions: {
+          manageProducts: true,
+          manageTenants: true,
+          manageOrders: true,
+          manageSwagBucks: true,
+          viewAnalytics: true
+        }
+      });
+      
+      // Refresh the page to reload with admin permissions
+      window.location.reload();
+    } catch (error) {
+      console.error('Admin registration failed:', error);
+      setAuthError('Failed to register as admin. Please try again.');
+    } finally {
+      setRegistering(false);
+    }
+  }
 
   // Check admin status
   useEffect(() => {
@@ -42,7 +72,7 @@ export default function AdminLayout({
         const adminDoc = await getDoc(doc(firestore, 'admins', user.uid));
         
         if (!adminDoc.exists() || adminDoc.data()?.role !== 'admin') {
-          setAuthError('Admin access required. Please register as admin first.');
+          setAuthError('Admin registration required to access this area.');
           setIsAdmin(false);
           return;
         }
@@ -75,15 +105,15 @@ export default function AdminLayout({
     );
   }
 
-  // Show access denied WITHOUT SIDEBAR
+  // Show access denied WITHOUT SIDEBAR - FULL SCREEN
   if (isAdmin === false) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="max-w-md mx-auto text-center p-8">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-red-600 mb-4">Access Denied</h1>
+          <h1 className="text-3xl font-bold text-red-600 mb-4">Admin Access Required</h1>
           <p className="text-gray-600 mb-6">
-            {authError || 'You do not have admin permissions.'}
+            {authError || 'You need to register as an admin to access this area.'}
           </p>
           
           {user && (
@@ -95,12 +125,13 @@ export default function AdminLayout({
 
           <div className="space-y-3">
             <Button 
-              onClick={() => registerAsAdmin()}
+              onClick={registerAsAdmin}
+              disabled={registering}
               className="w-full"
               variant="default"
             >
               <Shield className="w-4 h-4 mr-2" />
-              Register as Admin
+              {registering ? 'Registering...' : 'Register as Admin'}
             </Button>
             
             <Button 
@@ -116,7 +147,7 @@ export default function AdminLayout({
     );
   }
 
-  // If not authenticated at all, redirect - NO SIDEBAR
+  // If not authenticated at all, redirect - NO SIDEBAR  
   if (!user) {
     router.push('/login-admin');
     return (
@@ -140,30 +171,4 @@ export default function AdminLayout({
       </SidebarInset>
     </SidebarProvider>
   );
-
-  // Helper function for admin registration
-  async function registerAsAdmin() {
-    if (!user || !firestore) return;
-    
-    try {
-      await setDoc(doc(firestore, 'admins', user.uid), {
-        email: user.email,
-        role: 'admin',
-        createdAt: new Date(),
-        permissions: {
-          manageProducts: true,
-          manageTenants: true,
-          manageOrders: true,
-          manageSwagBucks: true,
-          viewAnalytics: true
-        }
-      });
-      
-      // Refresh the page to reload with admin permissions
-      window.location.reload();
-    } catch (error) {
-      console.error('Admin registration failed:', error);
-      setAuthError('Failed to register as admin. Please try again.');
-    }
-  }
 }
