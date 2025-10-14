@@ -13,7 +13,9 @@ import {
   Palette,
   Star,
   CheckCircle,
-  Zap
+  Zap,
+  ShoppingBag,
+  TrendingUp
 } from 'lucide-react';
 import StoreRequestForm from '@/components/StoreRequestForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -92,7 +94,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* How It Works - Enhanced Visual Design */}
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -102,33 +104,60 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>1) We Build Your Store</CardTitle>
-                <CardDescription>
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white">
+              <CardHeader className="text-center pb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <Store className="h-10 w-10 text-white" />
+                </div>
+                <div className="flex items-center justify-center mb-3">
+                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">Step 1</span>
+                </div>
+                <CardTitle className="text-xl mb-3">We Build Your Store</CardTitle>
+                <CardDescription className="text-base leading-relaxed text-muted-foreground">
                   SwagStore designs and maintains your professional branded storefront — no management needed from your team.
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>2) Supporters Shop & You Earn</CardTitle>
-                <CardDescription>
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white">
+              <CardHeader className="text-center pb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <ShoppingBag className="h-10 w-10 text-white" />
+                </div>
+                <div className="flex items-center justify-center mb-3">
+                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">Step 2</span>
+                </div>
+                <CardTitle className="text-xl mb-3">Supporters Shop & You Earn</CardTitle>
+                <CardDescription className="text-base leading-relaxed text-muted-foreground">
                   Parents, family, and fans purchase from your store. Every order earns your team SwagBucks automatically.
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>3) Redeem for Free Swag</CardTitle>
-                <CardDescription>
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white">
+              <CardHeader className="text-center pb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <Gift className="h-10 w-10 text-white" />
+                </div>
+                <div className="flex items-center justify-center mb-3">
+                  <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">Step 3</span>
+                </div>
+                <CardTitle className="text-xl mb-3">Redeem for Free Swag</CardTitle>
+                <CardDescription className="text-base leading-relaxed text-muted-foreground">
                   Track progress with your milestone meter and use SwagBucks for free team merchandise.
                 </CardDescription>
               </CardHeader>
             </Card>
+          </div>
+
+          {/* Progress Flow Indicator */}
+          <div className="flex justify-center items-center mt-12 space-x-4">
+            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
+            <ArrowRight className="h-5 w-5 text-muted-foreground" />
+            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
+            <ArrowRight className="h-5 w-5 text-muted-foreground" />
+            <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
           </div>
         </div>
       </section>
@@ -141,7 +170,7 @@ export default function HomePage() {
             <div className="p-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4"><span className="text-2xl">🏒</span></div>
               <h3 className="font-semibold mb-2">Hockey Teams</h3>
-              <p className="text-sm text-muted-foreground">Earn free equipment through supporter purchases</p>
+              <p className="text-sm text-muted-foreground">Earn free team swag through supporter purchases</p>
             </div>
             <div className="p-6">
               <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4"><span className="text-2xl">💃</span></div>
@@ -169,7 +198,7 @@ export default function HomePage() {
               <Star className="h-5 w-5 text-yellow-500 fill-current" />
             </div>
             <blockquote className="text-lg italic text-center mb-4">
-              "Our school hockey team earned hundreds in free equipment. Families love shopping and we love the free gear!"
+              "Our school hockey team earned hundreds in free swag. Families love shopping and we love the free gear!"
             </blockquote>
             <cite className="text-sm text-muted-foreground">- Coach, Winnipeg MB</cite>
           </div>
