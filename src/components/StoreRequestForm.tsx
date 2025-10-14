@@ -450,12 +450,12 @@ export default function StoreRequestForm() {
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating Your Store...
+                Submitting Request...
               </>
             ) : (
               <>
                 <Send className="mr-2 h-4 w-4" />
-                Create My FREE Store
+                Submit Request
               </>
             )}
           </Button>
