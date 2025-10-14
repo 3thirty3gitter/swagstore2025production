@@ -250,23 +250,6 @@ export async function uploadFile(prevState: any, formData: FormData): Promise<{ 
 }
 
 export async function deleteTenant(tenantId: string) {
-  if (!tenantId) {
-    return { success: false, error: 'Tenant ID is required.' };
-  }
-
-  const { db } = getAdminApp();
-  try {
-    await db.collection('tenants').doc(tenantId).delete();
-    revalidatePath('/admin/tenants');
-    return { success: true };
-  } catch (e: any) {
-    console.error('Error deleting tenant:', e);
-    return { success: false, error: e.message || 'Failed to delete tenant.' };
-  }
-}
-
-// Enhanced delete function with better error handling
-export async function deleteTenant(tenantId: string) {
   if (!tenantId || typeof tenantId !== 'string') {
     return { success: false, error: 'Valid tenant ID is required.' };
   }
@@ -292,5 +275,17 @@ export async function deleteTenant(tenantId: string) {
   } catch (e: any) {
     console.error('Error deleting tenant:', e);
     return { success: false, error: e.message || 'Failed to delete tenant. Please try again.' };
+  }
+};
+  }
+
+  const { db } = getAdminApp();
+  try {
+    await db.collection('tenants').doc(tenantId).delete();
+    revalidatePath('/admin/tenants');
+    return { success: true };
+  } catch (e: any) {
+    console.error('Error deleting tenant:', e);
+    return { success: false, error: e.message || 'Failed to delete tenant.' };
   }
 }
