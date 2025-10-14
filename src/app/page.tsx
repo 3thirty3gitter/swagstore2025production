@@ -35,7 +35,7 @@ export default function HomePage() {
               Custom Team Stores for Canadian Organizations
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-              Professional branded storefronts created for your hockey teams, dance clubs, bands, and organizations. Complete with custom subdomains and SwagBucks rewards.
+              We create professional branded storefronts for your hockey teams, dance clubs, bands, and organizations. Complete with custom subdomains and SwagBucks rewards.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/admin">
@@ -57,14 +57,14 @@ export default function HomePage() {
       <section className="py-16 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">
-            Ready to Launch Your Team Store?
+            Ready for Your Custom Team Store?
           </h2>
           <p className="text-lg mb-8 opacity-90">
-            Join Canadian teams already using SwagStore to manage their merchandise and engage their communities
+            Contact us to get a professional store created for your Canadian team or organization
           </p>
           <Link href="/admin">
             <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
-              Create Team Stores
+              Get Your Store Created
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
