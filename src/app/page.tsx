@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Store, Shield } from 'lucide-react';
+import { ArrowRight, Store, Shield, Zap } from 'lucide-react';
 import StoreRequestForm from '@/components/StoreRequestForm';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
@@ -24,6 +24,17 @@ export default function HomePage() {
           </div>
         </div>
       </header>
+
+      {/* Demand Notice */}
+      <section className="py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 text-sm md:text-base font-medium">
+            <Zap className="h-4 w-4" />
+            <span>🔥 High Demand Alert: Due to overwhelming response, we're processing requests as fast as possible!</span>
+            <Zap className="h-4 w-4" />
+          </div>
+        </div>
+      </section>
 
       {/* Hero Section */}
       <section className="py-20 md:py-32">

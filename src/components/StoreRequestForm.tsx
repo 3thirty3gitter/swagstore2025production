@@ -265,7 +265,7 @@ export default function StoreRequestForm() {
 
           {/* Logo Upload */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Team Logo</h3>
+            <h3 className="text-lg font-semibold mb-4">Logo (Optional)</h3>
             <div className="space-y-4">
               {formData.logoUrl && (
                 <div className="relative w-32 h-32 bg-muted rounded-md overflow-hidden">
@@ -300,10 +300,10 @@ export default function StoreRequestForm() {
                   ) : (
                     <Upload className="mr-2 h-4 w-4" />
                   )}
-                  Upload Team Logo
+                  Upload Logo
                 </Button>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Upload your team logo (PNG, JPG, SVG recommended)
+                  Upload your logo if available (PNG, JPG, SVG recommended)
                 </p>
               </div>
             </div>
