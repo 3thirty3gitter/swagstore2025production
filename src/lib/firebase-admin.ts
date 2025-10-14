@@ -8,9 +8,12 @@ let adminApp: any = null;
 export function getAdminApp() {
   if (!adminApp && getApps().length === 0) {
     try {
+      // Use the correct Firebase Storage format (.firebasestorage.app)
       const storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 
                            process.env.FIREBASE_STORAGE_BUCKET || 
-                           `${process.env.FIREBASE_PROJECT_ID}.appspot.com`;
+                           `${process.env.FIREBASE_PROJECT_ID}.firebasestorage.app`;
+      
+      console.log('Firebase Admin - Using storage bucket:', storageBucket);
       
       adminApp = initializeApp({
         credential: cert({
@@ -23,7 +26,7 @@ export function getAdminApp() {
           tokenUri: process.env.FIREBASE_TOKEN_URI,
         }),
         projectId: process.env.FIREBASE_PROJECT_ID,
-        storageBucket: storageBucket.split('.')[0], // Extract bucket name from full URL
+        storageBucket: storageBucket,
       });
     } catch (error) {
       console.error('Firebase Admin initialization failed:', error);

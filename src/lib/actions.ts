@@ -217,10 +217,16 @@ export async function uploadFile(prevState: any, formData: FormData): Promise<{ 
   try {
     const { storage } = getAdminApp();
     
-    // Get bucket name from environment or use default
-    const bucketName = process.env.FIREBASE_STORAGE_BUCKET || `${process.env.FIREBASE_PROJECT_ID}.appspot.com`;
+    // Use the correct Firebase Storage format (.firebasestorage.app)
+    const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 
+                      process.env.FIREBASE_STORAGE_BUCKET || 
+                      `${process.env.FIREBASE_PROJECT_ID}.firebasestorage.app`;
     
-    console.log('Using storage bucket:', bucketName);
+    console.log('Upload - Using bucket:', bucketName);
+    
+    if (!bucketName) {
+      throw new Error('No storage bucket configured');
+    }
     
     const mimeType = dataUrl.match(/data:(.*);base64,/)?.[1];
     const base64 = dataUrl.split(',')[1];
@@ -231,10 +237,14 @@ export async function uploadFile(prevState: any, formData: FormData): Promise<{ 
     const buffer = Buffer.from(base64, 'base64');
     const timestamp = Date.now();
     const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filePath = `uploads/${timestamp}-${sanitizedFileName}`;
     
-    // Use the bucket with explicit name
-    const bucket = bucketName ? storage.bucket(bucketName) : storage.bucket();
-    const file = bucket.file(`uploads/${timestamp}-${sanitizedFileName}`);
+    // Use the full bucket name: store-hub-1ty89.firebasestorage.app
+    const bucket = storage.bucket(bucketName);
+    const file = bucket.file(filePath);
+    
+    console.log('Uploading to Firebase Storage bucket:', bucketName);
+    console.log('File path:', filePath);
     
     await file.save(buffer, {
       metadata: {
@@ -244,28 +254,31 @@ export async function uploadFile(prevState: any, formData: FormData): Promise<{ 
       public: true,
     });
     
-    // Make the file public and get URL
+    // Make the file public
     await file.makePublic();
-    const publicUrl = `https://storage.googleapis.com/${bucketName}/uploads/${timestamp}-${sanitizedFileName}`;
     
-    console.log('File uploaded successfully:', publicUrl);
+    // Generate the correct public URL for the new Firebase Storage format
+    const encodedFilePath = encodeURIComponent(filePath);
+    const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedFilePath}?alt=media`;
+    
+    console.log('File uploaded successfully to:', publicUrl);
     
     return { success: true, url: publicUrl };
 
   } catch (e: any) {
-    console.error('Upload failed:', e);
-    
-    // Provide more specific error messages
-    if (e.message.includes('Bucket name not specified')) {
-      return { 
-        success: false, 
-        error: 'Storage bucket not configured. Please contact administrator.' 
-      };
-    }
-    
-    return { success: false, error: e.message || "File upload failed." };
+    console.error('Firebase Storage upload failed:', {
+      error: e.message,
+      code: e.code,
+      details: e.details || e,
+      bucketName: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    });
+    return { 
+      success: false, 
+      error: `Upload failed: ${e.message}` 
+    };
   }
 }
+
 
 export async function deleteTenant(tenantId: string) {
   if (!tenantId || typeof tenantId !== 'string') {
