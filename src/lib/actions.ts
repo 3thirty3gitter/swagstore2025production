@@ -1,4 +1,3 @@
-
 'use server';
 
 import { z } from 'zod';
@@ -32,16 +31,11 @@ export async function login(prevState: any, formData: FormData) {
   const { email, password } = validatedFields.data;
 
   try {
-    // We do this on the server to avoid exposing the sign-in logic to the client until it's necessary
-    // This is a placeholder for server-side validation if needed.
-    // The actual sign-in state is managed on the client.
     console.log(`Attempting login for ${email}`);
-    // This is a server-side check. The client will handle the actual sign-in.
   } catch (e: any) {
     return { success: false, error: e.message || 'An unknown error occurred.' };
   }
 
-  // We return success and the credentials to let the client-side perform the sign-in
   return { success: true, email, password };
 }
 
@@ -79,7 +73,6 @@ const productFormSchema = z.object({
     }
   }),
 });
-
 
 export async function saveProduct(prevState: any, formData: FormData) {
   const validatedFields = productFormSchema.safeParse(
@@ -157,7 +150,6 @@ const getDefaultWebsiteData = (): Website => ({
     ]
 });
 
-
 export async function saveTenant(prevState: any, formData: FormData) {
     const validatedFields = tenantFormSchema.safeParse(
       Object.fromEntries(formData.entries())
@@ -192,7 +184,6 @@ export async function saveTenant(prevState: any, formData: FormData) {
         return { success: false, error: 'Failed to save tenant. Check permissions and data.' };
     }
 }
-
 
 export async function saveWebsite(tenantId: string, websiteData: Website) {
   const { db } = getAdminApp();
@@ -256,7 +247,6 @@ export async function deleteTenant(tenantId: string) {
 
   const { db } = getAdminApp();
   try {
-    // First check if the tenant exists
     const tenantRef = db.collection('tenants').doc(tenantId);
     const tenantDoc = await tenantRef.get();
     
@@ -264,10 +254,7 @@ export async function deleteTenant(tenantId: string) {
       return { success: false, error: 'Tenant not found or already deleted.' };
     }
     
-    // Delete the tenant
     await tenantRef.delete();
-    
-    // Force revalidation of the tenants page
     revalidatePath('/admin/tenants');
     revalidatePath('/');
     
@@ -275,17 +262,5 @@ export async function deleteTenant(tenantId: string) {
   } catch (e: any) {
     console.error('Error deleting tenant:', e);
     return { success: false, error: e.message || 'Failed to delete tenant. Please try again.' };
-  }
-};
-  }
-
-  const { db } = getAdminApp();
-  try {
-    await db.collection('tenants').doc(tenantId).delete();
-    revalidatePath('/admin/tenants');
-    return { success: true };
-  } catch (e: any) {
-    console.error('Error deleting tenant:', e);
-    return { success: false, error: e.message || 'Failed to delete tenant.' };
   }
 }
