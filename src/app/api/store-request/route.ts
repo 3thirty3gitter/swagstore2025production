@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// Simple in-memory storage (will persist during server lifecycle)
-let pendingTenants: any[] = [];
+import { redis, TENANT_KEY } from '@/lib/redis';
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,8 +33,8 @@ export async function POST(request: NextRequest) {
       submittedAt: new Date().toISOString(),
     };
 
-    // Store tenant
-    pendingTenants.push(tenant);
+    // Store in Redis - prepend to list for newest-first ordering
+    await redis.lpush(TENANT_KEY, JSON.stringify(tenant));
     
     console.log('TENANT CREATED:', tenant.name);
     
@@ -49,5 +47,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  return NextResponse.json({ tenants: pendingTenants });
+  try {
+    // Get all tenants from Redis list
+    const tenantStrings = await redis.lrange(TENANT_KEY, 0, -1);
+    const tenants = tenantStrings.map((str: any) => JSON.parse(str as string));
+    
+    return NextResponse.json({ tenants });
+  } catch (e) {
+    console.error('Redis fetch error:', e);
+    return NextResponse.json({ tenants: [] });
+  }
 }
