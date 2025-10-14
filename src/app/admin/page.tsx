@@ -1,9 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirebase } from '@/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,95 +14,42 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [user, setUser] = useState(null);
-  const { auth, firestore } = useFirebase();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (!auth) {
-      setIsCheckingAuth(false);
-      return;
-    }
-
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        try {
-          // For now, allow any authenticated user to access admin
-          // TODO: Implement proper admin role checking
-          setUser(user);
-          setIsAuthenticated(true);
-        } catch (error) {
-          console.error('Error checking admin status:', error);
-          setIsAuthenticated(false);
-        }
-      } else {
-        setIsAuthenticated(false);
-        setUser(null);
-      }
-      
-      setIsCheckingAuth(false);
-    });
-
-    return () => unsubscribe();
-  }, [auth, firestore]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!auth) {
-      toast({
-        variant: 'destructive',
-        title: 'Connection Error',
-        description: 'Unable to connect to authentication service.',
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setIsAuthenticated(true);
-      setUser(userCredential.user);
-      toast({
-        title: 'Login Successful',
-        description: 'Welcome to the SwagStore admin dashboard.',
-      });
+      // Simple hardcoded admin check for now
+      // TODO: Implement proper Firebase authentication
+      if (email === 'admin@swagstore.ca' && password === 'admin123') {
+        setIsAuthenticated(true);
+        toast({
+          title: 'Login Successful',
+          description: 'Welcome to the SwagStore admin dashboard.',
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Login Failed',
+          description: 'Invalid email or password.',
+        });
+      }
     } catch (error: any) {
       console.error('Login error:', error);
-      let errorMessage = 'Login failed. Please try again.';
-      
-      if (error.code === 'auth/user-not-found') {
-        errorMessage = 'No account found with this email address.';
-      } else if (error.code === 'auth/wrong-password') {
-        errorMessage = 'Incorrect password.';
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage = 'Invalid email address format.';
-      }
-      
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: errorMessage,
+        description: 'An error occurred. Please try again.',
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/20">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Checking authentication...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (isAuthenticated && user) {
+  if (isAuthenticated) {
     return <AdminDashboard />;
   }
 
@@ -120,6 +64,9 @@ export default function AdminPage() {
           <CardDescription>
             Sign in to access the admin dashboard
           </CardDescription>
+          <CardDescription className="text-xs text-muted-foreground mt-2">
+            Demo: admin@swagstore.ca / admin123
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -130,7 +77,7 @@ export default function AdminPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@example.com"
+                placeholder="admin@swagstore.ca"
                 required
               />
             </div>

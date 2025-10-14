@@ -21,7 +21,7 @@ import {
   Gift
 } from 'lucide-react';
 import StoreRequestForm from '@/components/StoreRequestForm';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 export default function HomePage() {
   const [showForm, setShowForm] = useState(false);
@@ -309,6 +309,12 @@ export default function HomePage() {
       {/* Store Request Form Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Request Your Free SwagStore</DialogTitle>
+            <DialogDescription>
+              Fill out this form to request a custom merchandise store for your team or organization.
+            </DialogDescription>
+          </DialogHeader>
           <StoreRequestForm />
         </DialogContent>
       </Dialog>
