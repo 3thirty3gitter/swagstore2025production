@@ -20,6 +20,7 @@ import {
   Brush,
   Settings,
   Gift,
+  Clock
 } from "lucide-react";
 import { useFirebase } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -47,45 +48,17 @@ export function AdminSidebar() {
   };
 
   const menuItems = [
-    {
-      href: "/admin/dashboard",
-      label: "Dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      href: "/admin/swagbucks",
-      label: "SwagBucks",
-      icon: Gift,
-      isNew: true,
-    },
-    {
-      href: "/admin/products",
-      label: "Products",
-      icon: ShoppingBag,
-    },
-    {
-      href: "/admin/tenants",
-      label: "Tenants",
-      icon: Users,
-    },
-    {
-      href: "/admin/orders",
-      label: "Orders",
-      icon: Package,
-    },
+    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/swagbucks", label: "SwagBucks", icon: Gift, isNew: true },
+    { href: "/admin/products", label: "Products", icon: ShoppingBag },
+    { href: "/admin/tenants", label: "Tenants", icon: Users },
+    { href: "/admin/tenants/pending", label: "Pending Tenants", icon: Clock, isNew: true },
+    { href: "/admin/orders", label: "Orders", icon: Package }
   ];
   
   const bottomMenuItems = [
-    {
-      href: "/admin/website",
-      label: "Website",
-      icon: Brush,
-    },
-    {
-      href: "/admin/settings",
-      label: "Settings",
-      icon: Settings,
-    },
+    { href: "/admin/website", label: "Website", icon: Brush },
+    { href: "/admin/settings", label: "Settings", icon: Settings }
   ];
 
   return (
