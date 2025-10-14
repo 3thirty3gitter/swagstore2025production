@@ -1,9 +1,15 @@
-import Link from 'next/link';
+'use client';
+
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Store, Shield } from 'lucide-react';
+import { ArrowRight, Store, Shield, X } from 'lucide-react';
+import StoreRequestForm from '@/components/StoreRequestForm';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 export default function HomePage() {
+  const [showForm, setShowForm] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       {/* Header */}
@@ -30,7 +36,11 @@ export default function HomePage() {
               We create professional branded storefronts for your hockey teams, dance clubs, bands, and organizations. Complete with custom subdomains and SwagBucks rewards.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" className="text-lg px-8 py-6">
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-6"
+                onClick={() => setShowForm(true)}
+              >
                 Request a Store
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -72,6 +82,23 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Store Request Form Dialog */}
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-0 top-0 z-10"
+              onClick={() => setShowForm(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <StoreRequestForm />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
