@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,10 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Send, CheckCircle, Upload, X } from "lucide-react";
-// Using API endpoint instead of direct Firebase
-// Using API endpoint instead of direct Firebase
 import { CANADIAN_PROVINCES, formatCanadianPostalCode } from '@/lib/canadaData';
-import { uploadFile } from '@/lib/actions';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 
@@ -53,21 +50,16 @@ export default function StoreRequestForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   // Generate slug from team name
   const generateSlug = (teamName: string): string => {
     return teamName
       .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/[^a-z0-9\s-]/g, '') 
+      .replace(/\s+/g, '-') 
+      .replace(/-+/g, '-') 
       .trim();
   };
 
@@ -88,16 +80,21 @@ export default function StoreRequestForm() {
       
       try {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = async (loadEvent) => {
-          const dataUrl = loadEvent.target?.result as string;
+        reader.onload = async (e) => {
+          const dataUrl = e.target?.result as string;
           if (dataUrl) {
             console.log('File read successful, uploading...');
-            const formDataUpload = new FormData();
-            formDataUpload.append('dataUrl', dataUrl);
-            formDataUpload.append('fileName', file.name);
             
-            const result = await uploadFile(null, formDataUpload);
+            const formData = new FormData();
+            formData.append('dataUrl', dataUrl);
+            formData.append('fileName', file.name);
+            
+            const response = await fetch('/api/upload', {
+              method: 'POST',
+              body: formData,
+            });
+            
+            const result = await response.json();
             console.log('Upload result:', result);
             
             if (result.success && result.url) {
@@ -107,28 +104,23 @@ export default function StoreRequestForm() {
                 description: 'Your logo has been uploaded successfully.',
               });
             } else {
-              toast({
-                variant: 'destructive',
-                title: 'Upload failed',
-                description: result.error || 'Failed to upload logo.',
-              });
+              throw new Error(result.error || 'Upload failed');
             }
           }
         };
+        
         reader.onerror = () => {
-          console.error('File read error');
-          toast({
-            variant: 'destructive',
-            title: 'Upload failed',
-            description: 'Failed to read file.',
-          });
+          throw new Error('Failed to read file');
         };
+        
+        reader.readAsDataURL(file);
+        
       } catch (error) {
         console.error('Logo upload error:', error);
         toast({
           variant: 'destructive',
           title: 'Upload failed',
-          description: 'Failed to upload logo.',
+          description: 'Failed to upload logo. Please try again.',
         });
       } finally {
         setUploadingLogo(false);
@@ -144,13 +136,7 @@ export default function StoreRequestForm() {
     e.preventDefault();
     
     console.log('Form submit started');
-    console.log('Form data:', formData);
     
-    if (!isClient) {
-      console.log('Not client side, returning');
-      return;
-    }
-
     if (!formData.teamName || !formData.contactName || !formData.contactEmail) {
       toast({
         variant: 'destructive',
@@ -164,16 +150,8 @@ export default function StoreRequestForm() {
     setIsSubmitting(true);
     
     try {
-      // Generate slug and subdomain
-      const slug = generateSlug(formData.teamName);
-      const subdomain = slug;
-
-      console.log('Generated slug:', slug);
-
-      // Submit form data via API
+      console.log('Form data:', formData);
       
-
-      // Submit via API endpoint (server-side with proper permissions)
       const response = await fetch('/api/store-request', {
         method: 'POST',
         headers: {
@@ -182,13 +160,16 @@ export default function StoreRequestForm() {
         body: JSON.stringify(formData),
       });
       
-      const result = await response.json();
+      console.log('API response status:', response.status);
       
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to submit request');
+        const errorData = await response.json();
+        console.error('API error response:', errorData);
+        throw new Error(errorData.error || `HTTP ${response.status}`);
       }
       
-      console.log('Store request submitted successfully:', result);
+      const result = await response.json();
+      console.log('Success result:', result);
       
       setIsSubmitted(true);
       toast({
@@ -197,28 +178,11 @@ export default function StoreRequestForm() {
       });
       
     } catch (error) {
-      console.error('Detailed error submitting form:', error);
-      
-      // More specific error handling
-      let errorMessage = 'Failed to submit your request. Please try again.';
-      
-      if (error instanceof Error) {
-        console.error('Error message:', error.message);
-        console.error('Error stack:', error.stack);
-        
-        if (error.message.includes('permission')) {
-          errorMessage = 'Permission denied. Please contact support.';
-        } else if (error.message.includes('network')) {
-          errorMessage = 'Network error. Please check your connection and try again.';
-        } else if (error.message.includes('quota')) {
-          errorMessage = 'Service temporarily unavailable. Please try again later.';
-        }
-      }
-      
+      console.error('Form submission error:', error);
       toast({
         variant: 'destructive',
         title: 'Submission Failed',
-        description: errorMessage,
+        description: error instanceof Error ? error.message : 'Please try again.',
       });
     } finally {
       setIsSubmitting(false);
@@ -232,7 +196,7 @@ export default function StoreRequestForm() {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-green-700 mb-2">Request Submitted!</h2>
           <p className="text-muted-foreground mb-4">
-            Thank you for your interest! We've received your store request and will have your 
+            Thank you! We've received your store request and will have your 
             custom merchandise store live within 24 hours.
           </p>
           <div className="bg-blue-50 p-4 rounded-lg">
@@ -293,22 +257,6 @@ export default function StoreRequestForm() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="organizationLevel">Organization Level</Label>
-                <Select onValueChange={(value) => handleInputChange('organizationLevel', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="recreational">Recreational</SelectItem>
-                    <SelectItem value="competitive">Competitive</SelectItem>
-                    <SelectItem value="professional">Professional</SelectItem>
-                    <SelectItem value="youth">Youth</SelectItem>
-                    <SelectItem value="adult">Adult</SelectItem>
-                    <SelectItem value="corporate">Corporate</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
                 <Label htmlFor="city">City *</Label>
                 <Input
                   id="city"
@@ -332,15 +280,6 @@ export default function StoreRequestForm() {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div>
-                <Label htmlFor="postalCode">Postal Code</Label>
-                <Input
-                  id="postalCode"
-                  value={formData.postalCode}
-                  onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                  placeholder="K1A 0A9"
-                />
               </div>
             </div>
           </div>
@@ -368,16 +307,6 @@ export default function StoreRequestForm() {
                   onChange={(e) => handleInputChange('contactEmail', e.target.value)}
                   placeholder="your.email@example.com"
                   required
-                />
-              </div>
-              <div className="md:col-span-2">
-                <Label htmlFor="contactPhone">Phone Number</Label>
-                <Input
-                  id="contactPhone"
-                  type="tel"
-                  value={formData.contactPhone}
-                  onChange={(e) => handleInputChange('contactPhone', e.target.value)}
-                  placeholder="(416) 123-4567"
                 />
               </div>
             </div>
@@ -408,8 +337,8 @@ export default function StoreRequestForm() {
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
-                  <p className="text-xs text-green-600 font-medium flex items-center gap-1">
-                    <span className="text-green-500">✓</span> Logo uploaded successfully
+                  <p className="text-xs text-green-600 font-medium">
+                    ✓ Logo uploaded successfully
                   </p>
                 </div>
               )}
@@ -434,9 +363,6 @@ export default function StoreRequestForm() {
                   )}
                   {formData.logoUrl ? 'Change Logo' : 'Upload Logo'}
                 </Button>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Upload your logo if available (PNG, JPG, SVG recommended)
-                </p>
               </div>
             </div>
           </div>
@@ -470,20 +396,6 @@ export default function StoreRequestForm() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="md:col-span-2">
-                <Label htmlFor="urgency">When do you need your store? *</Label>
-                <Select onValueChange={(value) => handleInputChange('urgency', value)} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select timeframe" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="asap">ASAP (within 1 week)</SelectItem>
-                    <SelectItem value="2weeks">Within 2 weeks</SelectItem>
-                    <SelectItem value="month">Within a month</SelectItem>
-                    <SelectItem value="flexible">Flexible timeline</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
           </div>
 
@@ -494,8 +406,8 @@ export default function StoreRequestForm() {
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder="What types of products are you most interested in? Hockey jerseys, team hoodies, custom gear? Any special requirements?"
-              rows={4}
+              placeholder="What types of products are you most interested in? Hockey jerseys, team hoodies, custom gear?"
+              rows={3}
             />
           </div>
 
