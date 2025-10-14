@@ -264,33 +264,3 @@ export async function deleteTenant(tenantId: string) {
     return { success: false, error: e.message || 'Failed to delete tenant.' };
   }
 }
-
-// Enhanced delete function with better error handling
-export async function deleteTenant(tenantId: string) {
-  if (!tenantId || typeof tenantId !== 'string') {
-    return { success: false, error: 'Valid tenant ID is required.' };
-  }
-
-  const { db } = getAdminApp();
-  try {
-    // First check if the tenant exists
-    const tenantRef = db.collection('tenants').doc(tenantId);
-    const tenantDoc = await tenantRef.get();
-    
-    if (!tenantDoc.exists) {
-      return { success: false, error: 'Tenant not found or already deleted.' };
-    }
-    
-    // Delete the tenant
-    await tenantRef.delete();
-    
-    // Force revalidation of the tenants page
-    revalidatePath('/admin/tenants');
-    revalidatePath('/');
-    
-    return { success: true };
-  } catch (e: any) {
-    console.error('Error deleting tenant:', e);
-    return { success: false, error: e.message || 'Failed to delete tenant. Please try again.' };
-  }
-}
