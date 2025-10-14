@@ -6,7 +6,7 @@ import { TenantFormDialog } from '@/components/admin/tenant-form-dialog';
 import { useCollection } from "@/firebase/firestore/use-collection";
 import { useFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import type { Tenant } from '@/lib/types';
 
 export default function TenantsPage() {
@@ -25,17 +25,21 @@ export default function TenantsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold tracking-tight font-headline">
             Tenant Stores
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mt-2">
             Manage team stores with custom subdomains
           </p>
         </div>
+        
         <TenantFormDialog>
-          <Button>+ Create Store</Button>
+          <Button size="default" className="gap-2">
+            <Plus className="h-4 w-4" />
+            Create Store
+          </Button>
         </TenantFormDialog>
       </div>
       

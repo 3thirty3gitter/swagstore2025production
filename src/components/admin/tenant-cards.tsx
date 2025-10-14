@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Edit, ExternalLink, MoreVertical, Trash2 } from 'lucide-react';
+import { Edit, ExternalLink, MoreVertical, Trash2, Store } from 'lucide-react';
 import type { Tenant } from '@/lib/types';
 import Link from 'next/link';
 import { deleteTenant } from '@/lib/actions';
@@ -41,8 +41,8 @@ export function TenantCards({ tenants }: TenantCardsProps) {
       const result = await deleteTenant(tenant.id);
       if (result.success) {
         toast({
-          title: "Tenant Deleted",
-          description: `The tenant "${tenant.name}" has been deleted.`,
+          title: "Store Deleted",
+          description: `The store "${tenant.name}" has been deleted.`,
         });
       } else {
         toast({
@@ -56,9 +56,14 @@ export function TenantCards({ tenants }: TenantCardsProps) {
 
   if (!tenants || tenants.length === 0) {
     return (
-      <div className="text-center py-16 border-2 border-dashed rounded-lg">
-        <h2 className="text-xl font-semibold">No tenant stores found</h2>
-        <p className="text-muted-foreground mt-2">Create your first store to get started.</p>
+      <div className="text-center py-16 border-2 border-dashed rounded-lg bg-muted/20">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-muted">
+          <Store className="h-6 w-6 text-muted-foreground" />
+        </div>
+        <h3 className="mt-4 text-lg font-semibold">No stores yet</h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Get started by creating your first team store
+        </p>
       </div>
     );
   }
@@ -66,16 +71,16 @@ export function TenantCards({ tenants }: TenantCardsProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {tenants.map((tenant) => (
-        <Card key={tenant.id} className="relative bg-card">
+        <Card key={tenant.id} className="relative bg-card hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/10 rounded-md flex items-center justify-center">
-                  <div className="w-4 h-4 bg-primary rounded-sm" />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Store className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">{tenant.name}</h3>
-                  <p className="text-sm text-muted-foreground">Team: {tenant.name}</p>
+                  <h3 className="font-semibold text-base">{tenant.name}</h3>
+                  <p className="text-sm text-muted-foreground">{tenant.storeName}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -130,48 +135,40 @@ export function TenantCards({ tenants }: TenantCardsProps) {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                <span className="text-sm text-muted-foreground">Custom Domain</span>
-                <Button variant="ghost" size="icon" className="h-4 w-4 ml-auto">
-                  <ExternalLink className="h-3 w-3" />
-                </Button>
+            <div className="space-y-3">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                  <span className="text-xs text-muted-foreground">Primary Domain</span>
+                </div>
+                <p className="text-sm font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded border">
+                  {tenant.slug}.swagstore.ca
+                </p>
               </div>
-              <p className="text-sm font-mono text-blue-600">
-                https://{tenant.slug}.swagstore.ca
-              </p>
+              
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 bg-gray-500 rounded-full" />
+                  <span className="text-xs text-muted-foreground">Fallback URL</span>
+                </div>
+                <p className="text-sm font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded border">
+                  swagstore.ca/{tenant.slug}
+                </p>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-gray-500 rounded-full" />
-                <span className="text-sm text-muted-foreground">Fallback URL</span>
-                <Button variant="ghost" size="icon" className="h-4 w-4 ml-auto">
-                  <ExternalLink className="h-3 w-3" />
-                </Button>
-              </div>
-              <p className="text-sm font-mono text-gray-600">
-                https://swagstore.ca/{tenant.slug}
-              </p>
-            </div>
-            
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-2 pt-2">
               <Link href={`/admin/tenants/${tenant.id}/editor`} className="flex-1">
-                <Button className="w-full" size="sm">
+                <Button className="w-full h-9" size="sm">
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Website
                 </Button>
               </Link>
-              <Button 
-                variant="destructive" 
-                size="sm" 
-                className="px-3"
-                onClick={() => handleDelete(tenant)}
-                disabled={isPending}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <Link href={`https://${tenant.slug}.swagstore.ca`} target="_blank">
+                <Button variant="outline" size="sm" className="h-9 px-3">
+                  <ExternalLink className="h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
