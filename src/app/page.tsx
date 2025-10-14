@@ -16,14 +16,6 @@ export default function HomePage() {
               🍁 Canadian
             </Badge>
           </div>
-          
-          <div className="flex items-center space-x-4">
-            <Link href="/admin">
-              <Button variant="outline">
-                Admin Dashboard
-              </Button>
-            </Link>
-          </div>
         </div>
       </header>
 
@@ -38,12 +30,10 @@ export default function HomePage() {
               Professional branded storefronts created for your hockey teams, dance clubs, bands, and organizations. Complete with custom subdomains and SwagBucks rewards.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/admin">
-                <Button size="lg" className="text-lg px-8 py-6">
-                  Get Started
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
+              <Button size="lg" className="text-lg px-8 py-6">
+                Request a Store
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Shield className="h-4 w-4" />
                 <span>Secure • Canadian-hosted • Professional</span>
@@ -62,12 +52,6 @@ export default function HomePage() {
           <p className="text-lg mb-8 opacity-90">
             Join Canadian teams already using SwagStore to manage their merchandise and engage their communities
           </p>
-          <Link href="/admin">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
-              Create Team Stores
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
         </div>
       </section>
 
