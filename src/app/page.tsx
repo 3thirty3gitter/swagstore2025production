@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Store, Shield, X } from 'lucide-react';
+import { ArrowRight, Store, Shield } from 'lucide-react';
 import StoreRequestForm from '@/components/StoreRequestForm';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
@@ -86,17 +86,7 @@ export default function HomePage() {
       {/* Store Request Form Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-0 top-0 z-10"
-              onClick={() => setShowForm(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-            <StoreRequestForm />
-          </div>
+          <StoreRequestForm />
         </DialogContent>
       </Dialog>
     </div>

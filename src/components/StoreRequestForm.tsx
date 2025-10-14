@@ -1,16 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Send, CheckCircle } from "lucide-react";
+import { Loader2, Send, CheckCircle, Upload, X } from "lucide-react";
 import { db } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { CANADIAN_PROVINCES, validateCanadianPostalCode, formatCanadianPostalCode } from '@/lib/canadaData';
+import { uploadFile } from '@/lib/actions';
+import Image from 'next/image';
 
 interface StoreRequestData {
   teamName: string;
@@ -18,15 +20,16 @@ interface StoreRequestData {
   contactEmail: string;
   contactPhone: string;
   teamType: string;
-  organizationType: string;
-  location: string;
-  province: string;
-  postalCode: string;
-  teamSize: number;
-  expectedOrderVolume: string;
   description: string;
   hasExistingMerch: boolean;
   urgency: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  organizationLevel: string;
+  teamSize: string;
+  expectedVolume: string;
+  logoUrl?: string;
 }
 
 export default function StoreRequestForm() {
@@ -36,67 +39,79 @@ export default function StoreRequestForm() {
     contactEmail: '',
     contactPhone: '',
     teamType: '',
-    organizationType: '',
-    location: '',
-    province: '',
-    postalCode: '',
-    teamSize: 0,
-    expectedOrderVolume: '',
     description: '',
     hasExistingMerch: false,
-    urgency: ''
+    urgency: '',
+    city: '',
+    province: '',
+    postalCode: '',
+    organizationLevel: '',
+    teamSize: '',
+    expectedVolume: '',
+    logoUrl: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState('');
-  const [postalCodeError, setPostalCodeError] = useState('');
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
-  const handleInputChange = (field: keyof StoreRequestData, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-
-    // Validate postal code on change
-    if (field === 'postalCode') {
+  const handleInputChange = (field: keyof StoreRequestData, value: string | boolean) => {
+    if (field === 'postalCode' && typeof value === 'string') {
       const formatted = formatCanadianPostalCode(value);
-      setFormData(prev => ({ ...prev, postalCode: formatted }));
+      setFormData(prev => ({ ...prev, [field]: formatted }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
+  };
+
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadingLogo(true);
       
-      if (value && !validateCanadianPostalCode(formatted)) {
-        setPostalCodeError('Please enter a valid Canadian postal code (e.g., K1A 0A9)');
-      } else {
-        setPostalCodeError('');
-      }
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async (loadEvent) => {
+        const dataUrl = loadEvent.target?.result as string;
+        if (dataUrl) {
+          const formDataUpload = new FormData();
+          formDataUpload.append('dataUrl', dataUrl);
+          formDataUpload.append('fileName', file.name);
+          
+          const result = await uploadFile(null, formDataUpload);
+          
+          if (result.success && result.url) {
+            handleInputChange('logoUrl', result.url);
+          }
+        }
+      };
+      setUploadingLogo(false);
+    }
+    if (event.target) {
+      event.target.value = '';
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError('');
-
-    // Validate postal code before submission
-    if (formData.postalCode && !validateCanadianPostalCode(formData.postalCode)) {
-      setError('Please enter a valid Canadian postal code.');
-      setIsSubmitting(false);
+    
+    if (!formData.teamName || !formData.contactName || !formData.contactEmail) {
       return;
     }
 
+    setIsSubmitting(true);
+    
     try {
-      // Add to Firestore
-      await addDoc(collection(db, 'storeRequests'), {
+      await addDoc(collection(db, 'store-requests'), {
         ...formData,
-        status: 'pending',
-        country: 'Canada',
-        createdAt: new Date(),
-        updatedAt: new Date()
+        submittedAt: new Date(),
+        status: 'pending'
       });
-
+      
       setIsSubmitted(true);
-    } catch (err) {
-      console.error('Error submitting request:', err);
-      setError('Failed to submit request. Please try again.');
+    } catch (error) {
+      console.error('Error submitting form:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -104,15 +119,12 @@ export default function StoreRequestForm() {
 
   if (isSubmitted) {
     return (
-      <Card className="max-w-2xl mx-auto">
-        <CardContent className="text-center py-12">
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardContent className="pt-6 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold mb-2">Request Submitted Successfully!</h3>
-          <p className="text-muted-foreground mb-4">
-            Thank you for your interest in SwagStore. We'll review your request and get back to you within 24 hours.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Check your email ({formData.contactEmail}) for confirmation details.
+          <h2 className="text-2xl font-bold text-green-700 mb-2">Request Submitted!</h2>
+          <p className="text-muted-foreground">
+            Thank you for your interest! We'll be in touch within 24 hours to discuss your custom store.
           </p>
         </CardContent>
       </Card>
@@ -120,9 +132,9 @@ export default function StoreRequestForm() {
   }
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>Request Your Free SwagStore</CardTitle>
+        <CardTitle className="text-2xl">Request Your Free SwagStore</CardTitle>
         <CardDescription>
           Fill out this form and we'll set up your custom merchandise store within 24 hours. Serving teams across Canada! 🍁
         </CardDescription>
@@ -130,9 +142,8 @@ export default function StoreRequestForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Team Information */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-lg">Team Information</h4>
-            
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Team Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="teamName">Team/Organization Name *</Label>
@@ -140,62 +151,56 @@ export default function StoreRequestForm() {
                   id="teamName"
                   value={formData.teamName}
                   onChange={(e) => handleInputChange('teamName', e.target.value)}
-                  placeholder="Maple Leafs Hockey Club"
+                  placeholder="Your team name"
                   required
                 />
               </div>
               <div>
                 <Label htmlFor="teamType">Team Type *</Label>
-                <Select onValueChange={(value) => handleInputChange('teamType', value)} required>
+                <Select onValueChange={(value) => handleInputChange('teamType', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select team type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sports">Sports Team</SelectItem>
                     <SelectItem value="hockey">Hockey Team</SelectItem>
-                    <SelectItem value="school">School Club</SelectItem>
-                    <SelectItem value="nonprofit">Non-Profit</SelectItem>
-                    <SelectItem value="community">Community Group</SelectItem>
-                    <SelectItem value="corporate">Corporate Team</SelectItem>
+                    <SelectItem value="dance">Dance Studio</SelectItem>
+                    <SelectItem value="music">Music Group/Band</SelectItem>
+                    <SelectItem value="sports">Sports Team (Other)</SelectItem>
+                    <SelectItem value="organization">Organization</SelectItem>
+                    <SelectItem value="school">School</SelectItem>
                     <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="organizationType">Organization Level</Label>
-                <Select onValueChange={(value) => handleInputChange('organizationType', value)}>
+                <Label htmlFor="organizationLevel">Organization Level</Label>
+                <Select onValueChange={(value) => handleInputChange('organizationLevel', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select level" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="youth">Youth League</SelectItem>
-                    <SelectItem value="junior">Junior League</SelectItem>
-                    <SelectItem value="highschool">High School</SelectItem>
-                    <SelectItem value="college">College/University</SelectItem>
-                    <SelectItem value="adult">Adult League</SelectItem>
+                    <SelectItem value="recreational">Recreational</SelectItem>
+                    <SelectItem value="competitive">Competitive</SelectItem>
                     <SelectItem value="professional">Professional</SelectItem>
+                    <SelectItem value="youth">Youth</SelectItem>
+                    <SelectItem value="adult">Adult</SelectItem>
+                    <SelectItem value="corporate">Corporate</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="location">City *</Label>
+                <Label htmlFor="city">City *</Label>
                 <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="Toronto, Calgary, Vancouver..."
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  placeholder="Your city"
                   required
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="province">Province/Territory *</Label>
-                <Select onValueChange={(value) => handleInputChange('province', value)} required>
+                <Select onValueChange={(value) => handleInputChange('province', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select province" />
                   </SelectTrigger>
@@ -215,19 +220,14 @@ export default function StoreRequestForm() {
                   value={formData.postalCode}
                   onChange={(e) => handleInputChange('postalCode', e.target.value)}
                   placeholder="K1A 0A9"
-                  className={postalCodeError ? 'border-red-500' : ''}
                 />
-                {postalCodeError && (
-                  <p className="text-sm text-red-600 mt-1">{postalCodeError}</p>
-                )}
               </div>
             </div>
           </div>
 
           {/* Contact Information */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-lg">Contact Information</h4>
-            
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Contact Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="contactName">Contact Name *</Label>
@@ -235,7 +235,7 @@ export default function StoreRequestForm() {
                   id="contactName"
                   value={formData.contactName}
                   onChange={(e) => handleInputChange('contactName', e.target.value)}
-                  placeholder="John Smith"
+                  placeholder="Your name"
                   required
                 />
               </div>
@@ -246,91 +246,133 @@ export default function StoreRequestForm() {
                   type="email"
                   value={formData.contactEmail}
                   onChange={(e) => handleInputChange('contactEmail', e.target.value)}
-                  placeholder="john@mapleleafs.ca"
+                  placeholder="your.email@example.com"
                   required
                 />
               </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="contactPhone">Phone Number</Label>
+                <Input
+                  id="contactPhone"
+                  type="tel"
+                  value={formData.contactPhone}
+                  onChange={(e) => handleInputChange('contactPhone', e.target.value)}
+                  placeholder="(416) 123-4567"
+                />
+              </div>
             </div>
+          </div>
 
-            <div>
-              <Label htmlFor="contactPhone">Phone Number</Label>
-              <Input
-                id="contactPhone"
-                type="tel"
-                value={formData.contactPhone}
-                onChange={(e) => handleInputChange('contactPhone', e.target.value)}
-                placeholder="(416) 123-4567"
-              />
+          {/* Logo Upload */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Team Logo</h3>
+            <div className="space-y-4">
+              {formData.logoUrl && (
+                <div className="relative w-32 h-32 bg-muted rounded-md overflow-hidden">
+                  <Image src={formData.logoUrl} alt="Team logo" fill className="object-contain" />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-1 right-1 bg-background/80 hover:bg-background"
+                    onClick={() => handleInputChange('logoUrl', '')}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+              <div>
+                <input
+                  type="file"
+                  ref={logoInputRef}
+                  onChange={handleLogoUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => logoInputRef.current?.click()}
+                  disabled={uploadingLogo}
+                >
+                  {uploadingLogo ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="mr-2 h-4 w-4" />
+                  )}
+                  Upload Team Logo
+                </Button>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Upload your team logo (PNG, JPG, SVG recommended)
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Store Details */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-lg">Store Details</h4>
-            
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Store Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="teamSize">Approximate Team Size *</Label>
                 <Input
                   id="teamSize"
                   type="number"
-                  value={formData.teamSize || ''}
-                  onChange={(e) => handleInputChange('teamSize', parseInt(e.target.value) || 0)}
+                  value={formData.teamSize}
+                  onChange={(e) => handleInputChange('teamSize', e.target.value)}
                   placeholder="25"
-                  min="1"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="expectedOrderVolume">Expected Order Volume *</Label>
-                <Select onValueChange={(value) => handleInputChange('expectedOrderVolume', value)} required>
+                <Label htmlFor="expectedVolume">Expected Order Volume *</Label>
+                <Select onValueChange={(value) => handleInputChange('expectedVolume', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select volume" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="small">Small (1-50 items/month)</SelectItem>
-                    <SelectItem value="medium">Medium (50-200 items/month)</SelectItem>
-                    <SelectItem value="large">Large (200+ items/month)</SelectItem>
-                    <SelectItem value="seasonal">Seasonal (1-2 big orders/year)</SelectItem>
+                    <SelectItem value="low">Low (1-50 items)</SelectItem>
+                    <SelectItem value="medium">Medium (51-200 items)</SelectItem>
+                    <SelectItem value="high">High (201-500 items)</SelectItem>
+                    <SelectItem value="very-high">Very High (500+ items)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="urgency">When do you need your store? *</Label>
+                <Select onValueChange={(value) => handleInputChange('urgency', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select timeframe" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="asap">ASAP (within 1 week)</SelectItem>
+                    <SelectItem value="2weeks">Within 2 weeks</SelectItem>
+                    <SelectItem value="month">Within a month</SelectItem>
+                    <SelectItem value="flexible">Flexible timeline</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-
-            <div>
-              <Label htmlFor="urgency">When do you need your store? *</Label>
-              <Select onValueChange={(value) => handleInputChange('urgency', value)} required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select timeframe" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="asap">ASAP (within 1 week)</SelectItem>
-                  <SelectItem value="soon">Soon (within 2-4 weeks)</SelectItem>
-                  <SelectItem value="flexible">Flexible (within 2 months)</SelectItem>
-                  <SelectItem value="planning">Just planning ahead</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="description">Tell us about your team and merchandise needs</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="What types of products are you most interested in? Hockey jerseys, team hoodies, custom gear? Any special requirements?"
-                rows={4}
-              />
-            </div>
           </div>
 
-          {error && (
-            <div className="text-red-600 text-sm bg-red-50 p-3 rounded">
-              {error}
-            </div>
-          )}
+          {/* Description */}
+          <div>
+            <Label htmlFor="description">Tell us about your team and merchandise needs</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              placeholder="What types of products are you most interested in? Hockey jerseys, team hoodies, custom gear? Any special requirements?"
+              rows={4}
+            />
+          </div>
 
-          <Button type="submit" disabled={isSubmitting || !!postalCodeError} className="w-full">
+          {/* Submit Button */}
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isSubmitting || !formData.teamName || !formData.contactName || !formData.contactEmail}
+          >
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
