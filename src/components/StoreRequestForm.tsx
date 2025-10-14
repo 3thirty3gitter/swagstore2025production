@@ -9,9 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Send, CheckCircle, Upload, X } from "lucide-react";
 import { collection, addDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { CANADIAN_PROVINCES, formatCanadianPostalCode } from '@/lib/canadaData';
 import { uploadFile } from '@/lib/actions';
-import { useFirebase } from '@/firebase';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 
@@ -55,7 +55,6 @@ export default function StoreRequestForm() {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
-  const { firestore } = useFirebase();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -145,24 +144,13 @@ export default function StoreRequestForm() {
     e.preventDefault();
     
     console.log('Form submit started');
-    console.log('isClient:', isClient);
-    console.log('firestore:', !!firestore);
+    console.log('Form data:', formData);
     
     if (!isClient) {
       console.log('Not client side, returning');
       return;
     }
 
-    if (!firestore) {
-      console.log('No firestore connection');
-      toast({
-        variant: 'destructive',
-        title: 'Connection Error',
-        description: 'Unable to connect to database. Please try again.',
-      });
-      return;
-    }
-    
     if (!formData.teamName || !formData.contactName || !formData.contactEmail) {
       toast({
         variant: 'destructive',
@@ -194,42 +182,46 @@ export default function StoreRequestForm() {
         // Contact information
         contactName: formData.contactName,
         contactEmail: formData.contactEmail,
-        contactPhone: formData.contactPhone,
+        contactPhone: formData.contactPhone || '',
         
         // Team information
-        teamType: formData.teamType,
-        organizationLevel: formData.organizationLevel,
+        teamType: formData.teamType || '',
+        organizationLevel: formData.organizationLevel || '',
         
         // Location
-        city: formData.city,
-        province: formData.province,
-        postalCode: formData.postalCode,
+        city: formData.city || '',
+        province: formData.province || '',
+        postalCode: formData.postalCode || '',
         
         // Store details
-        teamSize: formData.teamSize,
-        expectedVolume: formData.expectedVolume,
-        urgency: formData.urgency,
-        description: formData.description,
+        teamSize: formData.teamSize || '',
+        expectedVolume: formData.expectedVolume || '',
+        urgency: formData.urgency || '',
+        description: formData.description || '',
         
         // Logo
-        logoUrl: formData.logoUrl,
+        logoUrl: formData.logoUrl || '',
         
         // Timestamps
         submittedAt: new Date(),
         createdAt: new Date(),
       };
 
-      console.log('Creating tenant document...');
+      console.log('Tenant data to submit:', pendingTenant);
+      
+      // Test Firebase connection first
+      console.log('Testing Firebase connection...');
       
       // Add to tenants collection as pending
-      const docRef = await addDoc(collection(firestore, 'tenants'), pendingTenant);
+      const docRef = await addDoc(collection(db, 'tenants'), pendingTenant);
       console.log('Tenant created with ID:', docRef.id);
       
       // Also keep the original store-requests collection for backwards compatibility
-      await addDoc(collection(firestore, 'store-requests'), {
+      await addDoc(collection(db, 'store-requests'), {
         ...formData,
         submittedAt: new Date(),
-        status: 'converted-to-tenant'
+        status: 'converted-to-tenant',
+        tenantId: docRef.id
       });
       
       console.log('Store request backup created');
@@ -237,15 +229,32 @@ export default function StoreRequestForm() {
       setIsSubmitted(true);
       toast({
         title: 'Request Submitted!',
-        description: 'Your store request has been submitted successfully.',
+        description: `Your store request for ${formData.teamName} has been submitted successfully.`,
       });
       
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Detailed error submitting form:', error);
+      
+      // More specific error handling
+      let errorMessage = 'Failed to submit your request. Please try again.';
+      
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        
+        if (error.message.includes('permission')) {
+          errorMessage = 'Permission denied. Please contact support.';
+        } else if (error.message.includes('network')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (error.message.includes('quota')) {
+          errorMessage = 'Service temporarily unavailable. Please try again later.';
+        }
+      }
+      
       toast({
         variant: 'destructive',
         title: 'Submission Failed',
-        description: 'Failed to submit your request. Please try again.',
+        description: errorMessage,
       });
     } finally {
       setIsSubmitting(false);
@@ -530,7 +539,7 @@ export default function StoreRequestForm() {
           <Button 
             type="submit" 
             className="w-full" 
-            disabled={isSubmitting || !formData.teamName || !formData.contactName || !formData.contactEmail || !formData.teamType}
+            disabled={isSubmitting || !formData.teamName || !formData.contactName || !formData.contactEmail}
           >
             {isSubmitting ? (
               <>
