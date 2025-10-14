@@ -73,3 +73,37 @@ export async function cleanupDuplicateTenants() {
     };
   }
 }
+
+export async function forceRefreshTenants() {
+  const { db } = getAdminApp();
+  
+  try {
+    // Get all actual tenants from database
+    const tenantsSnapshot = await db.collection('tenants').get();
+    const actualTenants = tenantsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    console.log(`Found ${actualTenants.length} actual tenants in database`);
+    
+    // Force revalidation of all paths
+    revalidatePath('/admin/tenants');
+    revalidatePath('/admin');
+    revalidatePath('/');
+    
+    return {
+      success: true,
+      message: `Refreshed tenant list. Found ${actualTenants.length} active tenants.`,
+      tenantCount: actualTenants.length,
+      tenants: actualTenants
+    };
+    
+  } catch (error: any) {
+    console.error('Error refreshing tenants:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to refresh tenant list'
+    };
+  }
+}

@@ -103,3 +103,43 @@ export default function CleanupPage() {
     </div>
   );
 }
+
+  const handleRefresh = () => {
+    startTransition(async () => {
+      try {
+        const refreshResult = await forceRefreshTenants();
+        setResult(refreshResult);
+        
+        if (refreshResult.success) {
+          toast({
+            title: 'Refresh Completed',
+            description: refreshResult.message,
+          });
+          // Force a page reload to clear any cached data
+          window.location.reload();
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Refresh Failed',
+            description: refreshResult.error,
+          });
+        }
+      } catch (error: any) {
+        toast({
+          variant: 'destructive',
+          title: 'Refresh Failed',
+          description: error.message || 'An unexpected error occurred',
+        });
+      }
+    });
+  };
+
+  // Add this button after the cleanup button
+  <Button 
+    onClick={handleRefresh} 
+    disabled={isPending}
+    variant="outline"
+    className="w-full mt-2"
+  >
+    {isPending ? 'Refreshing...' : 'Force Refresh Tenant List'}
+  </Button>
