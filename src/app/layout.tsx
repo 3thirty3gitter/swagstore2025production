@@ -80,30 +80,30 @@ export const viewport: Viewport = {
   themeColor: '#2563eb',
 };
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'SwagStore',
-  url: 'https://swagstore.ca',
-  logo: 'https://swagstore.ca/logo.png',
-  description: 'Custom team stores for Canadian organizations',
-  address: {
-    '@type': 'PostalAddress',
-    addressCountry: 'CA'
-  },
-  contactPoint: {
-    '@type': 'ContactPoint',
-    contactType: 'customer service',
-    areaServed: 'CA'
-  },
-  sameAs: []
-};
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'SwagStore',
+    url: 'https://swagstore.ca',
+    logo: 'https://swagstore.ca/logo.png',
+    description: 'Custom team stores for Canadian organizations',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'CA'
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      areaServed: 'CA'
+    },
+    sameAs: []
+  };
+
   return (
     <html lang="en-CA">
       <head>

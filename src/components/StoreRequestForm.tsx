@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,6 +54,11 @@ export default function StoreRequestForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (field: keyof StoreRequestData, value: string | boolean) => {
@@ -95,6 +100,8 @@ export default function StoreRequestForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isClient) return;
     
     if (!formData.teamName || !formData.contactName || !formData.contactEmail) {
       return;
