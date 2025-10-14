@@ -195,16 +195,9 @@ export default function StoreRequestForm() {
         <CardContent className="pt-6 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-green-700 mb-2">Request Submitted!</h2>
-          <p className="text-muted-foreground mb-4">
-            Thank you! We've received your store request and will have your 
-            custom merchandise store live within 24 hours.
+          <p className="text-muted-foreground">
+            Thank you! We have received your request and will provide an update soon.
           </p>
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Your store URL will be:</strong><br />
-              {generateSlug(formData.teamName)}.swagstore.ca
-            </p>
-          </div>
         </CardContent>
       </Card>
     );
