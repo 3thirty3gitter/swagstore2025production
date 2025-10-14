@@ -9,11 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Send, CheckCircle, Upload, X } from "lucide-react";
 import { collection, addDoc } from 'firebase/firestore';
-import { CANADIAN_PROVINCES, validateCanadianPostalCode, formatCanadianPostalCode } from '@/lib/canadaData';
+import { CANADIAN_PROVINCES, formatCanadianPostalCode } from '@/lib/canadaData';
 import { uploadFile } from '@/lib/actions';
 import { useFirebase } from '@/firebase';
 import Image from 'next/image';
-import type { Tenant } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
 
 interface StoreRequestData {
   teamName: string;
@@ -56,6 +56,7 @@ export default function StoreRequestForm() {
   const [isClient, setIsClient] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const { firestore } = useFirebase();
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsClient(true);
@@ -83,26 +84,58 @@ export default function StoreRequestForm() {
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      console.log('Starting logo upload...', file.name);
       setUploadingLogo(true);
       
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = async (loadEvent) => {
-        const dataUrl = loadEvent.target?.result as string;
-        if (dataUrl) {
-          const formDataUpload = new FormData();
-          formDataUpload.append('dataUrl', dataUrl);
-          formDataUpload.append('fileName', file.name);
-          
-          const result = await uploadFile(null, formDataUpload);
-          
-          if (result.success && result.url) {
-            handleInputChange('logoUrl', result.url);
+      try {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async (loadEvent) => {
+          const dataUrl = loadEvent.target?.result as string;
+          if (dataUrl) {
+            console.log('File read successful, uploading...');
+            const formDataUpload = new FormData();
+            formDataUpload.append('dataUrl', dataUrl);
+            formDataUpload.append('fileName', file.name);
+            
+            const result = await uploadFile(null, formDataUpload);
+            console.log('Upload result:', result);
+            
+            if (result.success && result.url) {
+              handleInputChange('logoUrl', result.url);
+              toast({
+                title: 'Logo uploaded!',
+                description: 'Your logo has been uploaded successfully.',
+              });
+            } else {
+              toast({
+                variant: 'destructive',
+                title: 'Upload failed',
+                description: result.error || 'Failed to upload logo.',
+              });
+            }
           }
-        }
-      };
-      setUploadingLogo(false);
+        };
+        reader.onerror = () => {
+          console.error('File read error');
+          toast({
+            variant: 'destructive',
+            title: 'Upload failed',
+            description: 'Failed to read file.',
+          });
+        };
+      } catch (error) {
+        console.error('Logo upload error:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Upload failed',
+          description: 'Failed to upload logo.',
+        });
+      } finally {
+        setUploadingLogo(false);
+      }
     }
+    
     if (event.target) {
       event.target.value = '';
     }
@@ -111,12 +144,35 @@ export default function StoreRequestForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isClient || !firestore) return;
+    console.log('Form submit started');
+    console.log('isClient:', isClient);
+    console.log('firestore:', !!firestore);
     
-    if (!formData.teamName || !formData.contactName || !formData.contactEmail) {
+    if (!isClient) {
+      console.log('Not client side, returning');
       return;
     }
 
+    if (!firestore) {
+      console.log('No firestore connection');
+      toast({
+        variant: 'destructive',
+        title: 'Connection Error',
+        description: 'Unable to connect to database. Please try again.',
+      });
+      return;
+    }
+    
+    if (!formData.teamName || !formData.contactName || !formData.contactEmail) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Information',
+        description: 'Please fill in all required fields.',
+      });
+      return;
+    }
+
+    console.log('Starting form submission...');
     setIsSubmitting(true);
     
     try {
@@ -124,8 +180,10 @@ export default function StoreRequestForm() {
       const slug = generateSlug(formData.teamName);
       const subdomain = slug;
 
+      console.log('Generated slug:', slug);
+
       // Create pending tenant with all form data
-      const pendingTenant: Omit<Tenant, 'id'> = {
+      const pendingTenant = {
         name: formData.teamName,
         slug: slug,
         subdomain: subdomain,
@@ -161,8 +219,11 @@ export default function StoreRequestForm() {
         createdAt: new Date(),
       };
 
+      console.log('Creating tenant document...');
+      
       // Add to tenants collection as pending
-      await addDoc(collection(firestore, 'tenants'), pendingTenant);
+      const docRef = await addDoc(collection(firestore, 'tenants'), pendingTenant);
+      console.log('Tenant created with ID:', docRef.id);
       
       // Also keep the original store-requests collection for backwards compatibility
       await addDoc(collection(firestore, 'store-requests'), {
@@ -171,9 +232,21 @@ export default function StoreRequestForm() {
         status: 'converted-to-tenant'
       });
       
+      console.log('Store request backup created');
+      
       setIsSubmitted(true);
+      toast({
+        title: 'Request Submitted!',
+        description: 'Your store request has been submitted successfully.',
+      });
+      
     } catch (error) {
       console.error('Error submitting form:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Submission Failed',
+        description: 'Failed to submit your request. Please try again.',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -184,9 +257,9 @@ export default function StoreRequestForm() {
       <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="pt-6 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-green-700 mb-2">Store Request Submitted!</h2>
+          <h2 className="text-2xl font-bold text-green-700 mb-2">Request Submitted!</h2>
           <p className="text-muted-foreground mb-4">
-            Thank you for your interest! We've created your store profile and will have your 
+            Thank you for your interest! We've received your store request and will have your 
             custom merchandise store live within 24 hours.
           </p>
           <div className="bg-blue-50 p-4 rounded-lg">
@@ -231,7 +304,7 @@ export default function StoreRequestForm() {
               </div>
               <div>
                 <Label htmlFor="teamType">Team Type *</Label>
-                <Select onValueChange={(value) => handleInputChange('teamType', value)}>
+                <Select onValueChange={(value) => handleInputChange('teamType', value)} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select team type" />
                   </SelectTrigger>
@@ -274,7 +347,7 @@ export default function StoreRequestForm() {
               </div>
               <div>
                 <Label htmlFor="province">Province/Territory *</Label>
-                <Select onValueChange={(value) => handleInputChange('province', value)}>
+                <Select onValueChange={(value) => handleInputChange('province', value)} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select province" />
                   </SelectTrigger>
@@ -342,17 +415,29 @@ export default function StoreRequestForm() {
             <h3 className="text-lg font-semibold mb-4">Logo (Optional)</h3>
             <div className="space-y-4">
               {formData.logoUrl && (
-                <div className="relative w-32 h-32 bg-muted rounded-md overflow-hidden">
-                  <Image src={formData.logoUrl} alt="Team logo" fill className="object-contain" />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-1 right-1 bg-background/80 hover:bg-background"
-                    onClick={() => handleInputChange('logoUrl', '')}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-green-700">Logo Preview:</Label>
+                  <div className="relative w-32 h-32 bg-green-50 rounded-md overflow-hidden border-2 border-green-300">
+                    <Image 
+                      src={formData.logoUrl} 
+                      alt="Team logo preview" 
+                      fill 
+                      className="object-contain p-2"
+                      unoptimized
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-1 right-1 bg-background/80 hover:bg-background shadow-sm"
+                      onClick={() => handleInputChange('logoUrl', '')}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-green-600 font-medium flex items-center gap-1">
+                    <span className="text-green-500">✓</span> Logo uploaded successfully
+                  </p>
                 </div>
               )}
               <div>
@@ -374,7 +459,7 @@ export default function StoreRequestForm() {
                   ) : (
                     <Upload className="mr-2 h-4 w-4" />
                   )}
-                  Upload Logo
+                  {formData.logoUrl ? 'Change Logo' : 'Upload Logo'}
                 </Button>
                 <p className="text-sm text-muted-foreground mt-1">
                   Upload your logo if available (PNG, JPG, SVG recommended)
@@ -400,7 +485,7 @@ export default function StoreRequestForm() {
               </div>
               <div>
                 <Label htmlFor="expectedVolume">Expected Order Volume *</Label>
-                <Select onValueChange={(value) => handleInputChange('expectedVolume', value)}>
+                <Select onValueChange={(value) => handleInputChange('expectedVolume', value)} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select volume" />
                   </SelectTrigger>
@@ -414,7 +499,7 @@ export default function StoreRequestForm() {
               </div>
               <div className="md:col-span-2">
                 <Label htmlFor="urgency">When do you need your store? *</Label>
-                <Select onValueChange={(value) => handleInputChange('urgency', value)}>
+                <Select onValueChange={(value) => handleInputChange('urgency', value)} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select timeframe" />
                   </SelectTrigger>
@@ -445,7 +530,7 @@ export default function StoreRequestForm() {
           <Button 
             type="submit" 
             className="w-full" 
-            disabled={isSubmitting || !formData.teamName || !formData.contactName || !formData.contactEmail}
+            disabled={isSubmitting || !formData.teamName || !formData.contactName || !formData.contactEmail || !formData.teamType}
           >
             {isSubmitting ? (
               <>
