@@ -53,8 +53,16 @@ export type SwagBucksGate = {
 export type Section = {
   id: string;
   type: 'Hero Section' | 'Image With Text' | 'Swag Bucks Tracker' | 'Product List';
+<<<<<<< HEAD
   props: any & { imageWidth?: number;
     imageHeight?: number; selectedProductIds?: string[] };
+=======
+  props: any & { 
+    imageWidth?: number; 
+    imageHeight?: number; // Added height control for Hero sections
+    selectedProductIds?: string[] 
+  };
+>>>>>>> 244f73a6ed462f991bcdaedf0fba788a9963ae12
 }
 
 export type ProductImage = {
