@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import Image from 'next/image';
@@ -19,6 +17,7 @@ type HeroSectionProps = {
   imageHint?: string;
   layout?: HeroSectionLayout;
   imageWidth?: number;
+  imageHeight?: number;
 };
 
 export function HeroSection({
@@ -31,13 +30,17 @@ export function HeroSection({
   imageHint,
   layout = 'center-left',
   imageWidth: initialImageWidth = 80,
+  imageHeight: initialImageHeight = 60,
 }: HeroSectionProps) {
 
   const [isEditor, setIsEditor] = useState(false);
   const [imageWidth, setImageWidth] = useState(initialImageWidth);
+  const [imageHeight, setImageHeight] = useState(initialImageHeight);
   const containerRef = useRef<HTMLDivElement>(null);
   const dragHandleRef = useRef<HTMLDivElement>(null);
+  const heightHandleRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
+  const isDraggingHeight = useRef(false);
 
   useEffect(() => {
     // Check if inside an iframe (the editor)
@@ -50,6 +53,9 @@ export function HeroSection({
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'section-width-update' && event.data.sectionId === sectionId) {
         setImageWidth(event.data.width);
+      }
+      if (event.data.type === 'section-height-update' && event.data.sectionId === sectionId) {
+        setImageHeight(event.data.height);
       }
     };
     window.addEventListener('message', handleMessage);
@@ -67,6 +73,14 @@ export function HeroSection({
       document.body.style.userSelect = 'none';
     };
 
+    const handleHeightMouseDown = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      isDraggingHeight.current = true;
+      document.body.style.cursor = 'ns-resize';
+      document.body.style.userSelect = 'none';
+    };
+
     const handleMouseUp = (e: MouseEvent) => {
       if (isDragging.current) {
         e.preventDefault();
@@ -75,6 +89,14 @@ export function HeroSection({
         document.body.style.cursor = 'default';
         document.body.style.userSelect = 'auto';
         window.parent.postMessage({ type: 'section-width-final-update', sectionId, width: imageWidth }, '*');
+      }
+      if (isDraggingHeight.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        isDraggingHeight.current = false;
+        document.body.style.cursor = 'default';
+        document.body.style.userSelect = 'auto';
+        window.parent.postMessage({ type: 'section-height-final-update', sectionId, height: imageHeight }, '*');
       }
     };
 
@@ -96,19 +118,36 @@ export function HeroSection({
         setImageWidth(clampedWidth);
         window.parent.postMessage({ type: 'section-width-live-update', sectionId, width: clampedWidth }, '*');
       }
+      
+      if (isDraggingHeight.current && containerRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const newHeight = e.clientY - containerRect.top;
+        const newHeightPercentage = (newHeight / containerRect.height) * 100;
+        
+        const clampedHeight = Math.max(30, Math.min(newHeightPercentage, 100));
+        
+        setImageHeight(clampedHeight);
+        window.parent.postMessage({ type: 'section-height-live-update', sectionId, height: clampedHeight }, '*');
+      }
     };
     
     const dragHandle = dragHandleRef.current;
-    dragHandle.addEventListener('mousedown', handleMouseDown);
+    const heightHandle = heightHandleRef.current;
+    
+    dragHandle?.addEventListener('mousedown', handleMouseDown);
+    heightHandle?.addEventListener('mousedown', handleHeightMouseDown);
     document.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mousemove', handleMouseMove);
 
     return () => {
-        dragHandle.removeEventListener('mousedown', handleMouseDown);
+        dragHandle?.removeEventListener('mousedown', handleMouseDown);
+        heightHandle?.removeEventListener('mousedown', handleHeightMouseDown);
         document.removeEventListener('mouseup', handleMouseUp);
         document.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [isEditor, imageWidth, sectionId, layout]);
+  }, [isEditor, imageWidth, imageHeight, sectionId, layout]);
 
 
   return (
@@ -122,7 +161,14 @@ export function HeroSection({
           "relative rounded-lg overflow-hidden group",
           layout.includes('right') ? 'md:order-last' : ''
         )}>
-          <div className="relative aspect-[3/4] w-full">
+          <div 
+            className="relative w-full"
+            style={{
+              height: `${imageHeight}vh`,
+              minHeight: '300px',
+              maxHeight: '80vh'
+            }}
+          >
             <Image
               src={imageUrl}
               alt={title}
@@ -135,12 +181,18 @@ export function HeroSection({
           {isEditor && (
              <>
                <div className="absolute inset-0 border-2 border-dashed border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+               {/* Width drag handle */}
                <div 
                   ref={dragHandleRef}
                   className={cn(
                     "absolute top-1/2 -translate-y-1/2 w-2 h-10 rounded-full bg-blue-500 cursor-ew-resize border-2 border-white opacity-0 group-hover:opacity-100 transition-opacity z-10",
                     layout.includes('right') ? "-left-1" : "-right-1"
                   )}
+               />
+               {/* Height drag handle */}
+               <div 
+                  ref={heightHandleRef}
+                  className="absolute left-1/2 -translate-x-1/2 -bottom-1 h-2 w-10 rounded-full bg-green-500 cursor-ns-resize border-2 border-white opacity-0 group-hover:opacity-100 transition-opacity z-10"
                />
             </>
           )}
