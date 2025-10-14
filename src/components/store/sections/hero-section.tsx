@@ -126,7 +126,7 @@ export function HeroSection({
         const newHeight = e.clientY - containerRect.top;
         const newHeightPercentage = (newHeight / containerRect.height) * 100;
         
-        const clampedHeight = Math.max(30, Math.min(newHeightPercentage, 100));
+        const clampedHeight = Math.max(20, Math.min(newHeightPercentage, 100));
         
         setImageHeight(clampedHeight);
         window.parent.postMessage({ type: 'section-height-live-update', sectionId, height: clampedHeight }, '*');
@@ -149,7 +149,6 @@ export function HeroSection({
     };
   }, [isEditor, imageWidth, imageHeight, sectionId, layout]);
 
-
   return (
     <section className="py-12 md:py-20">
       <div 
@@ -161,10 +160,6 @@ export function HeroSection({
           "relative rounded-lg overflow-hidden group",
           layout.includes('right') ? 'md:order-last' : ''
         )}>
-<<<<<<< HEAD
-          <div className="relative w-full"
-            style={{ height: `${imageHeight}vh` }}>
-=======
           <div 
             className="relative w-full"
             style={{
@@ -173,7 +168,6 @@ export function HeroSection({
               maxHeight: '80vh'
             }}
           >
->>>>>>> 244f73a6ed462f991bcdaedf0fba788a9963ae12
             <Image
               src={imageUrl}
               alt={title}
