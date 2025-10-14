@@ -8,11 +8,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Send, CheckCircle, Upload, X } from "lucide-react";
-import { db } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { CANADIAN_PROVINCES, validateCanadianPostalCode, formatCanadianPostalCode } from '@/lib/canadaData';
 import { uploadFile } from '@/lib/actions';
+import { useFirebase } from '@/firebase';
 import Image from 'next/image';
+import type { Tenant } from '@/lib/types';
 
 interface StoreRequestData {
   teamName: string;
@@ -21,14 +22,13 @@ interface StoreRequestData {
   contactPhone: string;
   teamType: string;
   description: string;
-  hasExistingMerch: boolean;
-  urgency: string;
   city: string;
   province: string;
   postalCode: string;
   organizationLevel: string;
   teamSize: string;
   expectedVolume: string;
+  urgency: string;
   logoUrl?: string;
 }
 
@@ -40,14 +40,13 @@ export default function StoreRequestForm() {
     contactPhone: '',
     teamType: '',
     description: '',
-    hasExistingMerch: false,
-    urgency: '',
     city: '',
     province: '',
     postalCode: '',
     organizationLevel: '',
     teamSize: '',
     expectedVolume: '',
+    urgency: '',
     logoUrl: ''
   });
 
@@ -55,11 +54,22 @@ export default function StoreRequestForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const { firestore } = useFirebase();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
-  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  // Generate slug from team name
+  const generateSlug = (teamName: string): string => {
+    return teamName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .trim();
+  };
 
   const handleInputChange = (field: keyof StoreRequestData, value: string | boolean) => {
     if (field === 'postalCode' && typeof value === 'string') {
@@ -101,7 +111,7 @@ export default function StoreRequestForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isClient) return;
+    if (!isClient || !firestore) return;
     
     if (!formData.teamName || !formData.contactName || !formData.contactEmail) {
       return;
@@ -110,10 +120,55 @@ export default function StoreRequestForm() {
     setIsSubmitting(true);
     
     try {
-      await addDoc(collection(db, 'store-requests'), {
+      // Generate slug and subdomain
+      const slug = generateSlug(formData.teamName);
+      const subdomain = slug;
+
+      // Create pending tenant with all form data
+      const pendingTenant: Omit<Tenant, 'id'> = {
+        name: formData.teamName,
+        slug: slug,
+        subdomain: subdomain,
+        storeName: formData.teamName,
+        status: 'pending',
+        isActive: false,
+        
+        // Contact information
+        contactName: formData.contactName,
+        contactEmail: formData.contactEmail,
+        contactPhone: formData.contactPhone,
+        
+        // Team information
+        teamType: formData.teamType,
+        organizationLevel: formData.organizationLevel,
+        
+        // Location
+        city: formData.city,
+        province: formData.province,
+        postalCode: formData.postalCode,
+        
+        // Store details
+        teamSize: formData.teamSize,
+        expectedVolume: formData.expectedVolume,
+        urgency: formData.urgency,
+        description: formData.description,
+        
+        // Logo
+        logoUrl: formData.logoUrl,
+        
+        // Timestamps
+        submittedAt: new Date(),
+        createdAt: new Date(),
+      };
+
+      // Add to tenants collection as pending
+      await addDoc(collection(firestore, 'tenants'), pendingTenant);
+      
+      // Also keep the original store-requests collection for backwards compatibility
+      await addDoc(collection(firestore, 'store-requests'), {
         ...formData,
         submittedAt: new Date(),
-        status: 'pending'
+        status: 'converted-to-tenant'
       });
       
       setIsSubmitted(true);
@@ -129,10 +184,17 @@ export default function StoreRequestForm() {
       <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="pt-6 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-green-700 mb-2">Request Submitted!</h2>
-          <p className="text-muted-foreground">
-            Thank you for your interest! We'll be in touch within 24 hours to discuss your custom store.
+          <h2 className="text-2xl font-bold text-green-700 mb-2">Store Request Submitted!</h2>
+          <p className="text-muted-foreground mb-4">
+            Thank you for your interest! We've created your store profile and will have your 
+            custom merchandise store live within 24 hours.
           </p>
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Your store URL will be:</strong><br />
+              {generateSlug(formData.teamName)}.swagstore.ca
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -161,6 +223,11 @@ export default function StoreRequestForm() {
                   placeholder="Your team name"
                   required
                 />
+                {formData.teamName && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Your store URL: <strong>{generateSlug(formData.teamName)}.swagstore.ca</strong>
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="teamType">Team Type *</Label>
@@ -383,12 +450,12 @@ export default function StoreRequestForm() {
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Submitting Request...
+                Creating Your Store...
               </>
             ) : (
               <>
                 <Send className="mr-2 h-4 w-4" />
-                Submit Store Request
+                Create My FREE Store
               </>
             )}
           </Button>

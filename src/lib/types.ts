@@ -7,6 +7,25 @@ export type Tenant = {
   website?: Website;
   createdAt?: Date;
   isActive?: boolean;
+  
+  // New fields from store request form
+  status?: 'pending' | 'active' | 'suspended';
+  teamType?: string;
+  organizationLevel?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  contactName?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  teamSize?: string;
+  expectedVolume?: string;
+  urgency?: string;
+  description?: string;
+  logoUrl?: string;
+  submittedAt?: Date;
+  approvedAt?: Date;
+  approvedBy?: string;
 };
 
 export type MenuItem = {
@@ -53,16 +72,11 @@ export type SwagBucksGate = {
 export type Section = {
   id: string;
   type: 'Hero Section' | 'Image With Text' | 'Swag Bucks Tracker' | 'Product List';
-<<<<<<< HEAD
-  props: any & { imageWidth?: number;
-    imageHeight?: number; selectedProductIds?: string[] };
-=======
   props: any & { 
     imageWidth?: number; 
     imageHeight?: number; // Added height control for Hero sections
     selectedProductIds?: string[] 
   };
->>>>>>> 244f73a6ed462f991bcdaedf0fba788a9963ae12
 }
 
 export type ProductImage = {
@@ -90,7 +104,7 @@ export type ProductVariant = {
   option3: string | null;
   imageId: string | null;
   inventoryManagement: 'shopify' | 'none';
-  inventoryQuantity: number;
+  inventoryQuantory: number;
   requiresShipping: boolean;
 };
 
@@ -116,4 +130,22 @@ export type Order = {
   customerName: string;
   orderDate: string;
   status: 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+};
+
+// Store Request Form Data (for backwards compatibility)
+export type StoreRequestData = {
+  teamName: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  teamType: string;
+  description: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  organizationLevel: string;
+  teamSize: string;
+  expectedVolume: string;
+  urgency: string;
+  logoUrl?: string;
 };
