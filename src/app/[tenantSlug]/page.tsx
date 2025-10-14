@@ -4,7 +4,7 @@
 import { notFound, useParams } from "next/navigation";
 import { HeroSection } from "@/components/store/sections/hero-section";
 import { ImageWithTextSection } from "@/components/store/sections/image-with-text-section";
-import { SwagBucksTrackerSection } from "@/components/store/sections/swag-bucks-tracker";
+import { SwagBucksTrackerSection } from "@/components/store/sections/swag-bucks-tracker-debug";
 import { ProductListSection } from "@/components/store/sections/product-list-section";
 import type { Tenant } from "@/lib/types";
 import { Loader2 } from "lucide-react";
