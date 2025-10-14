@@ -1,6 +1,6 @@
 'use client';
 
-import { TenantsTable } from '@/components/admin/tenants-table';
+import { TenantCards } from '@/components/admin/tenant-cards';
 import { Button } from '@/components/ui/button';
 import { TenantFormDialog } from '@/components/admin/tenant-form-dialog';
 import { useCollection } from "@/firebase/firestore/use-collection";
@@ -26,21 +26,27 @@ export default function TenantsPage() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight font-headline">
-          Tenants
-        </h1>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight font-headline">
+            Tenant Stores
+          </h1>
+          <p className="text-muted-foreground">
+            Manage team stores with custom subdomains
+          </p>
+        </div>
         <TenantFormDialog>
-          <Button>Create Tenant</Button>
+          <Button>+ Create Store</Button>
         </TenantFormDialog>
       </div>
-       {error ? (
-         <div className="text-center py-16 border-2 border-dashed rounded-lg border-destructive">
-            <h2 className="text-xl font-semibold text-destructive">Failed to load tenants</h2>
-            <p className="text-muted-foreground mt-2">{error.message}</p>
-          </div>
-       ) : (
-        <TenantsTable tenants={tenants || []} />
-       )}
+      
+      {error ? (
+        <div className="text-center py-16 border-2 border-dashed rounded-lg border-destructive">
+          <h2 className="text-xl font-semibold text-destructive">Failed to load tenants</h2>
+          <p className="text-muted-foreground mt-2">{error.message}</p>
+        </div>
+      ) : (
+        <TenantCards tenants={tenants || []} />
+      )}
     </div>
   );
 }
