@@ -1,49 +1,36 @@
 'use client';
 
-import { collection, doc, updateDoc, query, where } from 'firebase/firestore';
-import { useFirebase } from '@/firebase';
-import { useCollection } from '@/firebase/firestore/use-collection';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle, X, Globe, Mail, Phone, MapPin, Users } from 'lucide-react';
+import { CheckCircle, Globe, Mail, Phone, MapPin, Users } from 'lucide-react';
 import Image from 'next/image';
 
 export default function PendingTenantsPage() {
-  const { firestore } = useFirebase();
+  const [tenants, setTenants] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const pendingQuery = firestore 
-    ? query(collection(firestore, 'tenants'), where('status', '==', 'pending'))
-    : null;
-  const { data: tenants, isLoading } = useCollection<any>(pendingQuery);
+  useEffect(() => {
+    async function fetchTenants() {
+      try {
+        const response = await fetch('/api/store-request');
+        const data = await response.json();
+        setTenants(data.tenants || []);
+      } catch (e) {
+        console.error('Failed to fetch tenants:', e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTenants();
+  }, []);
 
-  const handleApprove = async (tenantId: string) => {
-    if (!firestore) return;
-    await updateDoc(doc(firestore, 'tenants', tenantId), {
-      status: 'active',
-      isActive: true,
-      approvedAt: new Date(),
-    });
-  };
-
-  const handleReject = async (tenantId: string) => {
-    if (!firestore) return;
-    await updateDoc(doc(firestore, 'tenants', tenantId), {
-      status: 'rejected',
-      rejectedAt: new Date(),
-    });
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading pending requests...</span>
-      </div>
-    );
+  if (loading) {
+    return <div>Loading pending requests...</div>;
   }
 
-  if (!tenants || tenants.length === 0) {
+  if (tenants.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center h-full max-w-md mx-auto text-center">
         <CheckCircle className="h-12 w-12 text-green-500 mb-2" />
@@ -110,8 +97,8 @@ export default function PendingTenantsPage() {
               )}
 
               <div className="flex gap-3 pt-3 border-t">
-                <Button onClick={() => handleApprove(t.id)} className="flex-1">Approve</Button>
-                <Button onClick={() => handleReject(t.id)} variant="outline">Reject</Button>
+                <Button className="flex-1">Approve</Button>
+                <Button variant="outline">Reject</Button>
               </div>
             </CardContent>
           </Card>
