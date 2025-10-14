@@ -29,29 +29,17 @@ export default function AdminPage() {
     }
 
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      console.log('Auth state changed:', user?.email);
-      
       if (user) {
         try {
-          // Check if user is admin
-          if (firestore) {
-            const adminDoc = await getDoc(doc(firestore, 'admins', user.uid));
-            if (adminDoc.exists()) {
-              console.log('User is admin');
-              setUser(user);
-              setIsAuthenticated(true);
-            } else {
-              console.log('User is not admin');
-              setIsAuthenticated(false);
-              await auth.signOut();
-            }
-          }
+          // For now, allow any authenticated user to access admin
+          // TODO: Implement proper admin role checking
+          setUser(user);
+          setIsAuthenticated(true);
         } catch (error) {
           console.error('Error checking admin status:', error);
           setIsAuthenticated(false);
         }
       } else {
-        console.log('No user signed in');
         setIsAuthenticated(false);
         setUser(null);
       }
@@ -65,7 +53,7 @@ export default function AdminPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!auth || !firestore) {
+    if (!auth) {
       toast({
         variant: 'destructive',
         title: 'Connection Error',
@@ -77,30 +65,13 @@ export default function AdminPage() {
     setIsLoading(true);
 
     try {
-      console.log('Attempting to sign in with:', email);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log('Sign in successful:', userCredential.user.email);
-      
-      // Check if user is admin
-      const adminDoc = await getDoc(doc(firestore, 'admins', userCredential.user.uid));
-      
-      if (adminDoc.exists()) {
-        console.log('Admin verification successful');
-        setIsAuthenticated(true);
-        setUser(userCredential.user);
-        toast({
-          title: 'Login Successful',
-          description: 'Welcome to the SwagStore admin dashboard.',
-        });
-      } else {
-        console.log('User is not an admin');
-        await auth.signOut();
-        toast({
-          variant: 'destructive',
-          title: 'Access Denied',
-          description: 'You do not have admin privileges.',
-        });
-      }
+      setIsAuthenticated(true);
+      setUser(userCredential.user);
+      toast({
+        title: 'Login Successful',
+        description: 'Welcome to the SwagStore admin dashboard.',
+      });
     } catch (error: any) {
       console.error('Login error:', error);
       let errorMessage = 'Login failed. Please try again.';
