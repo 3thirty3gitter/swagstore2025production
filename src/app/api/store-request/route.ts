@@ -95,3 +95,4 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({ message: 'Store request API working', timestamp: new Date().toISOString() });
 }
+// Force deploy Tue Oct 14 21:19:04 UTC 2025
