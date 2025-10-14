@@ -136,6 +136,7 @@ const getDefaultWebsiteData = (): Website => ({
                     imageUrl: `https://picsum.photos/seed/${Date.now()}/1200/800`,
                     imageHint: "storefront",
                     imageWidth: 80,
+                    imageHeight: 60,
                 }
               },
               {

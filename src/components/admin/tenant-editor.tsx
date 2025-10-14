@@ -57,6 +57,7 @@ const getDefaultWebsiteData = (): Website => ({
                     imageUrl: `https://picsum.photos/seed/${Date.now()}/1200/800`,
                     imageHint: "storefront",
                     imageWidth: 80,
+                        imageHeight: 60,
                 }
               }
             ]
@@ -156,6 +157,7 @@ export function TenantEditor({ tenant }: TenantEditorProps) {
                         imageHint: "placeholder",
                         layout: 'center-right',
                         imageWidth: 80,
+                        imageHeight: 60,
                     }
                 };
                 break;

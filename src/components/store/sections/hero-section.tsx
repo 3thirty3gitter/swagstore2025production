@@ -19,6 +19,7 @@ type HeroSectionProps = {
   imageHint?: string;
   layout?: HeroSectionLayout;
   imageWidth?: number;
+  imageHeight?: number;
 };
 
 export function HeroSection({
@@ -31,10 +32,12 @@ export function HeroSection({
   imageHint,
   layout = 'center-left',
   imageWidth: initialImageWidth = 80,
+  imageHeight: initialImageHeight = 60,
 }: HeroSectionProps) {
 
   const [isEditor, setIsEditor] = useState(false);
   const [imageWidth, setImageWidth] = useState(initialImageWidth);
+  const [imageHeight, setImageHeight] = useState(initialImageHeight);
   const containerRef = useRef<HTMLDivElement>(null);
   const dragHandleRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -50,6 +53,9 @@ export function HeroSection({
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'section-width-update' && event.data.sectionId === sectionId) {
         setImageWidth(event.data.width);
+      }
+      if (event.data.type === 'section-height-update' && event.data.sectionId === sectionId) {
+        setImageHeight(event.data.height);
       }
     };
     window.addEventListener('message', handleMessage);
@@ -122,7 +128,8 @@ export function HeroSection({
           "relative rounded-lg overflow-hidden group",
           layout.includes('right') ? 'md:order-last' : ''
         )}>
-          <div className="relative aspect-[3/4] w-full">
+          <div className="relative w-full"
+            style={{ height: `${imageHeight}vh` }}>
             <Image
               src={imageUrl}
               alt={title}
