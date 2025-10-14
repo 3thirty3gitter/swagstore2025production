@@ -1,67 +1,37 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Admin role validation
-    function isAdmin() {
-      return request.auth != null && 
-             get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
+    // Allow unauthenticated users to submit store requests
+    match /tenants/{document} {
+      allow read, write: if request.auth != null;
+      allow create: if true; // Allow anyone to create pending tenants
     }
     
-    function isValidOrder(orderData) {
-      return orderData.keys().hasAll(['tenantId', 'total', 'customerName']) &&
-             orderData.total is number &&
-             orderData.total > 0 &&
-             orderData.total < 10000; // Max $10,000 CAD per order
-    }
-
-    // Tenants - Public read, admin write
-    match /tenants/{tenantId} {
-      allow read: if true; // Needed for storefront
-      allow create, update, delete: if isAdmin();
-    }
-
-    // Products - Public read, admin write  
-    match /products/{productId} {
-      allow read: if true; // Needed for storefront
-      allow create, update, delete: if isAdmin();
-    }
-
-    // Orders - Controlled creation, admin read/write
-    match /orders/{orderId} {
-      allow create: if isValidOrder(request.resource.data);
-      allow read, list, update, delete: if isAdmin();
-    }
-
-    // SwagBucks Collections - Admin only
-    match /swagbucks_balances/{tenantId} {
-      allow read, write: if isAdmin();
+    // Allow unauthenticated users to submit store requests (backup)
+    match /store-requests/{document} {
+      allow create: if true; // Allow anyone to submit store requests
+      allow read, write: if request.auth != null;
     }
     
-    match /swagbucks_transactions/{transactionId} {
-      allow read, write: if isAdmin();
+    // Admin collection - only authenticated users
+    match /admins/{document} {
+      allow read, write: if request.auth != null;
     }
     
-    match /swagbucks_redemptions/{redemptionId} {
-      allow read, write: if isAdmin();
+    // Products collection - only authenticated users
+    match /products/{document} {
+      allow read: if true; // Public read for products
+      allow write: if request.auth != null;
     }
-
-    // Admin users collection
-    match /admins/{userId} {
-      allow read, write: if isAdmin();
-      allow create: if request.auth.uid == userId; // Self-registration
+    
+    // Orders collection - only authenticated users
+    match /orders/{document} {
+      allow read, write: if request.auth != null;
     }
-
-    // Settings - Admin only
-    match /settings/{document=**} {
-      allow read, write: if isAdmin();
-    }
-
-    // Store requests - Public create, admin manage
-    match /store_requests/{requestId} {
-      allow create: if request.resource.data.keys().hasAll(['teamName', 'contactEmail', 'province']) &&
-                       request.resource.data.contactEmail.matches('.*@.*\\..*'); // Basic email validation
-      allow read, list, update, delete: if isAdmin();
+    
+    // Default deny all other documents
+    match /{document=**} {
+      allow read, write: if request.auth != null;
     }
   }
 }

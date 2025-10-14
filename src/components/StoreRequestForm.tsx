@@ -8,8 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Send, CheckCircle, Upload, X } from "lucide-react";
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+// Using API endpoint instead of direct Firebase
+// Using API endpoint instead of direct Firebase
 import { CANADIAN_PROVINCES, formatCanadianPostalCode } from '@/lib/canadaData';
 import { uploadFile } from '@/lib/actions';
 import Image from 'next/image';
@@ -170,61 +170,25 @@ export default function StoreRequestForm() {
 
       console.log('Generated slug:', slug);
 
-      // Create pending tenant with all form data
-      const pendingTenant = {
-        name: formData.teamName,
-        slug: slug,
-        subdomain: subdomain,
-        storeName: formData.teamName,
-        status: 'pending',
-        isActive: false,
-        
-        // Contact information
-        contactName: formData.contactName,
-        contactEmail: formData.contactEmail,
-        contactPhone: formData.contactPhone || '',
-        
-        // Team information
-        teamType: formData.teamType || '',
-        organizationLevel: formData.organizationLevel || '',
-        
-        // Location
-        city: formData.city || '',
-        province: formData.province || '',
-        postalCode: formData.postalCode || '',
-        
-        // Store details
-        teamSize: formData.teamSize || '',
-        expectedVolume: formData.expectedVolume || '',
-        urgency: formData.urgency || '',
-        description: formData.description || '',
-        
-        // Logo
-        logoUrl: formData.logoUrl || '',
-        
-        // Timestamps
-        submittedAt: new Date(),
-        createdAt: new Date(),
-      };
+      // Submit form data via API
+      
 
-      console.log('Tenant data to submit:', pendingTenant);
-      
-      // Test Firebase connection first
-      console.log('Testing Firebase connection...');
-      
-      // Add to tenants collection as pending
-      const docRef = await addDoc(collection(db, 'tenants'), pendingTenant);
-      console.log('Tenant created with ID:', docRef.id);
-      
-      // Also keep the original store-requests collection for backwards compatibility
-      await addDoc(collection(db, 'store-requests'), {
-        ...formData,
-        submittedAt: new Date(),
-        status: 'converted-to-tenant',
-        tenantId: docRef.id
+      // Submit via API endpoint (server-side with proper permissions)
+      const response = await fetch('/api/store-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
       
-      console.log('Store request backup created');
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit request');
+      }
+      
+      console.log('Store request submitted successfully:', result);
       
       setIsSubmitted(true);
       toast({
