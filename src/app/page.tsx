@@ -52,15 +52,6 @@ export default function HomePage() {
           <p className="text-lg mb-8 opacity-90">
             Contact us to get a professional store created for your Canadian team or organization
           </p>
-<<<<<<< HEAD
-=======
-          <Link href="/admin">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
-              Get Your Store Created
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
->>>>>>> 4be4ad55fdb11f6e7757baed943cbdd8d41fb501
         </div>
       </section>
 
