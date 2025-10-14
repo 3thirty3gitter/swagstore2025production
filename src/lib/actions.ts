@@ -1,4 +1,3 @@
-
 'use server';
 
 import { z } from 'zod';
@@ -117,7 +116,7 @@ const tenantFormSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'Tenant name is required.'),
   storeName: z.string().min(1, 'Storefront name is required.'),
-  slug: z.string().min(1, 'Slug is required.'),
+  slug: z.string().min(1, 'Slug is required.').regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase with hyphens only.'),
 });
 
 const getDefaultWebsiteData = (): Website => ({
@@ -175,6 +174,22 @@ export async function saveTenant(prevState: any, formData: FormData) {
     const { db } = getAdminApp();
 
     try {
+        // Check for duplicate slugs
+        if (!id) {
+          const existingTenant = await db.collection('tenants')
+            .where('slug', '==', tenantData.slug)
+            .limit(1)
+            .get();
+          
+          if (!existingTenant.empty) {
+            return {
+              success: false,
+              error: 'A tenant with this slug already exists.',
+              fieldErrors: { slug: ['This slug is already taken.'] }
+            };
+          }
+        }
+        
         if (id) {
             const tenantRef = db.collection("tenants").doc(id);
             await tenantRef.set(tenantData, { merge: true });
@@ -182,6 +197,7 @@ export async function saveTenant(prevState: any, formData: FormData) {
             const newTenantData = {
               ...tenantData,
               website: getDefaultWebsiteData(),
+              createdAt: new Date().toISOString(),
             }
             await db.collection("tenants").add(newTenantData);
         }
@@ -250,17 +266,30 @@ export async function uploadFile(prevState: any, formData: FormData): Promise<{ 
 }
 
 export async function deleteTenant(tenantId: string) {
-  if (!tenantId) {
-    return { success: false, error: 'Tenant ID is required.' };
+  if (!tenantId || typeof tenantId !== 'string') {
+    return { success: false, error: 'Valid tenant ID is required.' };
   }
 
   const { db } = getAdminApp();
   try {
-    await db.collection('tenants').doc(tenantId).delete();
+    // First check if the tenant exists
+    const tenantRef = db.collection('tenants').doc(tenantId);
+    const tenantDoc = await tenantRef.get();
+    
+    if (!tenantDoc.exists) {
+      return { success: false, error: 'Tenant not found or already deleted.' };
+    }
+    
+    // Delete the tenant
+    await tenantRef.delete();
+    
+    // Force revalidation of the tenants page
     revalidatePath('/admin/tenants');
+    revalidatePath('/');
+    
     return { success: true };
   } catch (e: any) {
     console.error('Error deleting tenant:', e);
-    return { success: false, error: e.message || 'Failed to delete tenant.' };
+    return { success: false, error: e.message || 'Failed to delete tenant. Please try again.' };
   }
 }
