@@ -26,6 +26,14 @@ async function run() {
       process.exit(3);
     }
     console.log('Smoke upload succeeded, url:', json.url);
+    // Verify the returned URL is accessible
+    const check = await fetch(json.url, { method: 'GET' });
+    console.log('GET returned', check.status, check.headers.get('content-type'));
+    if (check.status !== 200) {
+      console.error('Signed/public URL fetch failed');
+      process.exit(5);
+    }
+    console.log('URL is accessible');
   } catch (err) {
     console.error('Failed to parse response:', err);
     process.exit(4);

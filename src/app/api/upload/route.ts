@@ -51,13 +51,16 @@ export async function POST(request: NextRequest) {
       resumable: false,
     });
 
-    const useSigned = process.env.USE_SIGNED_URLS === '1' || process.env.USE_SIGNED_URLS === 'true';
+    // Default to signed URLs unless explicitly disabled
+    const useSignedEnv = process.env.USE_SIGNED_URLS;
+    const useSigned = typeof useSignedEnv === 'undefined' ? true : (useSignedEnv === '1' || useSignedEnv === 'true');
 
     if (useSigned) {
-      // Generate signed URL (short-lived)
+      // Signed URL expiry configurable via env in seconds (default 24 hours)
+      const expirySeconds = Number(process.env.SIGNED_URL_EXPIRY_SECONDS) || 60 * 60 * 24;
       const [signedUrl] = await fileRef.getSignedUrl({
         action: 'read',
-        expires: Date.now() + 1000 * 60 * 60, // 1 hour
+        expires: Date.now() + expirySeconds * 1000,
       });
       console.log('Upload successful (signed):', signedUrl);
       return NextResponse.json({ success: true, url: signedUrl });
