@@ -16,52 +16,45 @@ export async function POST(request: NextRequest) {
 
     const redis = getRedis()
     
-    const tenantStrings = await redis.lrange(TENANT_KEY, 0, -1)
-    const tenants = tenantStrings.map((item: any) => {
-      if (typeof item === 'string') {
-        return JSON.parse(item)
-      } else if (typeof item === 'object' && item !== null) {
-        return item
-      } else {
-        return null
-      }
-    }).filter(Boolean)
-    
-    const tenant = tenants.find((t: any) => t.id === tenantId)
-    
-    if (!tenant) {
+    const pendingRaw = await redis.lrange(TENANT_KEY, 0, -1)
+    const pending = pendingRaw
+      .map((item: any) => (typeof item === 'string' ? JSON.parse(item) : item))
+      .filter(Boolean)
+
+    const original = pending.find((t: any) => t.id === tenantId)
+    if (!original) {
       return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
     }
-    
+
+    const now = new Date().toISOString()
     const approvedTenant = {
-      ...tenant,
+      ...original,
       ...updatedData,
-      status: 'approved',
+      name: updatedData.storeName || original.storeName || original.name,
+      storeName: updatedData.storeName || original.storeName || original.name,
+      subdomain: updatedData.subdomain || original.subdomain,
+      contactName: updatedData.contactName || original.contactName,
+      contactEmail: updatedData.contactEmail || original.contactEmail,
+      contactPhone: updatedData.contactPhone ?? original.contactPhone ?? '',
+      status: 'active',
       isActive: true,
-      approvedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString()
+      approvedAt: now,
+      createdAt: original.createdAt || now,
     }
-    
+
     await redis.lpush(APPROVED_TENANTS_KEY, JSON.stringify(approvedTenant))
-    
-    const remainingTenants = tenants.filter((t: any) => t.id !== tenantId)
-    
+
+    const remaining = pending.filter((t: any) => t.id !== tenantId)
     await redis.del(TENANT_KEY)
-    if (remainingTenants.length > 0) {
-      const tenantStringsToAdd = remainingTenants.map(t => JSON.stringify(t))
-      await redis.lpush(TENANT_KEY, ...tenantStringsToAdd)
+    if (remaining.length > 0) {
+      await redis.lpush(TENANT_KEY, ...remaining.map((t: any) => JSON.stringify(t)))
     }
-    
+
     console.log('TENANT APPROVED:', approvedTenant.storeName)
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Tenant approved successfully',
-      tenant: approvedTenant
-    })
-    
+
+    return NextResponse.json({ success: true, tenant: approvedTenant })
   } catch (e: any) {
-    console.error('Failed to approve tenant:', e)
+    console.error('Approve error:', e)
     return NextResponse.json({ error: e?.message || 'Server error' }, { status: 500 })
   }
 }
