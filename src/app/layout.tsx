@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { FirebaseProvider } from '@/firebase';
+import { FirebaseClientProvider } from '@/firebase';
+import SiteLogo from '@/components/ui/SiteLogo';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -113,10 +114,15 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <FirebaseProvider>
+  <FirebaseClientProvider>
+          <header className="w-full border-b bg-white">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex items-center">
+              <SiteLogo />
+            </div>
+          </header>
           {children}
           <Toaster />
-        </FirebaseProvider>
+        </FirebaseClientProvider>
       </body>
     </html>
   );
