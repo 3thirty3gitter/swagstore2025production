@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getRedis, TENANT_KEY } from '@/lib/redis'
+import { getRedis, TENANT_KEY, APPROVED_TENANTS_KEY } from '@/lib/redis'
 
 export const dynamic = 'force-dynamic'
 
-const APPROVED_TENANTS_KEY = 'approved_tenants'
+// Use shared key from lib/redis; keep local const for backward compatibility
 
 export async function POST(request: NextRequest) {
   try {
@@ -53,7 +53,13 @@ export async function POST(request: NextRequest) {
         urgency: updatedData.urgency || original.urgency || '',
       },
       assets: {
-        logoUrl: updatedData.logoUrl || original.logoUrl || '',
+        // If the client explicitly sends logoUrl (even empty string), respect that
+        // so we don't accidentally inherit a base64 blob from the original pending
+        // submission. Use updatedData.logoUrl when it's !== undefined, otherwise
+        // fall back to the original value.
+        logoUrl: (updatedData.logoUrl !== undefined)
+          ? updatedData.logoUrl
+          : (original.logoUrl || ''),
       },
       meta: {
         submittedAt: original.submittedAt || now,
@@ -63,15 +69,26 @@ export async function POST(request: NextRequest) {
       },
     }
 
-    await redis.lpush(APPROVED_TENANTS_KEY, JSON.stringify(normalized))
-
-    const remaining = pending.filter((t: any) => t.id !== tenantId)
-    await redis.del(TENANT_KEY)
-    if (remaining.length > 0) {
-      await redis.lpush(TENANT_KEY, ...remaining.map((t: any) => JSON.stringify(t)))
+    // Push to approved list and ensure write succeeded
+    const pushResult = await redis.lpush(APPROVED_TENANTS_KEY, JSON.stringify(normalized))
+    if (!pushResult || Number(pushResult) <= 0) {
+      console.error('Approve: LPUSH to approved_tenants returned unexpected result', pushResult)
+      return NextResponse.json({ error: 'Failed to persist approved tenant' }, { status: 500 })
     }
 
-    console.log('TENANT APPROVED:', normalized.storeName)
+    // Safely rewrite pending list without mutating the in-memory objects
+    const remaining = pending.filter((t: any) => t.id !== tenantId)
+    try {
+      await redis.del(TENANT_KEY)
+      if (remaining.length > 0) {
+        await redis.lpush(TENANT_KEY, ...remaining.map((t: any) => JSON.stringify(t)))
+      }
+    } catch (err) {
+      // Log but don't fail the approval (we already persisted approved tenant)
+      console.error('Approve: failed to rewrite pending list', err)
+    }
+
+    console.log('TENANT APPROVED:', normalized.storeName, 'id=', normalized.id)
 
     return NextResponse.json({ success: true, tenant: normalized })
   } catch (e: any) {

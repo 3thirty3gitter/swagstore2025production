@@ -1,6 +1,7 @@
 import { Redis } from '@upstash/redis'
 
 export const TENANT_KEY = 'pending_tenants'
+export const APPROVED_TENANTS_KEY = 'approved_tenants'
 
 function assertEnv() {
   const url = process.env.UPSTASH_REDIS_REST_URL

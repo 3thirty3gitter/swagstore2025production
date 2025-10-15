@@ -1,0 +1,1 @@
+Usage: sanitize-tenants.py input.ndjson output.ndjson

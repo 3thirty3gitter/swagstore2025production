@@ -13,6 +13,13 @@ export async function POST(request: NextRequest) {
 
     const slug = body.teamName.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').trim()
     
+    // Filter out base64 images to prevent Redis size issues
+    let logoUrl = body.logoUrl || ''
+    if (logoUrl.startsWith('data:') || logoUrl.length > 500) {
+      console.log('Blocked base64/oversized image for:', body.teamName, 'Size:', logoUrl.length)
+      logoUrl = ''
+    }
+    
     const tenant = {
       id: `tenant_${Date.now()}`,
       name: body.teamName,
@@ -31,7 +38,7 @@ export async function POST(request: NextRequest) {
       expectedVolume: body.expectedVolume || '',
       urgency: body.urgency || '',
       description: body.description || '',
-      logoUrl: body.logoUrl || '',
+      logoUrl: logoUrl,
       submittedAt: new Date().toISOString(),
     }
 
@@ -43,7 +50,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, tenantId: tenant.id })
     
   } catch (e: any) {
-    console.error('API POST Error:', e)
+    console.error('API Error:', e)
     return NextResponse.json({ error: e?.message || 'Server error' }, { status: 500 })
   }
 }
@@ -54,16 +61,14 @@ export async function GET() {
     const tenantStrings = await redis.lrange(TENANT_KEY, 0, -1)
     
     const tenants = tenantStrings.map((item: any) => {
-      // Handle both string and already-parsed object cases
       if (typeof item === 'string') {
         return JSON.parse(item)
       } else if (typeof item === 'object' && item !== null) {
         return item
       } else {
-        console.error('Unexpected item type:', typeof item, item)
         return null
       }
-    }).filter(Boolean) // Remove any null entries
+    }).filter(Boolean)
     
     return NextResponse.json({ tenants })
   } catch (e) {
