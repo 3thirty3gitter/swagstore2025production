@@ -1,15 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { redis, TENANT_KEY } from '@/lib/redis';
+import { NextRequest, NextResponse } from 'next/server'
+import { getRedis, TENANT_KEY } from '@/lib/redis'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
     
     if (!body.teamName || !body.contactName || !body.contactEmail) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const slug = body.teamName.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+    const slug = body.teamName.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').trim()
     
     const tenant = {
       id: `tenant_${Date.now()}`,
@@ -31,30 +33,30 @@ export async function POST(request: NextRequest) {
       description: body.description || '',
       logoUrl: body.logoUrl || '',
       submittedAt: new Date().toISOString(),
-    };
+    }
 
-    // Store in Redis - prepend to list for newest-first ordering
-    await redis.lpush(TENANT_KEY, JSON.stringify(tenant));
+    const redis = getRedis()
+    await redis.lpush(TENANT_KEY, JSON.stringify(tenant))
     
-    console.log('TENANT CREATED:', tenant.name);
+    console.log('TENANT CREATED:', tenant.name)
     
-    return NextResponse.json({ success: true, tenantId: tenant.id });
+    return NextResponse.json({ success: true, tenantId: tenant.id })
     
-  } catch (e) {
-    console.error('API Error:', e);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  } catch (e: any) {
+    console.error('API Error:', e)
+    return NextResponse.json({ error: e?.message || 'Server error' }, { status: 500 })
   }
 }
 
 export async function GET() {
   try {
-    // Get all tenants from Redis list
-    const tenantStrings = await redis.lrange(TENANT_KEY, 0, -1);
-    const tenants = tenantStrings.map((str: any) => JSON.parse(str as string));
+    const redis = getRedis()
+    const tenantStrings = await redis.lrange(TENANT_KEY, 0, -1)
+    const tenants = tenantStrings.map((str: any) => JSON.parse(str as string))
     
-    return NextResponse.json({ tenants });
+    return NextResponse.json({ tenants })
   } catch (e) {
-    console.error('Redis fetch error:', e);
-    return NextResponse.json({ tenants: [] });
+    console.error('Redis fetch error:', e)
+    return NextResponse.json({ tenants: [] })
   }
 }
