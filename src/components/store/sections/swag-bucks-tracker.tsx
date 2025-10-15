@@ -5,7 +5,7 @@ import { useCollection } from "@/firebase/firestore/use-collection";
 import { getTenantBalance } from "@/lib/services/swagbucks-service";
 import type { Order, SwagBucksGate } from "@/lib/types";
 import { collection, query, where } from "firebase/firestore";
-import { Loader2, Award, Shirt, MapleLeaf, DollarSign } from "lucide-react";
+import { Loader2, Award, Shirt, DollarSign } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { formatCAD } from "@/lib/canadaData";
@@ -51,9 +51,9 @@ export function SwagBucksTrackerSection({ tenantId, title, description, gates = 
             <section className="py-8 md:py-12 bg-gradient-to-br from-red-50 to-white border border-red-100">
                 <div className="container mx-auto text-center">
                     <div className="flex items-center justify-center gap-2">
-                        <MapleLeaf className="h-6 w-6 text-red-500 animate-pulse" />
+                        <span className="h-6 w-6 text-red-500 text-2xl">🍁</span>
                         <Loader2 className="h-8 w-8 animate-spin text-red-600" />
-                        <MapleLeaf className="h-6 w-6 text-red-500 animate-pulse" />
+                        <span className="h-6 w-6 text-red-500 text-2xl">🍁</span>
                     </div>
                     <p className="mt-2 text-sm text-red-600">Loading Canadian SwagBucks...</p>
                 </div>
@@ -76,9 +76,9 @@ export function SwagBucksTrackerSection({ tenantId, title, description, gates = 
             <div className="container mx-auto max-w-6xl">
                 <div className="text-center mb-12">
                     <div className="flex items-center justify-center gap-2 mb-4">
-                        <MapleLeaf className="h-8 w-8 text-red-500" />
+                        <span className="h-8 w-8 text-red-500 text-2xl">🍁</span>
                         <h2 className="text-4xl md:text-5xl font-bold font-headline uppercase text-red-800">{title}</h2>
-                        <MapleLeaf className="h-8 w-8 text-red-500" />
+                        <span className="h-8 w-8 text-red-500 text-2xl">🍁</span>
                     </div>
                     <p className="text-lg text-gray-700 max-w-3xl mx-auto">{description}</p>
                     <div className="mt-4 flex items-center justify-center gap-4 text-sm text-gray-600">

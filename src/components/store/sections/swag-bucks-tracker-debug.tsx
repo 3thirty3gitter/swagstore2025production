@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from "react";
-import { MapleLeaf } from "lucide-react";
 
 type SwagBucksTrackerProps = {
     tenantId: string;
@@ -23,9 +22,9 @@ export function SwagBucksTrackerSection({ tenantId, title, description, gates = 
         <section className="py-8 bg-red-50 border border-red-200 rounded-lg">
             <div className="container mx-auto text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <MapleLeaf className="h-6 w-6 text-red-500" />
+                    <span className="h-6 w-6 text-red-500 text-xl">🍁</span>
                     <h2 className="text-3xl font-bold text-red-800">{debugInfo.title}</h2>
-                    <MapleLeaf className="h-6 w-6 text-red-500" />
+                    <span className="h-6 w-6 text-red-500 text-xl">🍁</span>
                 </div>
                 
                 <p className="text-gray-700 mb-6">{debugInfo.description}</p>
