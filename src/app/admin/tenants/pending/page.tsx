@@ -96,7 +96,7 @@ export default function PendingTenantsPage() {
 
               <div className="flex gap-3 pt-3 border-t">
                 <Button className="flex-1" onClick={() => router.push(`/admin/tenants/pending/${t.id}`)}>
-                  <Eye className="h-4 w-4 mr-2" /> Review request
+                  <Eye className="h-4 w-4 mr-2" /> Review Request
                 </Button>
                 <Button variant="outline" onClick={() => router.push(`/admin/tenants/pending/${t.id}`)}>
                   Reject
