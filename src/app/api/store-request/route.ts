@@ -35,28 +35,52 @@ export async function POST(request: NextRequest) {
       submittedAt: new Date().toISOString(),
     }
 
+    console.log('TENANT OBJECT:', JSON.stringify(tenant, null, 2))
+    console.log('REDIS KEY:', TENANT_KEY)
+    
     const redis = getRedis()
-    await redis.lpush(TENANT_KEY, JSON.stringify(tenant))
+    console.log('Redis client created')
+    
+    const result = await redis.lpush(TENANT_KEY, JSON.stringify(tenant))
+    console.log('LPUSH RESULT:', result)
+    
+    // Verify it was stored
+    const verification = await redis.lrange(TENANT_KEY, 0, 0)
+    console.log('VERIFICATION (first item):', verification)
     
     console.log('TENANT CREATED:', tenant.name)
     
     return NextResponse.json({ success: true, tenantId: tenant.id })
     
   } catch (e: any) {
-    console.error('API Error:', e)
+    console.error('API POST Error:', e)
     return NextResponse.json({ error: e?.message || 'Server error' }, { status: 500 })
   }
 }
 
 export async function GET() {
   try {
+    console.log('GET: Starting fetch from Redis')
+    console.log('GET: REDIS KEY:', TENANT_KEY)
+    
     const redis = getRedis()
+    console.log('GET: Redis client created')
+    
     const tenantStrings = await redis.lrange(TENANT_KEY, 0, -1)
-    const tenants = tenantStrings.map((str: any) => JSON.parse(str as string))
+    console.log('GET: Raw tenant strings from Redis:', tenantStrings)
+    console.log('GET: Number of items:', tenantStrings.length)
+    
+    const tenants = tenantStrings.map((str: any) => {
+      console.log('GET: Parsing:', str)
+      return JSON.parse(str as string)
+    })
+    
+    console.log('GET: Parsed tenants:', tenants)
+    console.log('GET: Returning', tenants.length, 'tenants')
     
     return NextResponse.json({ tenants })
   } catch (e) {
-    console.error('Redis fetch error:', e)
+    console.error('GET: Redis fetch error:', e)
     return NextResponse.json({ tenants: [] })
   }
 }
