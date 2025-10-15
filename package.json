@@ -52,7 +52,7 @@
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.2"
     ,
-    "@upstash/redis": "^2.0.0"
+    "@upstash/redis": "^1.23.0"
   },
   "devDependencies": {
     "@types/node": "^20",
