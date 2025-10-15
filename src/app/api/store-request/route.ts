@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// Simple in-memory storage (will persist during server lifecycle)
-let pendingTenants: any[] = [];
+import { getAdminApp } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,8 +33,14 @@ export async function POST(request: NextRequest) {
       submittedAt: new Date().toISOString(),
     };
 
-    // Store tenant
-    pendingTenants.push(tenant);
+    // Store tenant in Firestore so it persists across deployments
+    try {
+      const { db } = getAdminApp();
+      await db.collection('pendingTenants').doc(tenant.id).set(tenant);
+    } catch (err) {
+      console.error('Failed to persist pending tenant to Firestore:', err);
+      // still proceed and return success (tenant created) but log the error
+    }
     
     console.log('TENANT CREATED:', tenant.name);
     
@@ -49,5 +53,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  return NextResponse.json({ tenants: pendingTenants });
+  try {
+    const { db } = getAdminApp();
+    const snapshot = await db.collection('pendingTenants').orderBy('submittedAt', 'desc').get();
+    const tenants: any[] = [];
+    snapshot.forEach(doc => tenants.push(doc.data()));
+    return NextResponse.json({ tenants });
+  } catch (err) {
+    console.error('Failed to read pending tenants from Firestore:', err);
+    return NextResponse.json({ tenants: [] });
+  }
 }
