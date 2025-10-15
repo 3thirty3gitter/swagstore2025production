@@ -27,6 +27,24 @@ function parseStoragePath(url: string) {
   return null;
 }
 
+function tryDecodeVariants(path: string) {
+  const variants = new Set<string>();
+  variants.add(path);
+  try {
+    variants.add(decodeURIComponent(path));
+  } catch (e) {}
+  // if it contains %25 (encoded %), try decoding twice
+  if (path.includes('%25')) {
+    try {
+      variants.add(decodeURIComponent(decodeURIComponent(path)));
+    } catch (e) {}
+  }
+  // replace + with space
+  variants.add(path.replace(/\+/g, ' '));
+  variants.add(decodeURIComponent(path.replace(/\+/g, ' ')));
+  return Array.from(variants);
+}
+
 export async function GET() {
   try {
     const expiry = parseInt(process.env.SIGNED_URL_EXPIRY_SECONDS || '900', 10);
@@ -51,7 +69,26 @@ export async function GET() {
     }
 
     const bucket = storage.bucket(bucketName);
-    const file = bucket.file(filePath);
+
+    // Try several decoded variants to find the real file
+    const candidates = tryDecodeVariants(filePath);
+    let file = null;
+    for (const candidate of candidates) {
+      const f = bucket.file(candidate);
+      try {
+        const [exists] = await f.exists();
+        if (exists) {
+          file = f;
+          break;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    // If not found, fall back to the original path
+    if (!file) file = bucket.file(filePath);
+
     const [signedUrl] = await file.getSignedUrl({
       action: 'read',
       expires: Date.now() + expiry * 1000,
