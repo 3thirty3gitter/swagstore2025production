@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getRedis } from '@/lib/redis'
+import { getRedis, APPROVED_TENANTS_KEY, TENANT_KEY } from '@/lib/redis'
 
 export const dynamic = 'force-dynamic'
-
-const APPROVED_TENANTS_KEY = 'approved_tenants'
 
 function flatten(tenant: any) {
   if (!tenant) return null
