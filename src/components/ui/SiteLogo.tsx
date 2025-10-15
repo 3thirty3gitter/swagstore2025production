@@ -6,6 +6,7 @@ type Settings = { logoUrl?: string };
 
 export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
   const [logo, setLogo] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
@@ -13,10 +14,27 @@ export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
       try {
         const res = await fetch('/api/site-settings');
         const json = await res.json();
-        const url = json?.settings?.logoUrl || fallbackSrc || null;
-        if (mounted && url) setLogo(url);
+        const raw = json?.settings?.logoUrl || fallbackSrc || null;
+        if (!raw) return;
+
+        // try signed URL first
+        try {
+          const signedRes = await fetch('/api/site-settings/signed');
+          if (signedRes.ok) {
+            const signedJson = await signedRes.json();
+            const final = signedJson?.signedUrl || raw;
+            if (mounted) setLogo(final);
+            return;
+          }
+        } catch (err) {
+          // fallback to raw
+        }
+
+        if (mounted) setLogo(raw);
       } catch (e) {
         // ignore
+      } finally {
+        if (mounted) setLoading(false);
       }
     }
     load();
