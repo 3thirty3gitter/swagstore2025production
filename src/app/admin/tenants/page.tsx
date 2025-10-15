@@ -3,6 +3,7 @@
 import { TenantCards } from '@/components/admin/tenant-cards';
 import { Button } from '@/components/ui/button';
 import { TenantFormDialog } from '@/components/admin/tenant-form-dialog';
+import Link from 'next/link';
 import { useCollection } from "@/firebase/firestore/use-collection";
 import { useFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
@@ -12,7 +13,7 @@ import type { Tenant } from '@/lib/types';
 export default function TenantsPage() {
   const { firestore } = useFirebase();
   const { data: tenants, isLoading, error } = useCollection<Tenant>(
-    firestore ? collection(firestore, 'tenants') : null
+    firestore ? (collection(firestore, 'tenants') as any) : null
   );
   
   if (isLoading) {
@@ -34,9 +35,17 @@ export default function TenantsPage() {
             Manage team stores with custom subdomains
           </p>
         </div>
-        <TenantFormDialog>
-          <Button>+ Create Store</Button>
-        </TenantFormDialog>
+        <div className="flex items-center gap-2">
+          <TenantFormDialog>
+            <Button>+ Create Store</Button>
+          </TenantFormDialog>
+          {/* Persistent fallback create page in case the dialog trigger is not available in some deployments */}
+          <Link href="/admin/tenants/new" passHref>
+            <Button asChild variant="outline">
+              <a>+ Create Store (page)</a>
+            </Button>
+          </Link>
+        </div>
       </div>
       
       {error ? (
