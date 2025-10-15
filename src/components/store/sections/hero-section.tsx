@@ -197,7 +197,7 @@ export function HeroSection({
           )}
         </div>
         <div className="space-y-4 text-center md:text-left">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline leading-[1.1] md:leading-[1.1] overflow-visible">
             {title}
           </h2>
           <p className="text-lg text-muted-foreground">{text}</p>
