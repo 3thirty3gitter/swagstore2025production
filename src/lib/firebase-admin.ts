@@ -8,25 +8,22 @@ let adminApp: any = null;
 export function getAdminApp() {
   if (!adminApp && getApps().length === 0) {
     try {
-      // Use the correct Firebase Storage format (.firebasestorage.app)
-      const storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 
-                           process.env.FIREBASE_STORAGE_BUCKET || 
-                           `${process.env.FIREBASE_PROJECT_ID}.firebasestorage.app`;
-      
+      // Prefer explicit env var but fall back to project-based bucket
+      const storageBucket = process.env.FIREBASE_STORAGE_BUCKET || process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || `${process.env.FIREBASE_PROJECT_ID}.appspot.com`;
+
       console.log('Firebase Admin - Using storage bucket:', storageBucket);
-      
-      adminApp = initializeApp({
-        credential: cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          privateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          clientId: process.env.FIREBASE_CLIENT_ID,
-          authUri: process.env.FIREBASE_AUTH_URI,
-          tokenUri: process.env.FIREBASE_TOKEN_URI,
-        }),
+
+      // Build service account object using only recommended fields
+      const serviceAccount: any = {
         projectId: process.env.FIREBASE_PROJECT_ID,
-        storageBucket: storageBucket,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      };
+
+      adminApp = initializeApp({
+        credential: cert(serviceAccount),
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        storageBucket,
       });
     } catch (error) {
       console.error('Firebase Admin initialization failed:', error);
