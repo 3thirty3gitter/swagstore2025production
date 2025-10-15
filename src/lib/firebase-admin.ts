@@ -1,5 +1,6 @@
-﻿import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+﻿import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
+import { getFirestore, Firestore } from 'firebase-admin/firestore';
+import { getStorage, Storage } from 'firebase-admin/storage';
 
 const firebaseAdminConfig = {
   credential: cert({
@@ -9,11 +10,24 @@ const firebaseAdminConfig = {
   }),
 };
 
-export function getAdminApp() {
+type AdminContext = {
+  app: App;
+  db: Firestore;
+  storage: Storage;
+};
+
+export function getAdminApp(): AdminContext {
+  let app: App;
   if (getApps().length === 0) {
-    return initializeApp(firebaseAdminConfig);
+    app = initializeApp(firebaseAdminConfig);
+  } else {
+    app = getApps()[0];
   }
-  return getApps()[0];
+
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  return { app, db, storage };
 }
 
-export const adminDb = getFirestore(getAdminApp());
+export const adminDb = getFirestore(getAdminApp().app);
