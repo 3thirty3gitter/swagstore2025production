@@ -54,7 +54,7 @@ export default function HomePage() {
         <section className="py-20 md:py-32">
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-5xl mx-auto">
-              <h1 className="text-4xl md:text-6xl font-bold font-headline mb-6 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-6xl font-bold font-headline mb-6 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent leading-[1.06] md:leading-[1.06] pb-1 overflow-visible">
                 Free Team Stores That Earn Free Swag
               </h1>
               <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
