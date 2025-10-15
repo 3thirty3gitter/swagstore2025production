@@ -7,8 +7,10 @@
     "build": "next build",
     "start": "next start -p 3001",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
-    ,"test:smoke-upload": "node ./scripts/smoke-upload.js"
+  "typecheck": "tsc --noEmit",
+  "test:smoke-upload": "node ./scripts/smoke-upload.js",
+  "test:integration-store-request": "node ./scripts/integration-store-request.js",
+  "migrate:pending-tenants": "node ./scripts/migrate-pending-tenants.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
