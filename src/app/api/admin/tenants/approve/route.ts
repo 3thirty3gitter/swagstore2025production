@@ -27,22 +27,43 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date().toISOString()
-    const approvedTenant = {
-      ...original,
-      ...updatedData,
-      name: updatedData.storeName || original.storeName || original.name,
-      storeName: updatedData.storeName || original.storeName || original.name,
-      subdomain: updatedData.subdomain || original.subdomain,
-      contactName: updatedData.contactName || original.contactName,
-      contactEmail: updatedData.contactEmail || original.contactEmail,
-      contactPhone: updatedData.contactPhone ?? original.contactPhone ?? '',
+    const storeName = updatedData.storeName || original.storeName || original.name
+    const subdomain = (updatedData.subdomain || original.subdomain || storeName || '')
+      .toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').trim()
+
+    const normalized = {
+      id: original.id,
+      storeName,
+      subdomain,
       status: 'active',
       isActive: true,
-      approvedAt: now,
-      createdAt: original.createdAt || now,
+      contact: {
+        name: updatedData.contactName || original.contactName || '',
+        email: updatedData.contactEmail || original.contactEmail || '',
+        phone: updatedData.contactPhone ?? original.contactPhone ?? '',
+      },
+      org: {
+        teamType: updatedData.teamType || original.teamType || '',
+        city: updatedData.city || original.city || '',
+        province: updatedData.province || original.province || '',
+        teamSize: updatedData.teamSize || original.teamSize || '',
+      },
+      commerce: {
+        expectedVolume: updatedData.expectedVolume || original.expectedVolume || '',
+        urgency: updatedData.urgency || original.urgency || '',
+      },
+      assets: {
+        logoUrl: updatedData.logoUrl || original.logoUrl || '',
+      },
+      meta: {
+        submittedAt: original.submittedAt || now,
+        approvedAt: now,
+        createdAt: original.createdAt || now,
+        updatedAt: now,
+      },
     }
 
-    await redis.lpush(APPROVED_TENANTS_KEY, JSON.stringify(approvedTenant))
+    await redis.lpush(APPROVED_TENANTS_KEY, JSON.stringify(normalized))
 
     const remaining = pending.filter((t: any) => t.id !== tenantId)
     await redis.del(TENANT_KEY)
@@ -50,9 +71,9 @@ export async function POST(request: NextRequest) {
       await redis.lpush(TENANT_KEY, ...remaining.map((t: any) => JSON.stringify(t)))
     }
 
-    console.log('TENANT APPROVED:', approvedTenant.storeName)
+    console.log('TENANT APPROVED:', normalized.storeName)
 
-    return NextResponse.json({ success: true, tenant: approvedTenant })
+    return NextResponse.json({ success: true, tenant: normalized })
   } catch (e: any) {
     console.error('Approve error:', e)
     return NextResponse.json({ error: e?.message || 'Server error' }, { status: 500 })
