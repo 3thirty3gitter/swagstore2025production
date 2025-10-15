@@ -51,7 +51,19 @@ export async function POST(request: NextRequest) {
       resumable: false,
     });
 
-    // Make public (optional) — if you use signed URLs in production, replace this
+    const useSigned = process.env.USE_SIGNED_URLS === '1' || process.env.USE_SIGNED_URLS === 'true';
+
+    if (useSigned) {
+      // Generate signed URL (short-lived)
+      const [signedUrl] = await fileRef.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 1000 * 60 * 60, // 1 hour
+      });
+      console.log('Upload successful (signed):', signedUrl);
+      return NextResponse.json({ success: true, url: signedUrl });
+    }
+
+    // Make public (fallback)
     try {
       await fileRef.makePublic();
     } catch (err) {
