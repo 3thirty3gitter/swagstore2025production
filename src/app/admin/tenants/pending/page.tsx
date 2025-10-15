@@ -1,20 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Globe, Mail, Phone, MapPin, Users } from 'lucide-react';
+import { CheckCircle, Globe, Mail, Phone, MapPin, Users, Eye } from 'lucide-react';
 import Image from 'next/image';
 
 export default function PendingTenantsPage() {
   const [tenants, setTenants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchTenants() {
       try {
-        const response = await fetch('/api/store-request');
+        const response = await fetch('/api/admin/tenants/pending');
         const data = await response.json();
         setTenants(data.tenants || []);
       } catch (e) {
@@ -92,13 +94,13 @@ export default function PendingTenantsPage() {
                 </div>
               </div>
 
-              {t.description && (
-                <div className="text-sm bg-muted/40 p-3 rounded-md">{t.description}</div>
-              )}
-
               <div className="flex gap-3 pt-3 border-t">
-                <Button className="flex-1">Approve</Button>
-                <Button variant="outline">Reject</Button>
+                <Button className="flex-1" onClick={() => router.push(`/admin/tenants/pending/${t.id}`)}>
+                  <Eye className="h-4 w-4 mr-2" /> Review request
+                </Button>
+                <Button variant="outline" onClick={() => router.push(`/admin/tenants/pending/${t.id}`)}>
+                  Reject
+                </Button>
               </div>
             </CardContent>
           </Card>
