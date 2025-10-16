@@ -26,6 +26,7 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
     watch,
     setValue,
     isSuccess,
+    lastSubmittedValues,
   } = useServerFormState(saveTenant, tenant);
   const { toast } = useToast();
 
@@ -44,13 +45,14 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
 
   useEffect(() => {
     if (isSuccess) {
+      const submittedName = lastSubmittedValues?.name || watch('name') || tenant?.name || '';
       toast({
         title: tenant ? 'Store Updated' : 'Store Created',
-        description: `The store "${watch('name')}" has been saved successfully.`,
+        description: `The store "${submittedName}" has been saved successfully.`,
       });
       onSuccess();
     }
-  }, [isSuccess, onSuccess, tenant, watch, toast]);
+  }, [isSuccess, onSuccess, tenant, watch, toast, lastSubmittedValues]);
 
   return (
     <div className="space-y-6">

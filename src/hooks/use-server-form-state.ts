@@ -16,6 +16,7 @@ export function useServerFormState<TFieldValues extends FieldValues>(
   formAction: (payload: FormData) => void;
   formErrors: Record<keyof TFieldValues, string[]>;
   isSuccess: boolean;
+  lastSubmittedValues?: Partial<TFieldValues> | null;
 } {
   const [state, formAction] = useActionState(action, {
     error: undefined,
@@ -25,6 +26,7 @@ export function useServerFormState<TFieldValues extends FieldValues>(
 
   const [isSuccess, setIsSuccess] = useState(false);
   const lastSuccessStateRef = useRef<any>(null);
+  const lastSubmittedValuesRef = useRef<Partial<TFieldValues> | null>(null);
 
   const form = useForm<TFieldValues>({
     defaultValues: initialData as any,
@@ -60,14 +62,24 @@ export function useServerFormState<TFieldValues extends FieldValues>(
 
   return {
     ...form,
-    formState: {isSubmitting, isSuccess},
+  // `formState` intentionally includes only a subset used by callers here.
+  // Cast to `any` to avoid TypeScript mismatch with react-hook-form's detailed FormState type.
+  formState: { isSubmitting, isSuccess } as any,
     formAction: (payload: FormData) => {
       // When a new action is dispatched, clear the success flag and the reference to the last success state.
       setIsSuccess(false);
       lastSuccessStateRef.current = null;
+      // Capture the current form values so callers can reference them after a reset.
+      try {
+        // @ts-ignore - useForm provides getValues
+        lastSubmittedValuesRef.current = form.getValues ? form.getValues() : null;
+      } catch (e) {
+        lastSubmittedValuesRef.current = null;
+      }
       formAction(payload);
     },
     formErrors,
     isSuccess,
+    lastSubmittedValues: lastSubmittedValuesRef.current,
   };
 }
