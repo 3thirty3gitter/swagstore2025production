@@ -1,47 +1,24 @@
-﻿'use client';
+﻿import OrdersTable from '@/components/admin/orders-table';
+import { getAdminApp } from '@/lib/firebase-admin';
 
-import { useEffect, useState } from 'react';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { useFirebase } from '@/firebase';
-import OrdersTable from '@/components/admin/orders-table';
-import { Loader2 } from 'lucide-react';
+export const dynamic = 'force-dynamic';
 
-export default function OrdersPage() {
-  const { firestore } = useFirebase();
-  const [orders, setOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function OrdersPage() {
+  const { db } = getAdminApp();
+  
+  let orders: any[] = [];
 
-  useEffect(() => {
-    fetchOrders();
-  }, [firestore]);
-
-  const fetchOrders = async () => {
-    if (!firestore) return;
-
-    try {
-      const ordersQuery = query(
-        collection(firestore, 'orders'),
-        orderBy('createdAt', 'desc')
-      );
-      const querySnapshot = await getDocs(ordersQuery);
-      const ordersData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setOrders(ordersData);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+  try {
+    const ordersSnapshot = await db.collection('orders')
+      .orderBy('createdAt', 'desc')
+      .get();
+      
+    orders = ordersSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error('Error fetching orders:', error);
   }
 
   return (
