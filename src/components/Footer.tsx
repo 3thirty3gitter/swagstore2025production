@@ -5,11 +5,11 @@ import SiteLogo from '@/components/ui/SiteLogo';
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-muted/30 py-8">
+  <footer className="border-t bg-muted/30 py-12">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center space-x-3 mb-4 md:mb-0">
-            <div className="h-8">
+          <div className="flex items-center space-x-3 mb-6 md:mb-0">
+            <div className="h-12">
               <SiteLogo />
             </div>
             <div className="flex flex-col">
