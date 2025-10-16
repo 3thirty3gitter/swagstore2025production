@@ -116,7 +116,7 @@ export default function RootLayout({
       <body className={inter.className}>
   <FirebaseClientProvider>
           <header className="w-full border-b bg-white relative z-50">
-            <div className="max-w-7xl mx-auto px-4 py-3 flex items-center">
+            <div className="max-w-7xl mx-auto px-4 py-4 md:py-4 flex items-center" style={{ minHeight: 64 }}>
               <div className="z-50 relative">
                 <SiteLogo />
               </div>
