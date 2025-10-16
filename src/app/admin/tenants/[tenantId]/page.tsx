@@ -1,45 +1,60 @@
-'use client';
-
-import { notFound, useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TenantProductList } from "@/components/admin/tenant-product-list";
-import { ArrowLeft, ExternalLink, Edit, Loader2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, Edit } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { Tenant, Product } from "@/lib/types";
-import { useFirebase } from "@/firebase";
-import { useDoc } from "@/firebase/firestore/use-doc";
-import { useCollection } from "@/firebase/firestore/use-collection";
-import { doc, collection } from "firebase/firestore";
+import { getAdminApp } from "@/lib/firebase-admin";
 
-export default function TenantDetailPage() {
-    const { firestore } = useFirebase();
-    const params = useParams();
-    const tenantId = params.tenantId as string;
+// Force dynamic rendering for fresh data
+export const dynamic = 'force-dynamic';
 
-    const { data: tenant, isLoading: tenantLoading } = useDoc<Tenant>(
-        firestore ? doc(firestore, 'tenants', tenantId) : null
-    );
+interface PageProps {
+    params: Promise<{ tenantId: string }>;
+}
 
-    const { data: allProducts, isLoading: productsLoading } = useCollection<Product>(
-        firestore ? collection(firestore, 'products') : null
-    );
-    
-    const isLoading = tenantLoading || productsLoading;
+async function getTenantDetails(tenantId: string) {
+    try {
+        const { db } = getAdminApp();
+        
+        const [tenantDoc, productsSnapshot] = await Promise.all([
+            db.collection('tenants').doc(tenantId).get(),
+            db.collection('products').get(),
+        ]);
 
-    if (isLoading) {
-        return (
-          <div className="flex justify-center items-center h-full">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
-        );
+        if (!tenantDoc.exists) {
+            return null;
+        }
+
+        const tenant: Tenant = {
+            id: tenantDoc.id,
+            ...tenantDoc.data()
+        } as Tenant;
+
+        const allProducts: Product[] = productsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        } as Product));
+
+        const tenantProducts = allProducts.filter(p => p.tenantIds?.includes(tenantId));
+
+        return { tenant, tenantProducts };
+    } catch (error) {
+        console.error('Error fetching tenant details:', error);
+        return null;
     }
-    
-    if (!tenant) {
+}
+
+export default async function TenantDetailPage({ params }: PageProps) {
+    const { tenantId } = await params;
+    const data = await getTenantDetails(tenantId);
+
+    if (!data) {
         notFound();
     }
-    
-    const tenantProducts = allProducts?.filter(p => p.tenantIds.includes(tenant.id)) || [];
+
+    const { tenant, tenantProducts } = data;
 
     return (
         <div className="space-y-8">
