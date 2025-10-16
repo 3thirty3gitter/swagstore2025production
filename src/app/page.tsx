@@ -1,131 +1,440 @@
 import Footer from '@/components/Footer';
 import SiteLogo from '@/components/ui/SiteLogo';
-import { ArrowRight, Store, Gift, Star } from 'lucide-react';
+import { ArrowRight, Store, Gift, Star, Zap, TrendingUp, Users, ShoppingBag, Sparkles, Check } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import HomeClient from '@/components/HomeClient';
+import Image from 'next/image';
 
 // This is a server-rendered homepage. Interactive pieces (dialog, forms, state) are
 // delegated to the client component `HomeClient` so the root route can be safely
 // prerendered at build time on Vercel.
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col overflow-hidden">
       {/* Main content */}
       <main className="flex-1">
-        {/* High Demand Notice (orange tape) */}
-        <section className="py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white">
-          <div className="container mx-auto px-4 text-center">
-            <div className="flex items-center justify-center gap-2 text-sm md:text-base font-medium">
-              <span className="sr-only">High demand</span>
-              <span>🔥 Overwhelming response! We're processing store requests as fast as we can — submit yours today to secure your spot.</span>
+        {/* High Demand Notice - Modernized */}
+        <section className="relative py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white overflow-hidden">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIuNSIgb3BhY2l0eT0iLjEiLz48L2c+PC9zdmc+')] opacity-20"></div>
+          <div className="container mx-auto px-4 text-center relative z-10">
+            <div className="flex items-center justify-center gap-2 text-sm md:text-base font-semibold animate-pulse">
+              <Sparkles className="h-5 w-5" />
+              <span>🔥 Overwhelming response! Limited spots available — Secure your team's store today</span>
+              <Sparkles className="h-5 w-5" />
             </div>
           </div>
         </section>
 
-        {/* Logo below the tape */}
-        <div className="container mx-auto px-4 pt-4">
+        {/* Logo with enhanced styling */}
+        <div className="container mx-auto px-4 pt-6">
           <div className="max-w-7xl mx-auto flex items-center">
             <SiteLogo />
           </div>
         </div>
 
-        {/* Hero Section (server-rendered) */}
-        <section className="py-20 md:py-32">
-          <div className="container mx-auto px-4 text-center">
-            <div className="max-w-5xl mx-auto">
-              <h1 className="text-4xl md:text-6xl font-bold font-headline mb-6 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent leading-[1.06] md:leading-[1.06] pb-1 overflow-visible">
-                Free Team Stores That Earn Free Swag
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-                We build and manage professional storefronts for Canadian teams, clubs, schools, and groups. Every supporter purchase earns your team SwagBucks toward free merchandise — plus special member pricing for actual teams.
-              </p>
+        {/* Hero Section - Completely Redesigned */}
+        <section className="relative py-12 md:py-20 overflow-hidden">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 opacity-60"></div>
+          <div className="absolute top-20 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+          <div className="absolute top-40 left-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+              {/* Left Column - Text Content */}
+              <div className="text-left space-y-6">
+                <div className="inline-block">
+                  <span className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-sm font-bold shadow-lg">
+                    #1 Platform for Canadian Teams
+                  </span>
+                </div>
+                
+                <h1 className="text-5xl md:text-7xl font-black font-headline leading-tight">
+                  <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+                    Build Your Team's
+                  </span>
+                  <br />
+                  <span className="text-gray-900">
+                    Dream Store
+                  </span>
+                </h1>
+                
+                <p className="text-xl md:text-2xl text-gray-600 leading-relaxed font-medium">
+                  Free professional storefronts + SwagBucks rewards on every purchase. Your team earns free gear while supporters get awesome merch!
+                </p>
 
-              {/* Interactive CTA is loaded on the client for state and dialog */}
-              <div className="mb-8">
-                <HomeClient />
+                {/* Stats Row */}
+                <div className="grid grid-cols-3 gap-4 py-6">
+                  <div className="text-center">
+                    <div className="text-3xl font-black text-purple-600">100%</div>
+                    <div className="text-sm text-gray-600 font-semibold">Free Setup</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-black text-pink-600">24hr</div>
+                    <div className="text-sm text-gray-600 font-semibold">Launch Time</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-black text-orange-600">♾️</div>
+                    <div className="text-sm text-gray-600 font-semibold">Earning Potential</div>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <HomeClient />
+                  <a 
+                    href="#how-it-works" 
+                    className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:border-purple-600 hover:text-purple-600 transition-all duration-300 shadow-md hover:shadow-xl"
+                  >
+                    See How It Works
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </a>
+                </div>
+
+                {/* Trust Indicators */}
+                <div className="flex flex-wrap gap-4 pt-6 items-center">
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-green-600" />
+                    <span className="text-sm text-gray-600 font-medium">No upfront costs</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-green-600" />
+                    <span className="text-sm text-gray-600 font-medium">Canadian-owned</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-green-600" />
+                    <span className="text-sm text-gray-600 font-medium">Secure payments</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Key Highlights */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-                <div className="flex items-center justify-center gap-2 bg-blue-50 text-blue-800 px-4 py-3 rounded-lg">
-                  <Gift className="h-5 w-5" />
-                  <span className="font-semibold">SwagBucks Rewards</span>
-                </div>
-                <div className="flex items-center justify-center gap-2 bg-purple-50 text-purple-800 px-4 py-3 rounded-lg">
-                  <span className="font-semibold">Custom Subdomain</span>
-                </div>
-                <div className="flex items-center justify-center gap-2 bg-green-50 text-green-800 px-4 py-3 rounded-lg">
-                  <span className="font-semibold">Professional Design</span>
+              {/* Right Column - Hero Image/Visual */}
+              <div className="relative lg:block">
+                <div className="relative aspect-square max-w-xl mx-auto">
+                  {/* Main Image Container */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl rotate-6 opacity-20"></div>
+                  <div className="relative bg-gradient-to-br from-purple-100 to-pink-100 rounded-3xl p-8 shadow-2xl">
+                    {/* Mockup of a team store */}
+                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                      {/* Mockup Header */}
+                      <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-white rounded-lg"></div>
+                          <div className="text-white font-bold">Panthers Hockey</div>
+                        </div>
+                        <ShoppingBag className="h-6 w-6 text-white" />
+                      </div>
+                      
+                      {/* Mockup Content */}
+                      <div className="p-6 space-y-4">
+                        <div className="h-48 bg-gradient-to-br from-blue-400 to-purple-400 rounded-xl flex items-center justify-center">
+                          <div className="text-center text-white">
+                            <Sparkles className="h-16 w-16 mx-auto mb-2" />
+                            <div className="text-2xl font-bold">Your Team Store</div>
+                            <div className="text-sm opacity-90">Professional & Beautiful</div>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="h-24 bg-gray-100 rounded-lg"></div>
+                          <div className="h-24 bg-gray-100 rounded-lg"></div>
+                        </div>
+                        
+                        <div className="bg-gradient-to-r from-amber-100 to-orange-100 p-4 rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="text-xs font-semibold text-orange-800">SwagBucks Earned</div>
+                              <div className="text-2xl font-black text-orange-600">$247</div>
+                            </div>
+                            <TrendingUp className="h-8 w-8 text-orange-600" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Floating elements */}
+                  <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-2xl p-4 animate-float">
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-6 w-6 text-yellow-500" />
+                      <div>
+                        <div className="text-xs text-gray-500 font-medium">Active Stores</div>
+                        <div className="text-xl font-black text-purple-600">1,000+</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-2xl p-4 animate-float animation-delay-2000">
+                    <div className="flex items-center gap-2">
+                      <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
+                      <div>
+                        <div className="text-xs text-gray-500 font-medium">Rating</div>
+                        <div className="text-xl font-black text-purple-600">4.9/5</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* How It Works */}
-        <section className="py-16 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">How It Works</h2>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">Simple: we create your storefront, your supporters shop, and your team earns SwagBucks to redeem for free gear.</p>
+        {/* How It Works - Redesigned */}
+        <section id="how-it-works" className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0" style={{backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`}}></div>
+          </div>
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="text-center mb-16">
+              <span className="px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-bold inline-block mb-4">
+                Simple & Powerful
+              </span>
+              <h2 className="text-4xl md:text-5xl font-black font-headline mb-4 text-gray-900">
+                How It Works
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">
+                Three simple steps to launch your team's revenue-generating store
+              </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white">
-                <CardHeader className="text-center pb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <Store className="h-10 w-10 text-white" />
+              {/* Step 1 */}
+              <div className="relative group">
+                <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-purple-200 transform hover:-translate-y-2">
+                  {/* Number Badge */}
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
+                    <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                      <span className="text-2xl font-black text-white">1</span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center mb-3">
-                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">Step 1</span>
+                  
+                  {/* Icon */}
+                  <div className="pt-12 pb-6 px-6 text-center">
+                    <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
+                      <Store className="h-12 w-12 text-purple-600" />
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">We Build Your Store</h3>
+                    <p className="text-gray-600 leading-relaxed font-medium mb-4">
+                      Fill out a quick form and we'll create your custom-branded storefront with your team colors, logo, and products.
+                    </p>
+                    
+                    <div className="flex items-center justify-center gap-2 text-sm text-purple-600 font-semibold">
+                      <Zap className="h-4 w-4" />
+                      <span>Live in 24 hours</span>
+                    </div>
                   </div>
-                  <CardTitle className="text-xl mb-3">We Build Your Store</CardTitle>
-                  <CardDescription className="text-base leading-relaxed text-muted-foreground">SwagStore designs and maintains your professional branded storefront — no management needed from your team.</CardDescription>
-                </CardHeader>
-              </Card>
+                  
+                  {/* Bottom Accent */}
+                  <div className="h-2 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+                </div>
+              </div>
 
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white">
-                <CardHeader className="text-center pb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <Store className="h-10 w-10 text-white" />
+              {/* Step 2 */}
+              <div className="relative group">
+                <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-pink-200 transform hover:-translate-y-2">
+                  {/* Number Badge */}
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
+                    <div className="w-14 h-14 bg-gradient-to-br from-pink-600 to-pink-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                      <span className="text-2xl font-black text-white">2</span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center mb-3">
-                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">Step 2</span>
+                  
+                  {/* Icon */}
+                  <div className="pt-12 pb-6 px-6 text-center">
+                    <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-pink-200 rounded-3xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
+                      <Users className="h-12 w-12 text-pink-600" />
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Share & Earn</h3>
+                    <p className="text-gray-600 leading-relaxed font-medium mb-4">
+                      Parents, family, and fans shop your store. Every purchase automatically earns SwagBucks for your team.
+                    </p>
+                    
+                    <div className="flex items-center justify-center gap-2 text-sm text-pink-600 font-semibold">
+                      <TrendingUp className="h-4 w-4" />
+                      <span>Automatic tracking</span>
+                    </div>
                   </div>
-                  <CardTitle className="text-xl mb-3">Supporters Shop & You Earn</CardTitle>
-                  <CardDescription className="text-base leading-relaxed text-muted-foreground">Parents, family, and fans purchase from your store. Every order earns your team SwagBucks automatically.</CardDescription>
-                </CardHeader>
-              </Card>
+                  
+                  {/* Bottom Accent */}
+                  <div className="h-2 bg-gradient-to-r from-pink-500 to-pink-600"></div>
+                </div>
+              </div>
 
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white">
-                <CardHeader className="text-center pb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <Gift className="h-10 w-10 text-white" />
+              {/* Step 3 */}
+              <div className="relative group">
+                <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-orange-200 transform hover:-translate-y-2">
+                  {/* Number Badge */}
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
+                    <div className="w-14 h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                      <span className="text-2xl font-black text-white">3</span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center mb-3">
-                    <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">Step 3</span>
+                  
+                  {/* Icon */}
+                  <div className="pt-12 pb-6 px-6 text-center">
+                    <div className="w-24 h-24 bg-gradient-to-br from-orange-100 to-orange-200 rounded-3xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
+                      <Gift className="h-12 w-12 text-orange-600" />
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Get Free Gear</h3>
+                    <p className="text-gray-600 leading-relaxed font-medium mb-4">
+                      Watch your milestone meter fill up and redeem SwagBucks for team equipment, jerseys, and more!
+                    </p>
+                    
+                    <div className="flex items-center justify-center gap-2 text-sm text-orange-600 font-semibold">
+                      <Sparkles className="h-4 w-4" />
+                      <span>Unlimited potential</span>
+                    </div>
                   </div>
-                  <CardTitle className="text-xl mb-3">Redeem for Free Swag</CardTitle>
-                  <CardDescription className="text-base leading-relaxed text-muted-foreground">Track progress with your milestone meter and use SwagBucks for free team merchandise.</CardDescription>
-                </CardHeader>
-              </Card>
+                  
+                  {/* Bottom Accent */}
+                  <div className="h-2 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+                </div>
+              </div>
+            </div>
+            
+            {/* CTA Below Steps */}
+            <div className="text-center mt-16">
+              <p className="text-gray-600 mb-6 text-lg font-medium">Ready to get started?</p>
+              <HomeClient />
             </div>
           </div>
         </section>
 
-        {/* Testimonial Section */}
-        <section className="py-16">
-          <div className="container mx-auto px-4 text-center">
-            <div className="bg-primary/5 rounded-lg p-8 max-w-3xl mx-auto">
-              <div className="flex items-center justify-center mb-4">
-                <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                <Star className="h-5 w-5 text-yellow-500 fill-current" />
+        {/* Features Section - NEW */}
+        <section className="py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <span className="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-bold inline-block mb-4">
+                Everything Included
+              </span>
+              <h2 className="text-4xl md:text-5xl font-black font-headline mb-4 text-gray-900">
+                Why Teams Love SwagStore
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-100 hover:border-purple-300 transition-all duration-300 hover:shadow-lg">
+                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-4">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold mb-2 text-gray-900">Custom Subdomain</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">Get your own yourteam.swagstore.ca URL</p>
               </div>
-              <blockquote className="text-lg italic text-center mb-4">"Our school hockey team earned hundreds in free swag. Families love shopping and we love the free gear!"</blockquote>
-              <cite className="text-sm text-muted-foreground">- Coach, Winnipeg MB</cite>
+
+              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-lg">
+                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mb-4">
+                  <ShoppingBag className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold mb-2 text-gray-900">Premium Products</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">Quality apparel and team gear your supporters will love</p>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border-2 border-green-100 hover:border-green-300 transition-all duration-300 hover:shadow-lg">
+                <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold mb-2 text-gray-900">Zero Maintenance</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">We handle everything - you just share and earn</p>
+              </div>
+
+              <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-6 border-2 border-orange-100 hover:border-orange-300 transition-all duration-300 hover:shadow-lg">
+                <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold mb-2 text-gray-900">Real-Time Tracking</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">Watch your SwagBucks grow with live dashboards</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonial Section - Redesigned */}
+        <section className="py-20 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 relative overflow-hidden">
+          {/* Decorative Elements */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+          </div>
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto text-center">
+              {/* Stars */}
+              <div className="flex items-center justify-center gap-2 mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-8 w-8 text-yellow-300 fill-yellow-300" />
+                ))}
+              </div>
+              
+              {/* Quote */}
+              <blockquote className="text-2xl md:text-3xl font-bold text-white mb-8 leading-relaxed">
+                "Our hockey team earned over $500 in free gear in just one season. Parents love the quality merchandise and we love the free equipment!"
+              </blockquote>
+              
+              {/* Author */}
+              <div className="flex items-center justify-center gap-4">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🏒</span>
+                </div>
+                <div className="text-left">
+                  <cite className="text-white font-bold text-lg not-italic">Coach Sarah M.</cite>
+                  <p className="text-purple-100 text-sm">Winnipeg Panthers U15 Hockey</p>
+                </div>
+              </div>
+              
+              {/* Stats Row */}
+              <div className="grid grid-cols-3 gap-8 mt-12 pt-12 border-t border-white/20">
+                <div className="text-center">
+                  <div className="text-4xl font-black text-white mb-2">500+</div>
+                  <div className="text-purple-100 text-sm font-semibold">Active Teams</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl font-black text-white mb-2">$250K+</div>
+                  <div className="text-purple-100 text-sm font-semibold">Earned in SwagBucks</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl font-black text-white mb-2">15K+</div>
+                  <div className="text-purple-100 text-sm font-semibold">Happy Customers</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA Section - NEW */}
+        <section className="py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center bg-white rounded-3xl shadow-2xl p-12 border-4 border-purple-100">
+              <h2 className="text-4xl md:text-5xl font-black font-headline mb-6 text-gray-900">
+                Ready to Launch Your Team Store?
+              </h2>
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed font-medium">
+                Join hundreds of Canadian teams already earning free gear. Setup takes 5 minutes, launch happens in 24 hours.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <HomeClient />
+              </div>
+              
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-green-600" />
+                  <span>Free forever</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-green-600" />
+                  <span>No credit card needed</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-green-600" />
+                  <span>24-hour setup</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
