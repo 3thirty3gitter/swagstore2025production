@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
-import SiteLogo from '@/components/ui/SiteLogo';
+// SiteLogo intentionally not rendered in the global header so pages can place it when needed
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -116,10 +116,8 @@ export default function RootLayout({
       <body className={inter.className}>
   <FirebaseClientProvider>
           <header className="w-full border-b bg-white relative z-50">
-            <div className="max-w-7xl mx-auto px-4 py-4 md:py-4 flex items-center" style={{ minHeight: 64 }}>
-              <div className="z-50 relative">
-                <SiteLogo />
-              </div>
+            <div className="max-w-7xl mx-auto px-4 py-0 flex items-center" style={{ minHeight: 0 }}>
+              {/* Header content (nav, account links) can be placed here. Logo is rendered on pages that need it (for example, below the orange tape on the home page). */}
             </div>
           </header>
           {children}

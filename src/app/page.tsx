@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import Footer from '@/components/Footer';
+import SiteLogo from '@/components/ui/SiteLogo';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +29,7 @@ export default function HomePage() {
 
       {/* Main content */}
       <main className="flex-1">
-        {/* High Demand Notice */}
+        {/* High Demand Notice (orange tape) */}
         <section className="py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white">
           <div className="container mx-auto px-4 text-center">
             <div className="flex items-center justify-center gap-2 text-sm md:text-base font-medium">
@@ -38,6 +39,13 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Logo below the tape */}
+        <div className="container mx-auto px-4 pt-4">
+          <div className="max-w-7xl mx-auto flex items-center">
+            <SiteLogo />
+          </div>
+        </div>
 
         {/* Hero Section */}
         <section className="py-20 md:py-32">
