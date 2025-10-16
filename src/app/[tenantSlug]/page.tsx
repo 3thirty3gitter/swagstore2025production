@@ -1,10 +1,7 @@
 import { notFound } from "next/navigation";
-import { HeroSection } from "@/components/store/sections/hero-section";
-import { ImageWithTextSection } from "@/components/store/sections/image-with-text-section";
-import { SwagBucksTrackerSection } from "@/components/store/sections/swag-bucks-tracker";
-import { ProductListSection } from "@/components/store/sections/product-list-section";
 import type { Tenant } from "@/lib/types";
 import { getAdminApp } from "@/lib/firebase-admin";
+import { TenantPageContent } from "@/components/store/tenant-page-content";
 
 // Force dynamic rendering for fresh tenant data
 export const dynamic = 'force-dynamic';
@@ -42,24 +39,5 @@ export default async function TenantPage({ params }: PageProps) {
     notFound();
   }
 
-  const homePage = tenant.website?.pages.find(p => p.path === '/');
-
-  return (
-    <div className="space-y-16 md:space-y-24">
-      {homePage?.sections.map(section => {
-        switch (section.type) {
-          case 'Hero Section':
-            return <HeroSection key={section.id} sectionId={section.id} {...section.props} />;
-          case 'Image With Text':
-            return <ImageWithTextSection key={section.id} {...section.props} />;
-          case 'Swag Bucks Tracker':
-            return <SwagBucksTrackerSection key={section.id} tenantId={tenant.id} {...section.props} />;
-          case 'Product List':
-            return <ProductListSection key={section.id} tenantId={tenant.id} {...section.props} />;
-          default:
-            return null;
-        }
-      })}
-    </div>
-  );
+  return <TenantPageContent tenant={tenant} />;
 }
