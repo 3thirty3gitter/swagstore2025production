@@ -46,26 +46,35 @@ export default function TenantLayout({
   const { data: tenants, isLoading } = useCollection<Tenant>(tenantsQuery);
   const tenant = tenants?.[0];
   const [serverTenant, setServerTenant] = useState<Tenant | null>(null);
+  const [isLoadingServerTenant, setIsLoadingServerTenant] = useState(false);
 
   // If client firestore isn't available (firebase hasn't initialized yet), fetch tenant from server admin API.
   useEffect(() => {
     let cancelled = false;
     async function fetchServerTenant() {
-      if (firestore || !tenantSlug) return;
+      if (firestore || !tenantSlug || serverTenant) return;
+      setIsLoadingServerTenant(true);
       try {
         const res = await fetch(`/api/admin/tenant?slug=${encodeURIComponent(tenantSlug)}`);
-        if (!res.ok) return;
+        if (!res.ok) {
+          if (!cancelled) setIsLoadingServerTenant(false);
+          return;
+        }
         const json = await res.json();
-        if (!cancelled) setServerTenant(json as Tenant);
+        if (!cancelled) {
+          setServerTenant(json as Tenant);
+          setIsLoadingServerTenant(false);
+        }
       } catch (e) {
-        // swallow
+        if (!cancelled) setIsLoadingServerTenant(false);
       }
     }
     fetchServerTenant();
     return () => { cancelled = true; };
-  }, [firestore, tenantSlug]);
+  }, [firestore, tenantSlug, serverTenant]);
 
   const effectiveTenant = tenant || serverTenant || null;
+  const effectiveLoading = isLoading || isLoadingServerTenant;
   
   const [logoWidth, setLogoWidth] = useState(tenant?.website?.header?.logoWidth || 96);
   const [isEditor, setIsEditor] = useState(false);
@@ -148,7 +157,7 @@ export default function TenantLayout({
   }, [isEditor, logoWidth]);
 
 
-  if (isLoading) {
+  if (effectiveLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -156,7 +165,7 @@ export default function TenantLayout({
     );
   }
 
-  if (!tenant) {
+  if (!effectiveTenant) {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <header className="border-b bg-card sticky top-0 z-50">
@@ -176,9 +185,9 @@ export default function TenantLayout({
     );
   }
 
-  const headerLayout = tenant.website?.header?.layout || 'centered';
-  const menuItems = tenant.website?.header?.menuItems || [];
-  const logoUrl = tenant.website?.header?.logoUrl;
+  const headerLayout = effectiveTenant.website?.header?.layout || 'centered';
+  const menuItems = effectiveTenant.website?.header?.menuItems || [];
+  const logoUrl = effectiveTenant.website?.header?.logoUrl;
   
   const navAlignment = headerLayout === 'left-aligned' ? 'ml-6' : 'justify-center';
   const logoAlignment = headerLayout === 'centered' ? 'absolute left-1/2 -translate-x-1/2' : '';
@@ -191,10 +200,10 @@ export default function TenantLayout({
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex min-h-16 relative py-2">
             <div className={`flex items-center ${headerLayout === 'left-aligned' ? '' : 'flex-1'}`}>
-                <Link href={`/${tenant.slug}`} className={cn(`flex items-center gap-2 ${logoAlignment}`, isEditor && 'pointer-events-none')}>
+                <Link href={`/${effectiveTenant.slug}`} className={cn(`flex items-center gap-2 ${logoAlignment}`, isEditor && 'pointer-events-none')}>
                   {logoUrl ? (
                     <div ref={logoRef} className={cn("relative group", isEditor && "pointer-events-auto")} style={{ width: `${logoWidth}px`, height: `${logoWidth / 2}px` }}>
-                       <Image src={logoUrl} alt={`${tenant.storeName} logo`} fill style={{objectFit: 'contain'}} />
+                       <Image src={logoUrl} alt={`${effectiveTenant.storeName} logo`} fill style={{objectFit: 'contain'}} />
                        {isEditor && (
                         <>
                            <div className="absolute inset-0 border-2 border-dashed border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -210,7 +219,7 @@ export default function TenantLayout({
                       <div className="bg-primary text-primary-foreground p-2 rounded-lg">
                         <Store className="h-6 w-6" />
                       </div>
-                      <span className="text-xl font-bold font-headline">{tenant.storeName}</span>
+                      <span className="text-xl font-bold font-headline">{effectiveTenant.storeName}</span>
                     </>
                   )}
                 </Link>
@@ -241,7 +250,7 @@ export default function TenantLayout({
       </main>
       <footer className="border-t">
         <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} {tenant.storeName}. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {effectiveTenant.storeName}. All rights reserved.</p>
         </div>
       </footer>
     </div>
