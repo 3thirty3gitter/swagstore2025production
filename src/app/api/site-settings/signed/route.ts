@@ -68,26 +68,46 @@ export async function GET() {
       return NextResponse.json({ signedUrl: null });
     }
 
-    const bucket = storage.bucket(bucketName);
+    // Build candidate bucket names to try
+    const bucketsToTry: string[] = [];
+    if (bucketName) bucketsToTry.push(bucketName);
+    // If bucket has .firebasestorage.app, try .appspot.com variant
+    if (bucketName && bucketName.includes('.firebasestorage.app')) {
+      bucketsToTry.push(bucketName.replace('.firebasestorage.app', '.appspot.com'));
+    }
+    // try short name (first segment) + .appspot.com
+    if (bucketName && bucketName.includes('.')) {
+      const short = bucketName.split('.')[0];
+      bucketsToTry.push(`${short}.appspot.com`);
+    }
+    // also include env fallback
+    if (process.env.FIREBASE_STORAGE_BUCKET) bucketsToTry.push(process.env.FIREBASE_STORAGE_BUCKET);
 
-    // Try several decoded variants to find the real file
-    const candidates = tryDecodeVariants(filePath);
     let file = null;
-    for (const candidate of candidates) {
-      const f = bucket.file(candidate);
-      try {
-        const [exists] = await f.exists();
-        if (exists) {
-          file = f;
-          break;
+    for (const bName of bucketsToTry) {
+      if (!bName) continue;
+      const b = storage.bucket(bName);
+      const candidates = tryDecodeVariants(filePath);
+      for (const candidate of candidates) {
+        const f = b.file(candidate);
+        try {
+          const [exists] = await f.exists();
+          if (exists) {
+            file = f;
+            break;
+          }
+        } catch (e) {
+          // ignore
         }
-      } catch (e) {
-        // ignore
       }
+      if (file) break;
     }
 
-    // If not found, fall back to the original path
-    if (!file) file = bucket.file(filePath);
+    // If still not found, try the original bucketName directly
+    if (!file) {
+      const b = storage.bucket(bucketName);
+      file = b.file(filePath);
+    }
 
     const [signedUrl] = await file.getSignedUrl({
       action: 'read',
