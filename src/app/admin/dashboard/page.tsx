@@ -1,39 +1,37 @@
-'use client';
-
 import { StatCard } from "@/components/admin/stat-card";
-import { ShoppingBag, Users, Package, Loader2 } from "lucide-react";
-import { useCollection } from "@/firebase/firestore/use-collection";
-import { collection } from "firebase/firestore";
-import { useFirebase } from "@/firebase";
+import { ShoppingBag, Users, Package } from "lucide-react";
+import { getAdminApp } from "@/lib/firebase-admin";
 
-export default function DashboardPage() {
-  const { firestore } = useFirebase();
+// Force dynamic rendering for fresh data
+export const dynamic = 'force-dynamic';
 
-  // Fetch data without admin gating (auth is already bypassed in layout)
-  const { data: products, isLoading: productsLoading } = useCollection(
-    firestore ? collection(firestore, 'products') : null
-  );
-  const { data: tenants, isLoading: tenantsLoading } = useCollection(
-    firestore ? collection(firestore, 'tenants') : null
-  );
-  const { data: orders, isLoading: ordersLoading } = useCollection(
-    firestore ? collection(firestore, 'orders') : null
-  );
+async function getDashboardStats() {
+  try {
+    const { db } = getAdminApp();
+    
+    const [productsSnapshot, tenantsSnapshot, ordersSnapshot] = await Promise.all([
+      db.collection('products').get(),
+      db.collection('tenants').get(),
+      db.collection('orders').get(),
+    ]);
 
-  const isLoading = productsLoading || tenantsLoading || ordersLoading;
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading dashboard data...</span>
-      </div>
-    );
+    return {
+      totalProducts: productsSnapshot.size,
+      totalTenants: tenantsSnapshot.size,
+      totalOrders: ordersSnapshot.size,
+    };
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    return {
+      totalProducts: 0,
+      totalTenants: 0,
+      totalOrders: 0,
+    };
   }
+}
 
-  const totalProducts = products?.length || 0;
-  const totalTenants = tenants?.length || 0;
-  const totalOrders = orders?.length || 0;
+export default async function DashboardPage() {
+  const { totalProducts, totalTenants, totalOrders } = await getDashboardStats();
 
   return (
     <div className="space-y-8">
