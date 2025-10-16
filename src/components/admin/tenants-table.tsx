@@ -71,7 +71,7 @@ export function TenantsTable({tenants}: TenantsTableProps) {
           <TableRow>
             <TableHead>Tenant Name</TableHead>
             <TableHead>Storefront Name</TableHead>
-            <TableHead>Store Slug</TableHead>
+            <TableHead>Subdomain</TableHead>
             <TableHead>
               <span className="sr-only">Actions</span>
             </TableHead>
@@ -89,7 +89,7 @@ export function TenantsTable({tenants}: TenantsTableProps) {
               <TableRow key={tenant.id}>
                 <TableCell className="font-medium">{tenant.name}</TableCell>
                 <TableCell>{tenant.storeName}</TableCell>
-                <TableCell className="font-mono text-sm">/{tenant.slug}</TableCell>
+                <TableCell className="font-mono text-sm text-blue-600">{tenant.subdomain}.swagstore.ca</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

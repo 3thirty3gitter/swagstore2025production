@@ -557,7 +557,7 @@ export function TenantEditor({ tenant }: TenantEditorProps) {
                     <iframe
                         ref={iframeRef}
                         key={iframeKey}
-                        src={`/${tenant.slug}?v=${iframeKey}`}
+                        src={`https://${tenant.subdomain}.swagstore.ca?v=${iframeKey}`}
                         title={`Storefront preview for ${tenant.storeName}`}
                         className="w-full h-full border-0"
                     />

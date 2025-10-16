@@ -93,10 +93,10 @@ export default async function TenantDetailPage({ params }: PageProps) {
                 </Card>
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-base">Store Slug</CardTitle>
+                        <CardTitle className="text-base">Subdomain</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-2xl font-mono text-muted-foreground">/{tenant.slug}</p>
+                        <p className="text-2xl font-mono text-blue-600">{tenant.subdomain}.swagstore.ca</p>
                     </CardContent>
                 </Card>
                 <Card>

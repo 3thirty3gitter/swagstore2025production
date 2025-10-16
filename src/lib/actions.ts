@@ -111,6 +111,7 @@ const tenantFormSchema = z.object({
   name: z.string().min(1, 'Tenant name is required.'),
   storeName: z.string().min(1, 'Storefront name is required.'),
   slug: z.string().min(1, 'Slug is required.'),
+  subdomain: z.string().min(1, 'Subdomain is required.'),
 });
 
 const getDefaultWebsiteData = (): Website => ({

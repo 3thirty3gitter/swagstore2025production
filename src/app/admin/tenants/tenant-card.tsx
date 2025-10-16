@@ -14,7 +14,6 @@ interface TenantCardProps {
 
 export function TenantCard({ tenant, onEdit, onDelete }: TenantCardProps) {
   const subdomainUrl = `https://${tenant.subdomain}.swagstore.ca`;
-  const fallbackUrl = `https://swagstore.ca/${tenant.slug}`;
 
   return (
     <Card>
@@ -40,28 +39,13 @@ export function TenantCard({ tenant, onEdit, onDelete }: TenantCardProps) {
           <div className="flex items-center gap-2">
             <Globe className="w-4 h-4 text-blue-600" />
             <div className="flex-1">
-              <p className="text-sm font-medium">Custom Domain</p>
+              <p className="text-sm font-medium">Storefront URL</p>
               <p className="font-mono text-sm text-blue-600">{subdomainUrl}</p>
             </div>
             <Button
               size="sm"
               variant="ghost"
               onClick={() => window.open(subdomainUrl, '_blank')}
-            >
-              <ExternalLink className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Store className="w-4 h-4 text-gray-600" />
-            <div className="flex-1">
-              <p className="text-sm font-medium">Fallback URL</p>
-              <p className="font-mono text-sm text-gray-600">{fallbackUrl}</p>
-            </div>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => window.open(fallbackUrl, '_blank')}
             >
               <ExternalLink className="w-4 h-4" />
             </Button>
