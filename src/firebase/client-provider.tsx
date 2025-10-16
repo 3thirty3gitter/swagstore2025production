@@ -10,14 +10,13 @@ export function FirebaseClientProvider({
 }: {
   children: ReactNode;
 }) {
-  const [app, setApp] = useState<FirebaseApp | null>(null);
-
-  useEffect(() => {
-    setApp(firebaseApp);
-  }, []);
+  // Initialize the firebase app synchronously from the imported config so
+  // consumers (like useCollection/useDoc) don't see `firestore` as null on
+  // the first render and miss real-time subscriptions.
+  const [app] = useState<FirebaseApp | null>(firebaseApp);
 
   if (!app) {
-    return null; 
+    return null;
   }
 
   return <FirebaseProvider app={app}>{children}</FirebaseProvider>;
