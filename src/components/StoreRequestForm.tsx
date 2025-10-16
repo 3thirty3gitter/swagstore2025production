@@ -208,7 +208,7 @@ export default function StoreRequestForm() {
       <CardHeader>
         <CardTitle className="text-2xl">Request Your Free SwagStore</CardTitle>
         <CardDescription>
-          Fill out this form and we'll set up your custom merchandise store within 24 hours. Serving teams across Canada! 🍁
+          Fill out this form and once your request is approved we will contact you with next steps. Serving teams across Canada! 🍁
         </CardDescription>
       </CardHeader>
       <CardContent>
