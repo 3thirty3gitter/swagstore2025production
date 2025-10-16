@@ -1,32 +1,42 @@
-'use client';
-
-import { notFound, useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import { HeroSection } from "@/components/store/sections/hero-section";
 import { ImageWithTextSection } from "@/components/store/sections/image-with-text-section";
 import { SwagBucksTrackerSection } from "@/components/store/sections/swag-bucks-tracker";
 import { ProductListSection } from "@/components/store/sections/product-list-section";
 import type { Tenant } from "@/lib/types";
-import { Loader2 } from "lucide-react";
-import { useCollection } from "@/firebase/firestore/use-collection";
-import { collection, query, where } from "firebase/firestore";
-import { useFirebase } from "@/firebase";
+import { getAdminApp } from "@/lib/firebase-admin";
 
-export default function TenantPage() {
-  const params = useParams();
-  const tenantSlug = params.tenantSlug as string;
-  const { firestore } = useFirebase();
+// Force dynamic rendering for fresh tenant data
+export const dynamic = 'force-dynamic';
 
-  const tenantsQuery = firestore ? query(collection(firestore, 'tenants') as any, where('slug', '==', tenantSlug)) as any : null;
-  const { data: tenants, isLoading: tenantLoading } = useCollection<Tenant>(tenantsQuery);
-  const tenant = tenants?.[0];
-  
-  if (tenantLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+interface PageProps {
+  params: Promise<{ tenantSlug: string }>;
+}
+
+async function getTenantBySlug(slug: string): Promise<Tenant | null> {
+  try {
+    const { db } = getAdminApp();
+    const tenantsRef = db.collection('tenants');
+    const snapshot = await tenantsRef.where('slug', '==', slug).limit(1).get();
+    
+    if (snapshot.empty) {
+      return null;
+    }
+
+    const doc = snapshot.docs[0];
+    return {
+      id: doc.id,
+      ...doc.data()
+    } as Tenant;
+  } catch (error) {
+    console.error('Error fetching tenant:', error);
+    return null;
   }
+}
+
+export default async function TenantPage({ params }: PageProps) {
+  const { tenantSlug } = await params;
+  const tenant = await getTenantBySlug(tenantSlug);
 
   if (!tenant) {
     notFound();
