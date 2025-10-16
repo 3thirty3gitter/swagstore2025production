@@ -1,36 +1,42 @@
-'use client';
-
 import { ProductsTable } from "@/components/admin/products-table";
-import { useCollection } from "@/firebase/firestore/use-collection";
-import { useFirebase } from "@/firebase";
-import { collection } from "firebase/firestore";
-import { Loader2 } from "lucide-react";
 import type { Product, Tenant } from "@/lib/types";
+import { getAdminApp } from "@/lib/firebase-admin";
 
-export default function ProductsPage() {
-  const { firestore } = useFirebase();
+// Force dynamic rendering for fresh data
+export const dynamic = 'force-dynamic';
 
-  const { data: allProducts, isLoading: productsLoading } = useCollection<Product>(
-    firestore ? collection(firestore, 'products') as any : null
-  );
+async function getProductsData() {
+  try {
+    const { db } = getAdminApp();
+    
+    const [productsSnapshot, tenantsSnapshot] = await Promise.all([
+      db.collection('products').get(),
+      db.collection('tenants').get(),
+    ]);
 
-  const { data: allTenants, isLoading: tenantsLoading } = useCollection<Tenant>(
-    firestore ? collection(firestore, 'tenants') : null
-  );
+    const products: Product[] = productsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Product));
 
-  const isLoading = productsLoading || tenantsLoading;
+    const tenants: Tenant[] = tenantsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Tenant));
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+    return { products, tenants };
+  } catch (error) {
+    console.error('Error fetching products data:', error);
+    return { products: [], tenants: [] };
   }
+}
+
+export default async function ProductsPage() {
+  const { products, tenants } = await getProductsData();
 
   return (
     <div>
-      <ProductsTable products={allProducts || []} tenants={allTenants || []} />
+      <ProductsTable products={products} tenants={tenants} />
     </div>
   );
 }
