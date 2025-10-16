@@ -44,8 +44,12 @@ export default async function TenantPage({ params }: PageProps) {
   const tenant = await getTenantBySlug(tenantSlug);
 
   if (!tenant) {
-    console.log('[TenantPage] Tenant not found, calling notFound()');
-    notFound();
+    console.log('[TenantPage] Tenant not found on server, returning placeholder - client layout will handle it');
+    // Don't call notFound() - let the client layout handle loading from API
+    // Return a minimal loading state and let client take over
+    return <div className="flex justify-center items-center h-64">
+      <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+    </div>;
   }
 
   console.log('[TenantPage] Rendering content for tenant:', tenant.name);
