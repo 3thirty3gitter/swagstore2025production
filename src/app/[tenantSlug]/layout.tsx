@@ -45,6 +45,27 @@ export default function TenantLayout({
   const tenantsQuery = firestore ? query(collection(firestore, 'tenants') as any, where('slug', '==', tenantSlug)) as any : null;
   const { data: tenants, isLoading } = useCollection<Tenant>(tenantsQuery);
   const tenant = tenants?.[0];
+  const [serverTenant, setServerTenant] = useState<Tenant | null>(null);
+
+  // If client firestore isn't available (firebase hasn't initialized yet), fetch tenant from server admin API.
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchServerTenant() {
+      if (firestore || !tenantSlug) return;
+      try {
+        const res = await fetch(`/api/admin/tenant?slug=${encodeURIComponent(tenantSlug)}`);
+        if (!res.ok) return;
+        const json = await res.json();
+        if (!cancelled) setServerTenant(json as Tenant);
+      } catch (e) {
+        // swallow
+      }
+    }
+    fetchServerTenant();
+    return () => { cancelled = true; };
+  }, [firestore, tenantSlug]);
+
+  const effectiveTenant = tenant || serverTenant || null;
   
   const [logoWidth, setLogoWidth] = useState(tenant?.website?.header?.logoWidth || 96);
   const [isEditor, setIsEditor] = useState(false);
@@ -59,10 +80,11 @@ export default function TenantLayout({
   }, []);
 
   useEffect(() => {
-    if (tenant?.website?.header?.logoWidth) {
-      setLogoWidth(tenant.website.header.logoWidth);
+    const t = effectiveTenant;
+    if (t?.website?.header?.logoWidth) {
+      setLogoWidth(t.website.header.logoWidth);
     }
-  }, [tenant]);
+  }, [effectiveTenant]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
