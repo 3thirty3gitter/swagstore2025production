@@ -17,18 +17,6 @@ export default function TenantsPage() {
   );
   const [localTenants, setLocalTenants] = useState<Tenant[] | null>(null);
 
-  // Debug: show client-side Firebase project id and snapshot events
-  useEffect(() => {
-    try {
-      // eslint-disable-next-line no-console
-      console.log('TenantsPage - firestore:', firestore);
-      // eslint-disable-next-line no-console
-      console.log('TenantsPage - initial tenants:', tenants);
-    } catch (e) {
-      // noop
-    }
-  }, [firestore, tenants]);
-
   useEffect(() => {
     // Initialize local cache when hook provides tenants
     if (tenants) setLocalTenants(tenants);
