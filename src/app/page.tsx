@@ -24,18 +24,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex flex-col">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Store className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold font-headline">SwagStore</span>
-            <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-              🍁 100% Canadian Owned & Operated
-            </Badge>
-          </div>
-        </div>
-      </header>
+      {/* Header removed — layout provides the site header and logo */}
 
       {/* Main content */}
       <main className="flex-1">
