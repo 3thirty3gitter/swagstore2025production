@@ -55,9 +55,25 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
           ? `The store "${submittedName}" has been saved successfully (id: ${createdId}).`
           : `The store "${submittedName}" has been saved successfully.`,
       });
+      // Dispatch a global event so list pages can optimistically show the new tenant.
+      try {
+        if (typeof window !== 'undefined') {
+          const payload = lastActionResult?.tenant || (lastActionResult?.id ? {
+            id: lastActionResult.id,
+            name: submittedName,
+            slug: lastSubmittedValues?.slug || slug,
+            storeName: lastSubmittedValues?.storeName || '',
+          } : null);
+          if (payload) {
+            window.dispatchEvent(new CustomEvent('tenant-created', { detail: payload }));
+          }
+        }
+      } catch (e) {
+        // swallow any errors dispatching the event
+      }
       onSuccess();
     }
-  }, [isSuccess, onSuccess, tenant, watch, toast, lastSubmittedValues]);
+  }, [isSuccess, onSuccess, tenant, watch, toast, lastSubmittedValues, lastActionResult, slug]);
 
   return (
     <div className="space-y-6">

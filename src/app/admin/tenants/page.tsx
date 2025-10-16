@@ -8,12 +8,33 @@ import { useFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import { Loader2, Plus } from 'lucide-react';
 import type { Tenant } from '@/lib/types';
+import { useEffect, useState } from 'react';
 
 export default function TenantsPage() {
   const { firestore } = useFirebase();
   const { data: tenants, isLoading, error } = useCollection<Tenant>(
-    firestore ? collection(firestore, 'tenants') : null
+    firestore ? (collection(firestore, 'tenants') as any) : null
   );
+  const [localTenants, setLocalTenants] = useState<Tenant[] | null>(null);
+
+  useEffect(() => {
+    // Initialize local cache when hook provides tenants
+    if (tenants) setLocalTenants(tenants);
+  }, [tenants]);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      const detail = e.detail as Tenant;
+      setLocalTenants((prev) => {
+        if (!prev) return [detail];
+        // Avoid duplicates
+        if (prev.find((t) => t.id === detail.id)) return prev;
+        return [detail, ...prev];
+      });
+    };
+    window.addEventListener('tenant-created', handler as EventListener);
+    return () => window.removeEventListener('tenant-created', handler as EventListener);
+  }, []);
   
   if (isLoading) {
     return (
@@ -49,7 +70,7 @@ export default function TenantsPage() {
           <p className="text-muted-foreground mt-2">{error.message}</p>
         </div>
       ) : (
-        <TenantCards tenants={tenants || []} />
+        <TenantCards tenants={localTenants || tenants || []} />
       )}
     </div>
   );
