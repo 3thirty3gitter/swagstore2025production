@@ -148,29 +148,20 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <Globe className="h-4 w-4" />
-                Store Preview
+                Store URL Preview
               </CardTitle>
               <CardDescription>
-                Your store will be accessible at these URLs
+                Your store will be accessible at this URL
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent>
               <div className="flex items-center gap-3">
                 <Badge variant="default" className="gap-1">
                   <Store className="h-3 w-3" />
-                  Primary
+                  Store URL
                 </Badge>
-                <code className="text-sm bg-background px-2 py-1 rounded border">
+                <code className="text-sm bg-background px-2 py-1 rounded border font-semibold text-blue-600">
                   https://{slug}.swagstore.ca
-                </code>
-              </div>
-              <div className="flex items-center gap-3">
-                <Badge variant="outline" className="gap-1">
-                  <Globe className="h-3 w-3" />
-                  Fallback
-                </Badge>
-                <code className="text-sm bg-background px-2 py-1 rounded border">
-                  https://swagstore.ca/{slug}
                 </code>
               </div>
             </CardContent>

@@ -138,21 +138,11 @@ export function TenantCards({ tenants }: TenantCardsProps) {
             <div className="space-y-3">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                  <span className="text-xs text-muted-foreground">Primary Domain</span>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                  <span className="text-xs text-muted-foreground">Store URL</span>
                 </div>
                 <p className="text-sm font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded border">
-                  {tenant.slug}.swagstore.ca
-                </p>
-              </div>
-              
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2 h-2 bg-gray-500 rounded-full" />
-                  <span className="text-xs text-muted-foreground">Fallback URL</span>
-                </div>
-                <p className="text-sm font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded border">
-                  swagstore.ca/{tenant.slug}
+                  {tenant.subdomain}.swagstore.ca
                 </p>
               </div>
             </div>
@@ -164,7 +154,7 @@ export function TenantCards({ tenants }: TenantCardsProps) {
                   Edit Website
                 </Button>
               </Link>
-              <Link href={`https://${tenant.slug}.swagstore.ca`} target="_blank">
+              <Link href={`https://${tenant.subdomain}.swagstore.ca`} target="_blank">
                 <Button variant="outline" size="sm" className="h-9 px-3">
                   <ExternalLink className="h-4 w-4" />
                 </Button>

@@ -66,7 +66,7 @@ export default async function TenantDetailPage({ params }: PageProps) {
                 <div className="flex justify-between items-center mt-2">
                     <h1 className="text-3xl font-bold tracking-tight font-headline">{tenant.name}</h1>
                     <div className="flex gap-2">
-                        <Link href={`/${tenant.slug}`} target="_blank">
+                        <Link href={`https://${tenant.subdomain}.swagstore.ca`} target="_blank">
                             <Button variant="outline">
                                 <ExternalLink className="mr-2 h-4 w-4" />
                                 View Storefront
