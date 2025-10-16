@@ -46,8 +46,8 @@ export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
   if (!logo) return null;
 
   return (
-    <div className="h-10 w-auto relative">
-      <Image src={logo} alt="Site logo" fill style={{ objectFit: 'contain' }} sizes="(max-width: 640px) 120px, 220px" />
+    <div className="h-10 w-auto">
+      <Image src={logo} alt="Site logo" width={220} height={40} style={{ objectFit: 'contain' }} />
     </div>
   );
 }
