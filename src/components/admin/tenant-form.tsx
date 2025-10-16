@@ -27,6 +27,7 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
     setValue,
     isSuccess,
     lastSubmittedValues,
+    lastActionResult,
   } = useServerFormState(saveTenant, tenant);
   const { toast } = useToast();
 
@@ -46,9 +47,13 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
   useEffect(() => {
     if (isSuccess) {
       const submittedName = lastSubmittedValues?.name || watch('name') || tenant?.name || '';
+      // If the server returned a created id, include it in the toast for verification.
+      const createdId = !tenant && lastActionResult?.id ? lastActionResult.id : undefined;
       toast({
         title: tenant ? 'Store Updated' : 'Store Created',
-        description: `The store "${submittedName}" has been saved successfully.`,
+        description: createdId
+          ? `The store "${submittedName}" has been saved successfully (id: ${createdId}).`
+          : `The store "${submittedName}" has been saved successfully.`,
       });
       onSuccess();
     }

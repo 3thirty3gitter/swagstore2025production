@@ -17,6 +17,7 @@ export function useServerFormState<TFieldValues extends FieldValues>(
   formErrors: Record<keyof TFieldValues, string[]>;
   isSuccess: boolean;
   lastSubmittedValues?: Partial<TFieldValues> | null;
+  lastActionResult?: any;
 } {
   const [state, formAction] = useActionState(action, {
     error: undefined,
@@ -81,5 +82,7 @@ export function useServerFormState<TFieldValues extends FieldValues>(
     formErrors,
     isSuccess,
     lastSubmittedValues: lastSubmittedValuesRef.current,
+    // Expose the raw last action result from the server so the UI can inspect ids or returned payloads.
+    lastActionResult: state,
   };
 }

@@ -171,15 +171,18 @@ export async function saveTenant(prevState: any, formData: FormData) {
         if (id) {
             const tenantRef = db.collection("tenants").doc(id);
             await tenantRef.set(tenantData, { merge: true });
+            revalidatePath('/admin/tenants');
+            return { success: true, id };
         } else {
             const newTenantData = {
               ...tenantData,
               website: getDefaultWebsiteData(),
             }
-            await db.collection("tenants").add(newTenantData);
+            const docRef = await db.collection("tenants").add(newTenantData);
+            revalidatePath('/admin/tenants');
+            console.log('saveTenant created tenant with id:', docRef.id);
+            return { success: true, id: docRef.id, tenant: { id: docRef.id, ...newTenantData } };
         }
-        revalidatePath('/admin/tenants');
-        return { success: true };
     } catch (e: any) {
         console.error("Error saving tenant:", e);
         return { success: false, error: 'Failed to save tenant. Check permissions and data.' };
