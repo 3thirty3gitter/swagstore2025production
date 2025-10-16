@@ -1,47 +1,27 @@
-'use client';
-
-import { TenantCards } from '@/components/admin/tenant-cards';
+import { TenantCardsWrapper } from '@/components/admin/tenant-cards-wrapper';
 import { Button } from '@/components/ui/button';
 import { TenantFormDialog } from '@/components/admin/tenant-form-dialog';
-import { useCollection } from "@/firebase/firestore/use-collection";
-import { useFirebase } from "@/firebase";
-import { collection } from "firebase/firestore";
-import { Loader2, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import type { Tenant } from '@/lib/types';
-import { useEffect, useState } from 'react';
+import { getAdminApp } from '@/lib/firebase-admin';
 
-export default function TenantsPage() {
-  const { firestore } = useFirebase();
-  const { data: tenants, isLoading, error } = useCollection<Tenant>(
-    firestore ? (collection(firestore, 'tenants') as any) : null
-  );
-  const [localTenants, setLocalTenants] = useState<Tenant[] | null>(null);
+export const dynamic = 'force-dynamic';
 
-  useEffect(() => {
-    // Initialize local cache when hook provides tenants
-    if (tenants) setLocalTenants(tenants);
-  }, [tenants]);
-
-  useEffect(() => {
-    const handler = (e: any) => {
-      const detail = e.detail as Tenant;
-      setLocalTenants((prev) => {
-        if (!prev) return [detail];
-        // Avoid duplicates
-        if (prev.find((t) => t.id === detail.id)) return prev;
-        return [detail, ...prev];
-      });
-    };
-    window.addEventListener('tenant-created', handler as EventListener);
-    return () => window.removeEventListener('tenant-created', handler as EventListener);
-  }, []);
+export default async function TenantsPage() {
+  const { db } = getAdminApp();
   
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-48">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+  let tenants: Tenant[] = [];
+  let error: string | null = null;
+
+  try {
+    const tenantsSnapshot = await db.collection('tenants').get();
+    tenants = tenantsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Tenant));
+  } catch (e: any) {
+    console.error('Error fetching tenants:', e);
+    error = e.message || 'Failed to load tenants';
   }
 
   return (
@@ -67,10 +47,10 @@ export default function TenantsPage() {
       {error ? (
         <div className="text-center py-16 border-2 border-dashed rounded-lg border-destructive">
           <h2 className="text-xl font-semibold text-destructive">Failed to load tenants</h2>
-          <p className="text-muted-foreground mt-2">{error.message}</p>
+          <p className="text-muted-foreground mt-2">{error}</p>
         </div>
       ) : (
-        <TenantCards tenants={localTenants || tenants || []} />
+        <TenantCardsWrapper initialTenants={tenants} />
       )}
     </div>
   );
