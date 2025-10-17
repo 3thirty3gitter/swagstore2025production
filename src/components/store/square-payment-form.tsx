@@ -55,11 +55,16 @@ export default function SquarePaymentForm({
           setSquareSettings(square);
           await initializeSquare(square);
         } else {
-          onPaymentError('Square payment is not configured');
+          setIsLoading(false);
+          onPaymentError('Square payment is not configured. Please contact the store administrator.');
         }
+      } else {
+        setIsLoading(false);
+        onPaymentError('Payment settings not found. Please contact the store administrator.');
       }
     } catch (error) {
       console.error('Error loading Square settings:', error);
+      setIsLoading(false);
       onPaymentError('Failed to load payment settings');
     }
   };
@@ -85,10 +90,12 @@ export default function SquarePaymentForm({
       };
 
       script.onerror = () => {
+        setIsLoading(false);
         onPaymentError('Failed to load Square payment SDK');
       };
     } catch (error: any) {
       console.error('Error loading Square:', error);
+      setIsLoading(false);
       onPaymentError('Failed to initialize payment form');
     }
   };
@@ -97,6 +104,7 @@ export default function SquarePaymentForm({
     try {
       const Square = (window as any).Square;
       if (!Square) {
+        setIsLoading(false);
         onPaymentError('Square SDK failed to load');
         return;
       }
@@ -108,6 +116,7 @@ export default function SquarePaymentForm({
       setIsLoading(false);
     } catch (error: any) {
       console.error('Square initialization error:', error);
+      setIsLoading(false);
       onPaymentError('Failed to initialize payment form');
     }
   };

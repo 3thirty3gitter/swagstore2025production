@@ -177,7 +177,7 @@ export default function TenantLayout({
           <div className="flex min-h-16 relative py-2">
             {effectiveTenant && (
             <div className={`flex items-center ${headerLayout === 'left-aligned' ? '' : 'flex-1'}`}>
-                <Link href={`/${effectiveTenant.slug}`} className={cn(`flex items-center gap-2 ${logoAlignment}`, isEditor && 'pointer-events-none')}>
+                <Link href="/" className={cn(`flex items-center gap-2 ${logoAlignment}`, isEditor && 'pointer-events-none')}>
                   {logoUrl ? (
                     <div ref={logoRef} className={cn("relative group", isEditor && "pointer-events-auto")} style={{ width: `${logoWidth}px`, height: `${logoWidth / 2}px` }}>
                        <Image src={logoUrl} alt={`${effectiveTenant.storeName} logo`} fill style={{objectFit: 'contain'}} />
