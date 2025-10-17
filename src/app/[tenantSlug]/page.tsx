@@ -15,12 +15,20 @@ async function getTenantBySlug(slug: string): Promise<Tenant | null> {
     console.log('[getTenantBySlug] Fetching tenant with slug:', slug);
     const { db } = getAdminApp();
     const tenantsRef = db.collection('tenants');
-    const snapshot = await tenantsRef.where('slug', '==', slug).limit(1).get();
+    
+    // Try to find by slug first (internal routing)
+    let snapshot = await tenantsRef.where('slug', '==', slug).limit(1).get();
+    
+    // If not found by slug, try by subdomain (in case they're different)
+    if (snapshot.empty) {
+      console.log('[getTenantBySlug] Not found by slug, trying subdomain:', slug);
+      snapshot = await tenantsRef.where('subdomain', '==', slug).limit(1).get();
+    }
     
     console.log('[getTenantBySlug] Query snapshot empty:', snapshot.empty);
     
     if (snapshot.empty) {
-      console.log('[getTenantBySlug] No tenant found for slug:', slug);
+      console.log('[getTenantBySlug] No tenant found for slug/subdomain:', slug);
       return null;
     }
 
