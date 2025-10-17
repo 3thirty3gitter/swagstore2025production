@@ -8,19 +8,19 @@ export type Tenant = {
   createdAt?: Date;
   isActive?: boolean;
   
-  // New fields from store request form
+  // Store request form fields
   status?: 'pending' | 'active' | 'suspended';
   teamType?: string;
-  organizationLevel?: string;
+  organizationLevel?: string; // e.g., "Minor/Youth", "High School", "College/University", "Professional/Adult"
   city?: string;
   province?: string;
-  postalCode?: string;
+  postalCode?: string; // Canadian postal code format
   contactName?: string;
   contactEmail?: string;
   contactPhone?: string;
-  teamSize?: string;
-  expectedVolume?: string;
-  urgency?: string;
+  teamSize?: string; // e.g., "1-25", "26-50", "51-100", "100+"
+  expectedVolume?: string; // e.g., "$500-1000", "$1000-2500", "$2500-5000", "$5000+"
+  urgency?: string; // e.g., "ASAP", "1-2 weeks", "3-4 weeks", "Flexible"
   description?: string;
   logoUrl?: string;
   submittedAt?: Date;
