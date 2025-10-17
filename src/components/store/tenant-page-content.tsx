@@ -4,13 +4,14 @@ import { HeroSection } from "@/components/store/sections/hero-section";
 import { ImageWithTextSection } from "@/components/store/sections/image-with-text-section";
 import { SwagBucksTrackerSection } from "@/components/store/sections/swag-bucks-tracker";
 import { ProductListSection } from "@/components/store/sections/product-list-section";
-import type { Tenant } from "@/lib/types";
+import type { Tenant, Product } from "@/lib/types";
 
 interface TenantPageContentProps {
   tenant: Tenant;
+  tenantProducts?: Product[];
 }
 
-export function TenantPageContent({ tenant }: TenantPageContentProps) {
+export function TenantPageContent({ tenant, tenantProducts }: TenantPageContentProps) {
   const homePage = tenant.website?.pages.find(p => p.path === '/');
 
   if (!homePage || !homePage.sections || homePage.sections.length === 0) {
@@ -35,7 +36,7 @@ export function TenantPageContent({ tenant }: TenantPageContentProps) {
           case 'Swag Bucks Tracker':
             return <SwagBucksTrackerSection key={section.id} tenantId={tenant.id} {...section.props} />;
           case 'Product List':
-            return <ProductListSection key={section.id} tenantId={tenant.id} {...section.props} />;
+            return <ProductListSection key={section.id} tenantId={tenant.id} tenantProducts={tenantProducts} {...section.props} />;
           default:
             return null;
         }

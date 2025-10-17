@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import type { Tenant } from "@/lib/types";
+import type { Tenant, Product } from "@/lib/types";
 import { getAdminApp } from "@/lib/firebase-admin";
 import { TenantPageContent } from "@/components/store/tenant-page-content";
 
@@ -49,6 +49,29 @@ async function getTenantBySlug(slug: string): Promise<Tenant | null> {
   }
 }
 
+async function getTenantProducts(tenantId: string): Promise<Product[]> {
+  try {
+    console.log('[getTenantProducts] Fetching products for tenant:', tenantId);
+    const { db } = getAdminApp();
+    const productsRef = db.collection('products');
+    const snapshot = await productsRef.where('tenantIds', 'array-contains', tenantId).get();
+    
+    const products = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return JSON.parse(JSON.stringify({
+        id: doc.id,
+        ...data
+      })) as Product;
+    });
+    
+    console.log('[getTenantProducts] Found products:', products.length);
+    return products;
+  } catch (error) {
+    console.error('[getTenantProducts] Error fetching products:', error);
+    return [];
+  }
+}
+
 export default async function TenantPage({ params }: PageProps) {
   const { tenantSlug } = await params;
   console.log('[TenantPage] Rendering for slug:', tenantSlug);
@@ -63,6 +86,9 @@ export default async function TenantPage({ params }: PageProps) {
     </div>;
   }
 
+  // Fetch products for this tenant
+  const tenantProducts = await getTenantProducts(tenant.id);
+
   console.log('[TenantPage] Rendering content for tenant:', tenant.name);
-  return <TenantPageContent tenant={tenant} />;
+  return <TenantPageContent tenant={tenant} tenantProducts={tenantProducts} />;
 }
