@@ -74,9 +74,11 @@ export default function TenantLayout({
   }, [firestore, tenantSlug, serverTenant]);
 
   const effectiveTenant = tenant || serverTenant || null;
-  const effectiveLoading = isLoading || isLoadingServerTenant;
+  // Don't block on loading - let page content render immediately
+  // Only consider it "loading" if we're actively fetching from server AND have no data yet
+  const effectiveLoading = !firestore && isLoadingServerTenant && !serverTenant;
   
-  const [logoWidth, setLogoWidth] = useState(tenant?.website?.header?.logoWidth || 96);
+  const [logoWidth, setLogoWidth] = useState(96); // Default logo width
   const [isEditor, setIsEditor] = useState(false);
   const logoRef = useRef<HTMLDivElement>(null);
   const dragHandleRef = useRef<HTMLDivElement>(null);
