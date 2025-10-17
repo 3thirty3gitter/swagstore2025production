@@ -13,34 +13,36 @@ export default function HomePage() {
     <div className="min-h-screen bg-white flex flex-col overflow-hidden">
       {/* Main content */}
       <main className="flex-1">
-        {/* High Demand Notice - Modernized */}
-        <section className="relative py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white overflow-hidden">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIuNSIgb3BhY2l0eT0iLjEiLz48L2c+PC9zdmc+')] opacity-20"></div>
-          <div className="container mx-auto px-4 text-center relative z-10">
-            <div className="flex items-center justify-center gap-2 text-sm md:text-base font-semibold animate-pulse">
-              <Sparkles className="h-5 w-5" />
-              <span>🔥 Overwhelming response! Limited spots available — Secure your team's store today</span>
-              <Sparkles className="h-5 w-5" />
+        {/* Hero Section - Completely Redesigned */}
+        <section className="relative py-3 md:py-20 overflow-hidden">
+          {/* High Demand Notice */}
+          <div className="absolute top-0 left-0 right-0 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white overflow-hidden z-20">
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIuNSIgb3BhY2l0eT0iLjEiLz48L2c+PC9zdmc+')] opacity-20"></div>
+            <div className="container mx-auto px-4 text-center relative z-10">
+              <div className="flex items-center justify-center gap-2 text-sm md:text-base font-semibold animate-pulse">
+                <Sparkles className="h-5 w-5" />
+                <span>🔥 Overwhelming response! Limited spots available — Secure your team's store today</span>
+                <Sparkles className="h-5 w-5" />
+              </div>
             </div>
           </div>
-        </section>
 
-        {/* Logo with enhanced styling */}
-        <div className="container mx-auto px-4 pt-6">
-          <div className="max-w-7xl mx-auto flex items-center">
-            <SiteLogo />
+          {/* Logo - positioned at top with high z-index */}
+          <div className="absolute top-16 left-0 right-0 z-30">
+            <div className="container mx-auto px-4">
+              <div className="max-w-7xl mx-auto flex items-center">
+                <SiteLogo />
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Hero Section - Completely Redesigned */}
-        <section className="relative py-12 md:py-20 overflow-hidden">
           {/* Animated background elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 opacity-60"></div>
           <div className="absolute top-20 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
           <div className="absolute top-40 left-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
           <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
           
-          <div className="container mx-auto px-4 relative z-10">
+          <div className="container mx-auto px-4 relative z-10 pt-32">
             <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
               {/* Left Column - Text Content */}
               <div className="text-left space-y-6">
