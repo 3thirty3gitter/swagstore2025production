@@ -119,16 +119,22 @@ export function TenantEditor({ tenant, tenantProducts }: TenantEditorProps) {
     const currentPage = website.pages.find(p => p.id === currentPageId);
 
     const updateWebsiteState = (newWebsite: Website, successMessage: string) => {
+        console.log('🟡 updateWebsiteState called with:', newWebsite);
+        console.log('🟡 tenant.id:', tenant.id);
         setWebsite(newWebsite);
         startTransition(async () => {
+            console.log('🟡 Starting transition, calling saveWebsite...');
             const result = await saveWebsite(tenant.id, newWebsite);
+            console.log('🟡 saveWebsite result:', result);
             if (result.success) {
+                console.log('✅ Save successful, showing toast');
                 toast({
                     title: 'Success',
                     description: successMessage,
                 });
                 setIframeKey(prev => prev + 1);
             } else {
+                console.log('❌ Save failed:', result.error);
                 toast({
                     variant: 'destructive',
                     title: 'Save Failed',
