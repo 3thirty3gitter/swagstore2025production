@@ -6,8 +6,6 @@ type Settings = { logoUrl?: string };
 
 export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
   const [logo, setLogo] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -16,10 +14,7 @@ export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
         const res = await fetch('/api/site-settings');
         const json = await res.json();
         const raw = json?.settings?.logoUrl || fallbackSrc || null;
-        if (!raw) {
-          if (mounted) setLoading(false);
-          return;
-        }
+        if (!raw) return;
 
         // try signed URL first
         try {
@@ -37,8 +32,6 @@ export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
         if (mounted) setLogo(raw);
       } catch (e) {
         // ignore
-      } finally {
-        if (mounted) setLoading(false);
       }
     }
     load();
@@ -47,23 +40,13 @@ export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
     };
   }, [fallbackSrc]);
 
-  // Show skeleton while loading or if no logo
-  if (loading || !logo) {
-    return (
-      <div className="h-10 w-[220px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-pulse" 
-           style={{ 
-             backgroundSize: '200% 100%',
-             animation: 'shimmer 1.5s ease-in-out infinite'
-           }}>
-      </div>
-    );
+  // Don't show anything until logo is loaded - prevents flash
+  if (!logo) {
+    return <div className="h-10 w-[220px]"></div>;
   }
 
   return (
-    <div 
-      className="h-10 w-auto transition-opacity duration-500 ease-in-out"
-      style={{ opacity: imageLoaded ? 1 : 0 }}
-    >
+    <div className="h-10 w-auto">
       <Image 
         src={logo} 
         alt="Site logo" 
@@ -71,7 +54,6 @@ export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
         height={40} 
         style={{ objectFit: 'contain' }} 
         priority
-        onLoad={() => setImageLoaded(true)}
       />
     </div>
   );
