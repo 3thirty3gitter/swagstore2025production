@@ -21,14 +21,11 @@ export function FloatingCard({ children, delay = 0, className = '' }: FloatingCa
     // Set initial CSS variables
     utils.set(element, {
       '--opacity': '0',
-      '--y': '80px',
-      '--scale': '0.9',
-      '--blur': '4px',
+      '--y': '60px',
+      '--scale': '0.95',
       '--float-y': '0px',
-      '--float-rotate': '0deg',
       opacity: () => 'var(--opacity)',
-      transform: () => 'translateY(calc(var(--y) + var(--float-y))) scale(var(--scale)) rotateZ(var(--float-rotate))',
-      filter: () => 'blur(var(--blur))',
+      transform: () => 'translateY(calc(var(--y) + var(--float-y))) scale(var(--scale))',
     });
 
     // Entrance animation
@@ -36,27 +33,21 @@ export function FloatingCard({ children, delay = 0, className = '' }: FloatingCa
       '--opacity': '1',
       '--y': '0px',
       '--scale': '1',
-      '--blur': '0px',
-      easing: 'spring(1, 80, 10, 0)',
-      duration: 1800,
+      easing: 'outExpo',
+      duration: 1200,
       delay: delay,
     });
 
-    // Seamless continuous floating animation
+    // Continuous smooth floating - no stops
     setTimeout(() => {
       animationRef.current = animate(element, {
-        keyframes: [
-          { '--float-y': '0px', '--float-rotate': '0deg' },
-          { '--float-y': '-12px', '--float-rotate': '1deg' },
-          { '--float-y': '0px', '--float-rotate': '0deg' },
-          { '--float-y': '12px', '--float-rotate': '-1deg' },
-          { '--float-y': '0px', '--float-rotate': '0deg' },
-        ],
-        duration: 8000,
-        easing: 'linear',
+        '--float-y': ['-10px', '10px'],
+        duration: 3000,
+        easing: 'inOutSine',
+        direction: 'alternate',
         loop: true,
       });
-    }, delay + 1800);
+    }, delay + 1200);
 
     return () => {
       if (animationRef.current) {
@@ -69,9 +60,6 @@ export function FloatingCard({ children, delay = 0, className = '' }: FloatingCa
     <div 
       ref={cardRef} 
       className={className}
-      style={{ 
-        willChange: 'transform',
-      }}
     >
       {children}
     </div>
