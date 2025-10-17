@@ -128,10 +128,56 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
               prose-strong:text-gray-900 prose-strong:font-semibold
               prose-ul:my-6 prose-li:text-gray-700
               prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline"
-            dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br />').replace(/#{1,3}\s(.+)/g, (match, title) => {
-              const level = match.split(' ')[0].length;
-              return `<h${level}>${title}</h${level}>`;
-            })}}
+            dangerouslySetInnerHTML={{ __html: (() => {
+              let html = post.content;
+              
+              // Convert headings (# ## ###)
+              html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+              html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+              html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+              
+              // Convert bold text (**text**)
+              html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+              
+              // Convert line breaks to paragraphs
+              html = html.split('\n\n').map(para => {
+                para = para.trim();
+                if (para.startsWith('<h') || para.startsWith('<ul') || para.startsWith('-')) {
+                  return para;
+                }
+                return para ? `<p>${para.replace(/\n/g, '<br />')}</p>` : '';
+              }).join('\n');
+              
+              // Convert bullet lists (- item)
+              html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+              
+              // Wrap consecutive list items in ul tags
+              const lines = html.split('\n');
+              const result: string[] = [];
+              let inList = false;
+              
+              for (const line of lines) {
+                if (line.trim().startsWith('<li>')) {
+                  if (!inList) {
+                    result.push('<ul>');
+                    inList = true;
+                  }
+                  result.push(line);
+                } else {
+                  if (inList) {
+                    result.push('</ul>');
+                    inList = false;
+                  }
+                  result.push(line);
+                }
+              }
+              
+              if (inList) {
+                result.push('</ul>');
+              }
+              
+              return result.join('\n');
+            })()}}
           />
         </article>
 
