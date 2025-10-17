@@ -23,6 +23,7 @@ export function SwagBucksTrackerSection({ tenantId, title, description, gates = 
     const { firestore } = useFirebase();
     const [tenantBalance, setTenantBalance] = useState<SwagBucksBalance | null>(null);
     const [loadingBalance, setLoadingBalance] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     
     // Get orders for calculating total sales (for display purposes)
     const ordersQuery = firestore ? query(collection(firestore, 'orders'), where('tenantId', '==', tenantId)) : null;
@@ -31,13 +32,33 @@ export function SwagBucksTrackerSection({ tenantId, title, description, gates = 
     // Load real SwagBucks balance
     useEffect(() => {
         async function loadBalance() {
-            if (!firestore) return;
+            if (!firestore) {
+                // Wait a bit for firestore to initialize
+                setTimeout(() => setLoadingBalance(false), 2000);
+                return;
+            }
+            
+            if (!tenantId) {
+                setError('No tenant ID provided');
+                setLoadingBalance(false);
+                return;
+            }
             
             try {
                 const balance = await getTenantBalance(firestore, tenantId);
                 setTenantBalance(balance);
+                setError(null);
             } catch (error) {
                 console.error('Error loading tenant balance:', error);
+                setError('Failed to load SwagBucks balance');
+                // Set default values so the component doesn't break
+                setTenantBalance({
+                    tenantId,
+                    balance: 0,
+                    totalEarned: 0,
+                    totalRedeemed: 0,
+                    lastUpdated: new Date()
+                });
             } finally {
                 setLoadingBalance(false);
             }
@@ -45,6 +66,21 @@ export function SwagBucksTrackerSection({ tenantId, title, description, gates = 
 
         loadBalance();
     }, [firestore, tenantId]);
+
+    // Show error state if there's a critical error
+    if (error && !tenantBalance) {
+        return (
+            <section className="py-8 md:py-12 bg-gradient-to-br from-red-50 to-white border border-red-100 rounded-2xl">
+                <div className="container mx-auto text-center">
+                    <div className="flex items-center justify-center gap-2 text-red-600">
+                        <span className="h-6 w-6 text-2xl">🍁</span>
+                        <p className="text-sm">{error}</p>
+                        <span className="h-6 w-6 text-2xl">🍁</span>
+                    </div>
+                </div>
+            </section>
+        );
+    }
 
     if (ordersLoading || loadingBalance) {
         return (
