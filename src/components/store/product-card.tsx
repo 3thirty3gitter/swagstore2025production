@@ -31,8 +31,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const imageSrc = getImageSrc(product.images?.[0]);
 
+  // On subdomain, tenantSlug is already in the URL path, so don't duplicate it
+  const productLink = tenantSlug ? `/products/${product.id}` : `/products/${product.id}`;
+
   return (
-    <Link href={`/${tenantSlug}/products/${product.id}`}>
+    <Link href={productLink}>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
         <div className="aspect-square relative">
           <Image
