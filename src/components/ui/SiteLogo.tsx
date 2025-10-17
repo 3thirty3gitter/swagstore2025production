@@ -6,6 +6,7 @@ type Settings = { logoUrl?: string };
 
 export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
   const [logo, setLogo] = useState<string | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -40,13 +41,16 @@ export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
     };
   }, [fallbackSrc]);
 
-  // Don't show anything until logo is loaded - prevents flash
+  // Don't show anything until logo URL is fetched
   if (!logo) {
     return <div className="h-10 w-[220px]"></div>;
   }
 
   return (
-    <div className="h-10 w-auto">
+    <div 
+      className="h-10 w-auto transition-opacity duration-300 ease-in"
+      style={{ opacity: imageLoaded ? 1 : 0 }}
+    >
       <Image 
         src={logo} 
         alt="Site logo" 
@@ -54,6 +58,7 @@ export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
         height={40} 
         style={{ objectFit: 'contain' }} 
         priority
+        onLoad={() => setImageLoaded(true)}
       />
     </div>
   );
