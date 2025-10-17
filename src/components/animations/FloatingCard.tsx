@@ -11,7 +11,6 @@ interface FloatingCardProps {
 
 export function FloatingCard({ children, delay = 0, className = '' }: FloatingCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<any>(null);
 
   useEffect(() => {
     if (!cardRef.current) return;
@@ -21,46 +20,23 @@ export function FloatingCard({ children, delay = 0, className = '' }: FloatingCa
     // Set initial CSS variables
     utils.set(element, {
       '--opacity': '0',
-      '--y': '60px',
-      '--scale': '0.95',
-      '--float-y': '0px',
+      '--y': '40px',
       opacity: () => 'var(--opacity)',
-      transform: () => 'translateY(calc(var(--y) + var(--float-y))) scale(var(--scale))',
+      transform: () => 'translateY(var(--y))',
     });
 
-    // Entrance animation
+    // Simple fade in and slide up entrance
     animate(element, {
       '--opacity': '1',
       '--y': '0px',
-      '--scale': '1',
       easing: 'outExpo',
       duration: 1200,
       delay: delay,
     });
-
-    // Continuous smooth floating - no stops
-    setTimeout(() => {
-      animationRef.current = animate(element, {
-        '--float-y': ['-10px', '10px'],
-        duration: 3000,
-        easing: 'inOutSine',
-        direction: 'alternate',
-        loop: true,
-      });
-    }, delay + 1200);
-
-    return () => {
-      if (animationRef.current) {
-        animationRef.current.pause();
-      }
-    };
   }, [delay]);
 
   return (
-    <div 
-      ref={cardRef} 
-      className={className}
-    >
+    <div ref={cardRef} className={className}>
       {children}
     </div>
   );
