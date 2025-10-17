@@ -10,12 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CreditCard, Check, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { useFirebase } from '@/firebase';
 
 export default function PaymentIntegrations() {
   const { toast } = useToast();
-  const { firestore } = useFirebase();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -33,29 +30,28 @@ export default function PaymentIntegrations() {
     locationId: '',
   });
 
-    useEffect(() => {
-    console.log('PaymentIntegrations: firestore =', firestore);
+  useEffect(() => {
+    console.log('PaymentIntegrations: loading settings from API');
     loadSettings();
-  }, [firestore]);
+  }, []);
 
-    const loadSettings = async () => {
-    console.log('loadSettings called, firestore:', firestore);
-    if (!firestore) {
-      console.log('Firestore not available, will retry when it initializes');
-      setLoading(false);
-      return;
-    }
-
+  const loadSettings = async () => {
+    console.log('loadSettings called');
+    
     try {
-      console.log('Loading payment settings...');
-      const settingsDoc = await getDoc(doc(firestore, 'settings', 'payment'));
-      if (settingsDoc.exists()) {
-        console.log('Settings found:', settingsDoc.data());
-        const data = settingsDoc.data();
-        if (data.stripe) setStripe(data.stripe);
-        if (data.square) setSquare(data.square);
-      } else {
-        console.log('No payment settings document found');
+      console.log('Loading payment settings from API...');
+      const response = await fetch('/api/admin/settings/payment');
+      
+      if (!response.ok) {
+        throw new Error('Failed to load settings');
+      }
+
+      const result = await response.json();
+      console.log('Settings loaded:', result);
+
+      if (result.success && result.data) {
+        if (result.data.stripe) setStripe(result.data.stripe);
+        if (result.data.square) setSquare(result.data.square);
       }
     } catch (error) {
       console.error('Error loading settings:', error);
@@ -66,14 +62,19 @@ export default function PaymentIntegrations() {
   };
 
   const handleSaveStripe = async () => {
-    if (!firestore) return;
     setSaving(true);
 
     try {
-      await setDoc(doc(firestore, 'settings', 'payment'), {
-        stripe,
-        square,
-      }, { merge: true });
+      // Use API route instead of direct Firestore access
+      const response = await fetch('/api/admin/settings/payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stripe }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save settings');
+      }
 
       toast({
         title: 'Stripe settings saved',
@@ -92,14 +93,19 @@ export default function PaymentIntegrations() {
   };
 
   const handleSaveSquare = async () => {
-    if (!firestore) return;
     setSaving(true);
 
     try {
-      await setDoc(doc(firestore, 'settings', 'payment'), {
-        stripe,
-        square,
-      }, { merge: true });
+      // Use API route instead of direct Firestore access
+      const response = await fetch('/api/admin/settings/payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ square }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save settings');
+      }
 
       toast({
         title: 'Square settings saved',
