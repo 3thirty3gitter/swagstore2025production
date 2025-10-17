@@ -34,14 +34,14 @@ export default function PaymentIntegrations() {
   });
 
   useEffect(() => {
-    loadSettings();
+    if (firestore) {
+      loadSettings();
+    }
   }, [firestore]);
 
   const loadSettings = async () => {
-    if (!firestore) return;
-
     try {
-      const settingsDoc = await getDoc(doc(firestore, 'settings', 'payment'));
+      const settingsDoc = await getDoc(doc(firestore!, 'settings', 'payment'));
       if (settingsDoc.exists()) {
         const data = settingsDoc.data();
         if (data.stripe) setStripe(data.stripe);
