@@ -343,75 +343,32 @@ export default function HomePage() {
           
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
-              {/* Stars */}
-              <div className="flex items-center justify-center gap-2 mb-6">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-8 w-8 text-yellow-300 fill-yellow-300" />
-                ))}
-              </div>
-              
-              {/* Quote */}
-              <blockquote className="text-2xl md:text-3xl font-bold text-white mb-8 leading-relaxed">
-                "Our hockey team earned over $500 in free gear in just one season. Parents love the quality merchandise and we love the free equipment!"
-              </blockquote>
-              
-              {/* Author */}
-              <div className="flex items-center justify-center gap-4">
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                  <span className="text-2xl">🏒</span>
+              {/* CTA Card */}
+              <div className="bg-white rounded-3xl shadow-2xl p-12 border-4 border-purple-100">
+                <h2 className="text-4xl md:text-5xl font-black font-headline mb-6 text-gray-900">
+                  Ready to Launch Your Team Store?
+                </h2>
+                <p className="text-xl text-gray-600 mb-8 leading-relaxed font-medium">
+                  Join hundreds of Canadian teams already earning free gear. Setup takes 5 minutes, launch happens in 24 hours.
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                  <HomeClient />
                 </div>
-                <div className="text-left">
-                  <cite className="text-white font-bold text-lg not-italic">Coach Sarah M.</cite>
-                  <p className="text-purple-100 text-sm">Winnipeg Panthers U15 Hockey</p>
-                </div>
-              </div>
-              
-              {/* Stats Row */}
-              <div className="grid grid-cols-3 gap-8 mt-12 pt-12 border-t border-white/20">
-                <div className="text-center">
-                  <div className="text-4xl font-black text-white mb-2">500+</div>
-                  <div className="text-purple-100 text-sm font-semibold">Active Teams</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-4xl font-black text-white mb-2">$250K+</div>
-                  <div className="text-purple-100 text-sm font-semibold">Earned in SwagBucks</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-4xl font-black text-white mb-2">15K+</div>
-                  <div className="text-purple-100 text-sm font-semibold">Happy Customers</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA Section - NEW */}
-        <section className="py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center bg-white rounded-3xl shadow-2xl p-12 border-4 border-purple-100">
-              <h2 className="text-4xl md:text-5xl font-black font-headline mb-6 text-gray-900">
-                Ready to Launch Your Team Store?
-              </h2>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed font-medium">
-                Join hundreds of Canadian teams already earning free gear. Setup takes 5 minutes, launch happens in 24 hours.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-                <HomeClient />
-              </div>
-              
-              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
-                <div className="flex items-center gap-2">
-                  <Check className="h-5 w-5 text-green-600" />
-                  <span>Free forever</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-5 w-5 text-green-600" />
-                  <span>No credit card needed</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-5 w-5 text-green-600" />
-                  <span>24-hour setup</span>
+                
+                <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-green-600" />
+                    <span>Free forever</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-green-600" />
+                    <span>No credit card needed</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-green-600" />
+                    <span>24-hour setup</span>
+                  </div>
                 </div>
               </div>
             </div>
