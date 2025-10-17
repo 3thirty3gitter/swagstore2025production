@@ -25,6 +25,8 @@ export function TenantPageContent({ tenant }: TenantPageContentProps) {
   return (
     <div className="space-y-16 md:space-y-24">
       {homePage.sections.map(section => {
+        console.log('Rendering section:', section.type, 'Props:', section.props);
+        
         switch (section.type) {
           case 'Hero Section':
             return <HeroSection key={section.id} sectionId={section.id} {...section.props} />;

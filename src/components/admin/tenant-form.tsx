@@ -32,17 +32,15 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
   const { toast } = useToast();
 
   const name = watch('name', tenant?.name || '');
-  const subdomain = watch('subdomain', tenant?.subdomain || '');
+  const slug = watch('slug', tenant?.slug || '');
 
   useEffect(() => {
     if (name && !tenant) {
-      const newSubdomain = name
+      const newSlug = name
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '');
-      setValue('subdomain', newSubdomain);
-      // Slug mirrors subdomain for internal routing
-      setValue('slug', newSubdomain);
+      setValue('slug', newSlug);
     }
   }, [name, setValue, tenant]);
 
@@ -63,8 +61,7 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
           const payload = lastActionResult?.tenant || (lastActionResult?.id ? {
             id: lastActionResult.id,
             name: submittedName,
-            subdomain: lastSubmittedValues?.subdomain || subdomain,
-            slug: lastSubmittedValues?.subdomain || subdomain, // slug mirrors subdomain
+            slug: lastSubmittedValues?.slug || slug,
             storeName: lastSubmittedValues?.storeName || '',
           } : null);
           if (payload) {
@@ -76,7 +73,7 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
       }
       onSuccess();
     }
-  }, [isSuccess, onSuccess, tenant, watch, toast, lastSubmittedValues, lastActionResult, subdomain]);
+  }, [isSuccess, onSuccess, tenant, watch, toast, lastSubmittedValues, lastActionResult, slug]);
 
   return (
     <div className="space-y-6">
@@ -123,29 +120,21 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
             </p>
           </div>
 
-          {/* Hidden slug field - automatically synced with subdomain */}
-          <input type="hidden" {...register('slug')} />
-
           <div className="space-y-2">
-            <Label htmlFor="subdomain" className="text-sm font-medium">
+            <Label htmlFor="slug" className="text-sm font-medium">
               Custom Subdomain
             </Label>
             <div className="flex items-center space-x-2">
               <Input 
-                id="subdomain" 
-                {...register('subdomain')} 
+                id="slug" 
+                {...register('slug')} 
                 placeholder="e.g. vohon" 
                 className="h-10 flex-1"
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setValue('subdomain', value);
-                  setValue('slug', value); // Keep slug in sync
-                }}
               />
               <span className="text-sm text-muted-foreground">.swagstore.ca</span>
             </div>
-            {formErrors.subdomain && (
-              <p className="text-sm text-destructive">{formErrors.subdomain[0]}</p>
+            {formErrors.slug && (
+              <p className="text-sm text-destructive">{formErrors.slug[0]}</p>
             )}
             <p className="text-xs text-muted-foreground">
               Your unique store URL (letters, numbers, and hyphens only)
@@ -154,7 +143,7 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
         </div>
 
         {/* Preview Section */}
-        {subdomain && (
+        {slug && (
           <Card className="bg-muted/30">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
@@ -172,7 +161,7 @@ export function TenantForm({ tenant, onSuccess }: TenantFormProps) {
                   Store URL
                 </Badge>
                 <code className="text-sm bg-background px-2 py-1 rounded border font-semibold text-blue-600">
-                  https://{subdomain}.swagstore.ca
+                  https://{slug}.swagstore.ca
                 </code>
               </div>
             </CardContent>

@@ -17,6 +17,9 @@ type ProductListSectionProps = {
 export function ProductListSection({ tenantId, title, selectedProductIds }: ProductListSectionProps) {
     const { firestore } = useFirebase();
 
+    // Debug logging
+    console.log('ProductListSection props:', { tenantId, title, selectedProductIds });
+
     let productsQuery = null;
     const hasSelectedProducts = selectedProductIds && selectedProductIds.length > 0;
 

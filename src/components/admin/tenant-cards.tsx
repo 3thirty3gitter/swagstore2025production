@@ -142,7 +142,7 @@ export function TenantCards({ tenants }: TenantCardsProps) {
                   <span className="text-xs text-muted-foreground">Store URL</span>
                 </div>
                 <p className="text-sm font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded border">
-                  {tenant.subdomain}.swagstore.ca
+                  {tenant.subdomain || tenant.slug}.swagstore.ca
                 </p>
               </div>
             </div>
@@ -154,7 +154,7 @@ export function TenantCards({ tenants }: TenantCardsProps) {
                   Edit Website
                 </Button>
               </Link>
-              <Link href={`https://${tenant.subdomain}.swagstore.ca`} target="_blank">
+              <Link href={`https://${tenant.subdomain || tenant.slug}.swagstore.ca`} target="_blank">
                 <Button variant="outline" size="sm" className="h-9 px-3">
                   <ExternalLink className="h-4 w-4" />
                 </Button>
