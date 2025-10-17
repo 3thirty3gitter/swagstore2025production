@@ -348,7 +348,7 @@ export default function HomePage() {
                   <TrendingUp className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="text-lg font-bold mb-2 text-gray-900">Real-Time Tracking</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">Watch your SwagBucks grow with live dashboards</p>
+                <p className="text-gray-600 text-sm leading-relaxed">Watch your SwagBucks grow right on your storefront website</p>
               </div>
             </div>
           </div>

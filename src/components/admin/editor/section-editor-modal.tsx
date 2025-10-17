@@ -16,9 +16,6 @@ import Image from 'next/image';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
-import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where } from 'firebase/firestore';
-import { useFirebase } from '@/firebase';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -31,16 +28,13 @@ type SectionEditorModalProps = {
     section: Section;
     onSave: (updatedSection: Section) => void;
     tenantId: string;
+    tenantProducts: Product[];
 };
 
-export function SectionEditorModal({ isOpen, onClose, section, onSave, tenantId }: SectionEditorModalProps) {
+export function SectionEditorModal({ isOpen, onClose, section, onSave, tenantId, tenantProducts }: SectionEditorModalProps) {
     const [currentSection, setCurrentSection] = useState<Section>(section);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
-    const { firestore } = useFirebase();
-
-    const productsQuery = firestore ? query(collection(firestore, 'products'), where('tenantIds', 'array-contains', tenantId)) : null;
-    const { data: tenantProducts } = useCollection<Product>(productsQuery);
 
     useEffect(() => {
         if (isOpen) {

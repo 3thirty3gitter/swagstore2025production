@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SectionEditorModal } from "@/components/admin/editor/section-editor-modal";
 import { useState, useTransition, useRef, useEffect } from "react";
-import type { Tenant, Page, Section, Website, HeaderConfig, MenuItem } from "@/lib/types";
+import type { Tenant, Page, Section, Website, HeaderConfig, MenuItem, Product } from "@/lib/types";
 import { saveWebsite, uploadFile } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -32,6 +32,7 @@ import { Slider } from "@/components/ui/slider";
 
 type TenantEditorProps = {
     tenant: Tenant;
+    tenantProducts: Product[];
 }
 
 const getDefaultWebsiteData = (): Website => ({
@@ -65,7 +66,7 @@ const getDefaultWebsiteData = (): Website => ({
     ]
 });
 
-export function TenantEditor({ tenant }: TenantEditorProps) {
+export function TenantEditor({ tenant, tenantProducts }: TenantEditorProps) {
     const { toast } = useToast();
     const [isSaving, startTransition] = useTransition();
     const [website, setWebsite] = useState<Website>(tenant.website || getDefaultWebsiteData());
@@ -571,6 +572,7 @@ export function TenantEditor({ tenant }: TenantEditorProps) {
                 section={editingSection}
                 onSave={handleSectionSave}
                 tenantId={tenant.id}
+                tenantProducts={tenantProducts}
             />
         )}
         </>
