@@ -4,6 +4,12 @@ import { ArrowRight, Store, Gift, Star, Zap, TrendingUp, Users, ShoppingBag, Spa
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import HomeClient from '@/components/HomeClient';
 import Image from 'next/image';
+import { AnimatedHero } from '@/components/animations/AnimatedHero';
+import { AnimatedNumber } from '@/components/animations/AnimatedNumber';
+import { ScrollReveal } from '@/components/animations/ScrollReveal';
+import { FloatingCard } from '@/components/animations/FloatingCard';
+import { StaggeredCards } from '@/components/animations/StaggeredCards';
+import { PulseIcon } from '@/components/animations/PulseIcon';
 
 // This is a server-rendered homepage. Interactive pieces (dialog, forms, state) are
 // delegated to the client component `HomeClient` so the root route can be safely
@@ -45,118 +51,124 @@ export default function HomePage() {
           <div className="container mx-auto px-4 relative z-10 pt-32">
             <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
               {/* Left Column - Text Content */}
-              <div className="text-left space-y-6">
-                <div className="inline-block">
-                  <span className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-sm font-bold shadow-lg">
-                    #1 Platform for Canadian Teams
-                  </span>
-                </div>
-                
-                <h1 className="text-5xl md:text-7xl font-black font-headline leading-tight">
-                  <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
-                    Build Your Team's
-                  </span>
-                  <br />
-                  <span className="text-gray-900">
-                    Dream Store
-                  </span>
-                </h1>
-                
-                <p className="text-xl md:text-2xl text-gray-600 leading-relaxed font-medium">
-                  Free professional storefronts + SwagBucks rewards on every purchase. Your team earns free gear while supporters get awesome merch!
-                </p>
+              <AnimatedHero>
+                <div className="text-left space-y-6">
+                  <div className="inline-block hero-badge">
+                    <span className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-sm font-bold shadow-lg">
+                      #1 Platform for Canadian Teams
+                    </span>
+                  </div>
+                  
+                  <h1 className="text-5xl md:text-7xl font-black font-headline leading-tight hero-title">
+                    <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+                      Build Your Team's
+                    </span>
+                    <br />
+                    <span className="text-gray-900">
+                      Dream Store
+                    </span>
+                  </h1>
+                  
+                  <p className="text-xl md:text-2xl text-gray-600 leading-relaxed font-medium hero-subtitle">
+                    Free professional storefronts + SwagBucks rewards on every purchase. Your team earns free gear while supporters get awesome merch!
+                  </p>
 
-                {/* Stats Row */}
-                <div className="grid grid-cols-3 gap-4 py-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-black text-purple-600">100%</div>
-                    <div className="text-sm text-gray-600 font-semibold">Free Setup</div>
+                  {/* Stats Row */}
+                  <div className="grid grid-cols-3 gap-4 py-6 hero-stats">
+                    <div className="text-center">
+                      <AnimatedNumber value={100} suffix="%" className="text-3xl font-black text-purple-600" />
+                      <div className="text-sm text-gray-600 font-semibold">Free Setup</div>
+                    </div>
+                    <div className="text-center">
+                      <AnimatedNumber value={24} suffix="hr" className="text-3xl font-black text-pink-600" />
+                      <div className="text-sm text-gray-600 font-semibold">Launch Time</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-black text-orange-600">♾️</div>
+                      <div className="text-sm text-gray-600 font-semibold">Earning Potential</div>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-black text-pink-600">24hr</div>
-                    <div className="text-sm text-gray-600 font-semibold">Launch Time</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-black text-orange-600">♾️</div>
-                    <div className="text-sm text-gray-600 font-semibold">Earning Potential</div>
-                  </div>
-                </div>
 
-                {/* CTA */}
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <HomeClient />
-                  <a 
-                    href="#how-it-works" 
-                    className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:border-purple-600 hover:text-purple-600 transition-all duration-300 shadow-md hover:shadow-xl"
-                  >
-                    See How It Works
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </a>
-                </div>
+                  {/* CTA */}
+                  <div className="flex flex-col sm:flex-row gap-4 pt-4 hero-cta">
+                    <HomeClient />
+                    <a 
+                      href="#how-it-works" 
+                      className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:border-purple-600 hover:text-purple-600 transition-all duration-300 shadow-md hover:shadow-xl"
+                    >
+                      See How It Works
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </a>
+                  </div>
 
-                {/* Trust Indicators */}
-                <div className="flex flex-wrap gap-4 pt-6 items-center">
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-green-600" />
-                    <span className="text-sm text-gray-600 font-medium">No upfront costs</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-green-600" />
-                    <span className="text-sm text-gray-600 font-medium">Canadian-owned</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-green-600" />
-                    <span className="text-sm text-gray-600 font-medium">Secure payments</span>
+                  {/* Trust Indicators */}
+                  <div className="flex flex-wrap gap-4 pt-6 items-center">
+                    <div className="flex items-center gap-2">
+                      <Check className="h-5 w-5 text-green-600" />
+                      <span className="text-sm text-gray-600 font-medium">No upfront costs</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="h-5 w-5 text-green-600" />
+                      <span className="text-sm text-gray-600 font-medium">Canadian-owned</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="h-5 w-5 text-green-600" />
+                      <span className="text-sm text-gray-600 font-medium">Secure payments</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </AnimatedHero>
 
               {/* Right Column - Hero Image/Visual */}
-              <div className="relative lg:block">
-                <div className="relative aspect-square max-w-xl mx-auto">
-                  {/* Main Image Container */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl rotate-6 opacity-20"></div>
-                  <div className="relative bg-gradient-to-br from-purple-100 to-pink-100 rounded-3xl p-8 shadow-2xl">
-                    {/* Mockup of a team store */}
-                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-                      {/* Mockup Header */}
-                      <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-white rounded-lg"></div>
-                          <div className="text-white font-bold">Panthers Hockey</div>
-                        </div>
-                        <ShoppingBag className="h-6 w-6 text-white" />
-                      </div>
-                      
-                      {/* Mockup Content */}
-                      <div className="p-6 space-y-4">
-                        <div className="h-48 bg-gradient-to-br from-blue-400 to-purple-400 rounded-xl flex items-center justify-center">
-                          <div className="text-center text-white">
-                            <Sparkles className="h-16 w-16 mx-auto mb-2" />
-                            <div className="text-2xl font-bold">Your Team Store</div>
-                            <div className="text-sm opacity-90">Professional & Beautiful</div>
+              <FloatingCard delay={600}>
+                <div className="relative lg:block">
+                  <div className="relative aspect-square max-w-xl mx-auto">
+                    {/* Main Image Container */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl rotate-6 opacity-20"></div>
+                    <div className="relative bg-gradient-to-br from-purple-100 to-pink-100 rounded-3xl p-8 shadow-2xl">
+                      {/* Mockup of a team store */}
+                      <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                        {/* Mockup Header */}
+                        <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-white rounded-lg"></div>
+                            <div className="text-white font-bold">Panthers Hockey</div>
                           </div>
+                          <ShoppingBag className="h-6 w-6 text-white" />
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="h-24 bg-gray-100 rounded-lg"></div>
-                          <div className="h-24 bg-gray-100 rounded-lg"></div>
-                        </div>
-                        
-                        <div className="bg-gradient-to-r from-amber-100 to-orange-100 p-4 rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="text-xs font-semibold text-orange-800">SwagBucks Earned</div>
-                              <div className="text-2xl font-black text-orange-600">$247</div>
+                        {/* Mockup Content */}
+                        <div className="p-6 space-y-4">
+                          <div className="h-48 bg-gradient-to-br from-blue-400 to-purple-400 rounded-xl flex items-center justify-center">
+                            <div className="text-center text-white">
+                              <PulseIcon>
+                                <Sparkles className="h-16 w-16 mx-auto mb-2" />
+                              </PulseIcon>
+                              <div className="text-2xl font-bold">Your Team Store</div>
+                              <div className="text-sm opacity-90">Professional & Beautiful</div>
                             </div>
-                            <TrendingUp className="h-8 w-8 text-orange-600" />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="h-24 bg-gray-100 rounded-lg"></div>
+                            <div className="h-24 bg-gray-100 rounded-lg"></div>
+                          </div>
+                          
+                          <div className="bg-gradient-to-r from-amber-100 to-orange-100 p-4 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="text-xs font-semibold text-orange-800">SwagBucks Earned</div>
+                                <div className="text-2xl font-black text-orange-600">$247</div>
+                              </div>
+                              <TrendingUp className="h-8 w-8 text-orange-600" />
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </FloatingCard>
             </div>
           </div>
         </section>
@@ -169,85 +181,88 @@ export default function HomePage() {
           </div>
           
           <div className="container mx-auto px-4 relative z-10">
-            <div className="text-center mb-16">
-              <span className="px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-bold inline-block mb-4">
-                Simple & Powerful
-              </span>
-              <h2 className="text-4xl md:text-5xl font-black font-headline mb-4 text-gray-900">
-                How It Works
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">
-                Three simple steps to launch your team's revenue-generating store
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto pt-8">
-              {/* Step 1 */}
-              <div className="relative group">
-                <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-purple-200 transform hover:-translate-y-2">
-                  {/* Number Badge */}
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
-                    <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
-                      <span className="text-2xl font-black text-white">1</span>
-                    </div>
-                  </div>
-                  
-                  {/* Icon */}
-                  <div className="pt-12 pb-6 px-6 text-center">
-                    <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
-                      <Store className="h-12 w-12 text-purple-600" />
-                    </div>
-                    
-                    <h3 className="text-2xl font-bold mb-3 text-gray-900">We Build Your Store</h3>
-                    <p className="text-gray-600 leading-relaxed font-medium mb-4">
-                      Fill out a quick form and we'll create your custom-branded storefront with your team colors, logo, and products.
-                    </p>
-                    
-                    <div className="flex items-center justify-center gap-2 text-sm text-purple-600 font-semibold">
-                      <Zap className="h-4 w-4" />
-                      <span>Live in 24 hours</span>
-                    </div>
-                  </div>
-                  
-                  {/* Bottom Accent */}
-                  <div className="h-2 bg-gradient-to-r from-purple-500 to-purple-600"></div>
-                </div>
+            <ScrollReveal direction="up">
+              <div className="text-center mb-16">
+                <span className="px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-bold inline-block mb-4">
+                  Simple & Powerful
+                </span>
+                <h2 className="text-4xl md:text-5xl font-black font-headline mb-4 text-gray-900">
+                  How It Works
+                </h2>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">
+                  Three simple steps to launch your team's revenue-generating store
+                </p>
               </div>
+            </ScrollReveal>
 
-              {/* Step 2 */}
-              <div className="relative group">
-                <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-pink-200 transform hover:-translate-y-2">
-                  {/* Number Badge */}
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
-                    <div className="w-14 h-14 bg-gradient-to-br from-pink-600 to-pink-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
-                      <span className="text-2xl font-black text-white">2</span>
-                    </div>
-                  </div>
-                  
-                  {/* Icon */}
-                  <div className="pt-12 pb-6 px-6 text-center">
-                    <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-pink-200 rounded-3xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
-                      <Users className="h-12 w-12 text-pink-600" />
+            <StaggeredCards staggerDelay={200}>
+              <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto pt-8">
+                {/* Step 1 */}
+                <div className="relative group stagger-item">
+                  <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-purple-200 transform hover:-translate-y-2">
+                    {/* Number Badge */}
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
+                      <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                        <span className="text-2xl font-black text-white">1</span>
+                      </div>
                     </div>
                     
-                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Share & Earn</h3>
-                    <p className="text-gray-600 leading-relaxed font-medium mb-4">
-                      Parents, family, and fans shop your store. Every purchase automatically earns SwagBucks for your team.
-                    </p>
-                    
-                    <div className="flex items-center justify-center gap-2 text-sm text-pink-600 font-semibold">
-                      <TrendingUp className="h-4 w-4" />
-                      <span>Automatic tracking</span>
+                    {/* Icon */}
+                    <div className="pt-12 pb-6 px-6 text-center">
+                      <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
+                        <Store className="h-12 w-12 text-purple-600" />
+                      </div>
+                      
+                      <h3 className="text-2xl font-bold mb-3 text-gray-900">We Build Your Store</h3>
+                      <p className="text-gray-600 leading-relaxed font-medium mb-4">
+                        Fill out a quick form and we'll create your custom-branded storefront with your team colors, logo, and products.
+                      </p>
+                      
+                      <div className="flex items-center justify-center gap-2 text-sm text-purple-600 font-semibold">
+                        <Zap className="h-4 w-4" />
+                        <span>Live in 24 hours</span>
+                      </div>
                     </div>
+                    
+                    {/* Bottom Accent */}
+                    <div className="h-2 bg-gradient-to-r from-purple-500 to-purple-600"></div>
                   </div>
-                  
-                  {/* Bottom Accent */}
-                  <div className="h-2 bg-gradient-to-r from-pink-500 to-pink-600"></div>
                 </div>
-              </div>
 
-              {/* Step 3 */}
-              <div className="relative group">
+                {/* Step 2 */}
+                <div className="relative group stagger-item">
+                  <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-pink-200 transform hover:-translate-y-2">
+                    {/* Number Badge */}
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
+                      <div className="w-14 h-14 bg-gradient-to-br from-pink-600 to-pink-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                        <span className="text-2xl font-black text-white">2</span>
+                      </div>
+                    </div>
+                    
+                    {/* Icon */}
+                    <div className="pt-12 pb-6 px-6 text-center">
+                      <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-pink-200 rounded-3xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
+                        <Users className="h-12 w-12 text-pink-600" />
+                      </div>
+                      
+                      <h3 className="text-2xl font-bold mb-3 text-gray-900">Share & Earn</h3>
+                      <p className="text-gray-600 leading-relaxed font-medium mb-4">
+                        Parents, family, and fans shop your store. Every purchase automatically earns SwagBucks for your team.
+                      </p>
+                      
+                      <div className="flex items-center justify-center gap-2 text-sm text-pink-600 font-semibold">
+                        <TrendingUp className="h-4 w-4" />
+                        <span>Automatic tracking</span>
+                      </div>
+                    </div>
+                    
+                    {/* Bottom Accent */}
+                    <div className="h-2 bg-gradient-to-r from-pink-500 to-pink-600"></div>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="relative group stagger-item">
                 <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-orange-200 transform hover:-translate-y-2">
                   {/* Number Badge */}
                   <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
@@ -278,12 +293,15 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+            </StaggeredCards>
             
             {/* CTA Below Steps */}
-            <div className="text-center mt-16">
-              <p className="text-gray-600 mb-6 text-lg font-medium">Ready to get started?</p>
-              <HomeClient />
-            </div>
+            <ScrollReveal direction="up" delay={400}>
+              <div className="text-center mt-16">
+                <p className="text-gray-600 mb-6 text-lg font-medium">Ready to get started?</p>
+                <HomeClient />
+              </div>
+            </ScrollReveal>
           </div>
         </section>
 
