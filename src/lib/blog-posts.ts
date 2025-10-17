@@ -106,7 +106,7 @@ Your store goes live in 24 hours or less. No waiting weeks for setup.
 Team members can order individually - no need to coordinate bulk orders.
 
 **Earn While You Outfit**
-Every purchase earns you SwagBucks rewards that you can redeem for free merchandise or equipment.
+Every purchase earns you SwagBucks rewards that you can redeem for apparel, accessories, and promotional items.
 
 **Full Service**
 We handle design, production, fulfillment, and shipping. You just share the link.
@@ -227,11 +227,11 @@ You control the profit margin on each item. Many schools add 15-30% to wholesale
 ## SwagBucks: The Bonus Reward
 
 Beyond your profit margins, every purchase earns you SwagBucks that can be redeemed for:
-- Free classroom supplies
-- Sports equipment
-- Technology and tools
-- More spirit wear
-- Gift cards for school needs
+- More apparel and merchandise
+- Accessories for your school
+- Promotional items
+- Additional spirit wear
+- Custom branded items
 
 ## Real-World Example
 
@@ -315,7 +315,7 @@ Great team merchandise extends your brand to:
 
 **Revenue Generation**
 Team merchandise creates sustainable income streams that support:
-- Equipment upgrades
+- Additional merchandise and apparel
 - Tournament travel
 - Facility rentals
 - Team events and activities
@@ -422,7 +422,7 @@ From request to live store in one day—perfect for time-sensitive team needs.
 Families order individually when they're ready. No coordinating bulk orders or managing inventory.
 
 **Earn SwagBucks**
-Every purchase earns rewards you can use for team equipment, tournament fees, or more merchandise.
+Every purchase earns rewards you can use for more apparel, accessories, and promotional items from your store.
 
 **Quality Guaranteed**
 We use premium blanks and printing methods that withstand the demands of active sports.
@@ -697,12 +697,12 @@ Encourage dancers to wear studio merchandise:
 - Holiday shopping options
 - Graduation presents
 
-**Studio Equipment**
+**Additional Merchandise**
 Use earned SwagBucks for:
-- New mirrors or barres
-- Sound equipment
-- Classroom supplies
-- Competition fees
+- More apparel and accessories
+- Promotional items for your studio
+- Custom branded merchandise
+- Additional inventory for your store
 
 ## Success Story Example
 

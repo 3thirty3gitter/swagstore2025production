@@ -124,7 +124,7 @@ export default function RequestStorePage() {
             <div className="border rounded-lg p-6">
               <h3 className="font-semibold mb-2">How do SwagBucks work in Canada?</h3>
               <p className="text-muted-foreground">
-                You earn SwagBucks in Canadian dollars on every sale made through your store. Redeem them for free merchandise, equipment, or donate to your team fund. All SwagBucks values are in CAD.
+                You earn SwagBucks in Canadian dollars on every sale made through your store. Redeem them for apparel, accessories, promotional items, or donate to your team fund. All SwagBucks values are in CAD.
               </p>
             </div>
             <div className="border rounded-lg p-6">

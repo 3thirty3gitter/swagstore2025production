@@ -70,7 +70,7 @@ export default function HomePage() {
                   </h1>
                   
                   <p className="text-xl md:text-2xl text-gray-600 leading-relaxed font-medium hero-subtitle">
-                    Free professional storefronts + SwagBucks rewards on every purchase. Your team earns free gear while supporters get awesome merch!
+                    Free professional storefronts + SwagBucks rewards on every purchase. Your team earns apparel, accessories, and promotional items while supporters get awesome merch!
                   </p>
 
                   {/* Stats Row */}
@@ -277,9 +277,9 @@ export default function HomePage() {
                       <Gift className="h-12 w-12 text-orange-600" />
                     </div>
                     
-                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Get Free Gear</h3>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Earn Rewards</h3>
                     <p className="text-gray-600 leading-relaxed font-medium mb-4">
-                      Watch your milestone meter fill up and redeem SwagBucks for team equipment, jerseys, and more!
+                      Watch your milestone meter fill up and redeem SwagBucks for apparel, accessories, and promotional items!
                     </p>
                     
                     <div className="flex items-center justify-center gap-2 text-sm text-orange-600 font-semibold">

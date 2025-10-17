@@ -169,7 +169,7 @@ export function SwagBucksTrackerSection({ tenantId, title, description, gates = 
                             <strong>How it works:</strong> Earn 10 SwagBucks for every $100 CAD in team sales
                         </p>
                         <p>
-                            SwagBucks can be redeemed for team equipment, tournament fees, or special gear!
+                            SwagBucks can be redeemed for apparel, accessories, and promotional items from your store!
                         </p>
                     </div>
                 </div>

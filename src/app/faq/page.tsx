@@ -36,7 +36,7 @@ const faqs = [
   },
   {
     question: "What are SwagBucks and how do they work?",
-    answer: "SwagBucks are rewards you earn on every purchase made through your team store. They accumulate automatically and can be redeemed for free merchandise, gift cards, or team equipment. It's our way of rewarding you for using SwagStore - the more your team buys, the more you earn!"
+    answer: "SwagBucks are rewards you earn on every purchase made through your team store. They accumulate automatically and can be redeemed for apparel, accessories, and promotional items from your store. It's our way of rewarding you for using SwagStore - the more your team buys, the more you earn!"
   },
   {
     question: "What types of products can I sell in my store?",
