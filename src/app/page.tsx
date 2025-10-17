@@ -153,27 +153,6 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Floating elements */}
-                  <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-2xl p-4 animate-float">
-                    <div className="flex items-center gap-2">
-                      <Zap className="h-6 w-6 text-yellow-500" />
-                      <div>
-                        <div className="text-xs text-gray-500 font-medium">Active Stores</div>
-                        <div className="text-xl font-black text-purple-600">1,000+</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-2xl p-4 animate-float animation-delay-2000">
-                    <div className="flex items-center gap-2">
-                      <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
-                      <div>
-                        <div className="text-xs text-gray-500 font-medium">Rating</div>
-                        <div className="text-xl font-black text-purple-600">4.9/5</div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -200,12 +179,12 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto pt-8">
               {/* Step 1 */}
               <div className="relative group">
                 <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-purple-200 transform hover:-translate-y-2">
                   {/* Number Badge */}
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
                     <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
                       <span className="text-2xl font-black text-white">1</span>
                     </div>
@@ -237,7 +216,7 @@ export default function HomePage() {
               <div className="relative group">
                 <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-pink-200 transform hover:-translate-y-2">
                   {/* Number Badge */}
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
                     <div className="w-14 h-14 bg-gradient-to-br from-pink-600 to-pink-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
                       <span className="text-2xl font-black text-white">2</span>
                     </div>
@@ -269,7 +248,7 @@ export default function HomePage() {
               <div className="relative group">
                 <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-orange-200 transform hover:-translate-y-2">
                   {/* Number Badge */}
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
                     <div className="w-14 h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
                       <span className="text-2xl font-black text-white">3</span>
                     </div>
