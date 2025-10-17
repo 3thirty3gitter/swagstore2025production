@@ -15,7 +15,10 @@ export function FirebaseClientProvider({
   // the first render and miss real-time subscriptions.
   const [app] = useState<FirebaseApp | null>(firebaseApp);
 
+  console.log('FirebaseClientProvider: app =', app);
+
   if (!app) {
+    console.log('FirebaseClientProvider: No Firebase app, returning null');
     return null;
   }
 

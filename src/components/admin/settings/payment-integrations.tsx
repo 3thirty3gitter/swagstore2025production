@@ -42,6 +42,7 @@ export default function PaymentIntegrations() {
     console.log('loadSettings called, firestore:', firestore);
     if (!firestore) {
       console.log('Firestore not available, will retry when it initializes');
+      setLoading(false);
       return;
     }
 

@@ -29,6 +29,10 @@ export const FirebaseProvider = ({
   const auth = getAuth(app);
   const firestore = getFirestore(app);
 
+  console.log('FirebaseProvider: app =', app);
+  console.log('FirebaseProvider: auth =', auth);
+  console.log('FirebaseProvider: firestore =', firestore);
+
   return (
     <FirebaseContext.Provider value={{ app, auth, firestore }}>
       {children}
