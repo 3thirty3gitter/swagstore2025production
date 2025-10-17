@@ -33,23 +33,33 @@ export default function PaymentIntegrations() {
     locationId: '',
   });
 
-  useEffect(() => {
-    if (firestore) {
-      loadSettings();
-    }
+    useEffect(() => {
+    console.log('PaymentIntegrations: firestore =', firestore);
+    loadSettings();
   }, [firestore]);
 
-  const loadSettings = async () => {
+    const loadSettings = async () => {
+    console.log('loadSettings called, firestore:', firestore);
+    if (!firestore) {
+      console.log('Firestore not available, will retry when it initializes');
+      return;
+    }
+
     try {
-      const settingsDoc = await getDoc(doc(firestore!, 'settings', 'payment'));
+      console.log('Loading payment settings...');
+      const settingsDoc = await getDoc(doc(firestore, 'settings', 'payment'));
       if (settingsDoc.exists()) {
+        console.log('Settings found:', settingsDoc.data());
         const data = settingsDoc.data();
         if (data.stripe) setStripe(data.stripe);
         if (data.square) setSquare(data.square);
+      } else {
+        console.log('No payment settings document found');
       }
     } catch (error) {
       console.error('Error loading settings:', error);
     } finally {
+      console.log('Setting loading to false');
       setLoading(false);
     }
   };
