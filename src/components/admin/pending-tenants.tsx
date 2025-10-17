@@ -16,7 +16,7 @@ import {
   X
 } from 'lucide-react';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, doc, updateDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
 import type { Tenant } from '@/lib/types';
 import Image from 'next/image';
@@ -28,8 +28,9 @@ export function PendingTenants() {
   const { toast } = useToast();
   const [approvingIds, setApprovingIds] = useState<Set<string>>(new Set());
 
+  // Query pendingTenants collection instead of tenants with status filter
   const pendingQuery = firestore 
-    ? query(collection(firestore, 'tenants'), where('status', '==', 'pending'))
+    ? query(collection(firestore, 'pendingTenants'))
     : null;
   
   const { data: pendingTenants, isLoading } = useCollection<Tenant>(pendingQuery);
@@ -43,18 +44,26 @@ export function PendingTenants() {
       // Generate default website data
       const defaultWebsite = generateDefaultWebsiteData(tenant);
       
-      // Update tenant to active status
-      await updateDoc(doc(firestore, 'tenants', tenant.id), {
-        status: 'active',
+      // Create new active tenant in the tenants collection
+      const activeTenant = {
+        ...tenant,
+        status: 'active' as const,
         isActive: true,
         website: defaultWebsite,
         approvedAt: new Date(),
         approvedBy: 'admin', // You could pass in current user ID
-      });
+        createdAt: new Date(),
+      };
+
+      // Add to tenants collection
+      await setDoc(doc(firestore, 'tenants', tenant.id), activeTenant);
+      
+      // Remove from pendingTenants collection
+      await deleteDoc(doc(firestore, 'pendingTenants', tenant.id));
 
       toast({
         title: 'Tenant Approved!',
-        description: `${tenant.storeName} has been activated and their store is now live.`,
+        description: `${tenant.storeName} has been activated and their store is now live at ${tenant.subdomain}.swagstore.ca`,
       });
     } catch (error) {
       console.error('Error approving tenant:', error);
@@ -76,14 +85,12 @@ export function PendingTenants() {
     if (!firestore) return;
     
     try {
-      await updateDoc(doc(firestore, 'tenants', tenantId), {
-        status: 'rejected',
-        rejectedAt: new Date(),
-      });
+      // Simply delete from pendingTenants collection
+      await deleteDoc(doc(firestore, 'pendingTenants', tenantId));
 
       toast({
         title: 'Request Rejected',
-        description: 'The store request has been rejected.',
+        description: 'The store request has been rejected and removed.',
       });
     } catch (error) {
       console.error('Error rejecting tenant:', error);
@@ -204,7 +211,7 @@ export function PendingTenants() {
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Submitted:</span>
                       <span className="text-sm font-medium">
-                        {tenant.submittedAt ? new Date(tenant.submittedAt.seconds * 1000).toLocaleDateString() : 'N/A'}
+                        {tenant.submittedAt ? new Date(tenant.submittedAt).toLocaleDateString() : 'N/A'}
                       </span>
                     </div>
                   </div>
