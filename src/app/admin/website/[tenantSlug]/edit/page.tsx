@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import type { Tenant } from "@/lib/types";
+import type { Tenant, Product } from "@/lib/types";
 import { TenantEditor } from '@/components/admin/tenant-editor';
 import { getAdminApp } from '@/lib/firebase-admin';
 
@@ -19,10 +19,29 @@ async function getTenantBySlug(slug: string) {
   }
   
   const doc = tenantsSnapshot.docs[0];
-  return {
+  const data = doc.data();
+  
+  // Properly serialize the data to ensure it can be passed to client components
+  return JSON.parse(JSON.stringify({
     id: doc.id,
-    ...doc.data()
-  } as Tenant;
+    ...data
+  })) as Tenant;
+}
+
+async function getTenantProducts(tenantId: string) {
+  const { db } = getAdminApp();
+  
+  const productsSnapshot = await db
+    .collection('products')
+    .where('tenantIds', 'array-contains', tenantId)
+    .get();
+  
+  return JSON.parse(JSON.stringify(
+    productsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+  )) as Product[];
 }
 
 export default async function WebsiteEditorPage({
@@ -37,5 +56,7 @@ export default async function WebsiteEditorPage({
     notFound();
   }
 
-  return <TenantEditor tenant={tenant} />;
+  const tenantProducts = await getTenantProducts(tenant.id);
+
+  return <TenantEditor tenant={tenant} tenantProducts={tenantProducts} />;
 }
