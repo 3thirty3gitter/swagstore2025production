@@ -6,12 +6,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { CheckCircle, Loader2, Package, Mail, Phone, MapPin } from 'lucide-react';
-import { doc, getDoc } from 'firebase/firestore';
-import { useFirebase } from '@/firebase';
 
 export default function OrderConfirmationPage() {
   const searchParams = useSearchParams();
-  const { firestore } = useFirebase();
   const orderId = searchParams.get('orderId');
   
   const [order, setOrder] = useState<any>(null);
@@ -19,12 +16,21 @@ export default function OrderConfirmationPage() {
 
   useEffect(() => {
     const fetchOrder = async () => {
-      if (!orderId || !firestore) return;
+      if (!orderId) {
+        setLoading(false);
+        return;
+      }
       
       try {
-        const orderDoc = await getDoc(doc(firestore, 'orders', orderId));
-        if (orderDoc.exists()) {
-          setOrder({ id: orderDoc.id, ...orderDoc.data() });
+        console.log('Fetching order from API:', orderId);
+        const response = await fetch(`/api/orders/${orderId}`);
+        const result = await response.json();
+        
+        if (result.success && result.order) {
+          console.log('Order loaded:', result.order);
+          setOrder(result.order);
+        } else {
+          console.log('Order not found');
         }
       } catch (error) {
         console.error('Error fetching order:', error);
@@ -34,7 +40,7 @@ export default function OrderConfirmationPage() {
     };
 
     fetchOrder();
-  }, [orderId, firestore]);
+  }, [orderId]);
 
   if (loading) {
     return (
