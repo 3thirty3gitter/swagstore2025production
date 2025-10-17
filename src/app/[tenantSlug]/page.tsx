@@ -33,10 +33,13 @@ async function getTenantBySlug(slug: string): Promise<Tenant | null> {
     }
 
     const doc = snapshot.docs[0];
-    const tenant = {
+    const data = doc.data();
+    
+    // Properly serialize to avoid React hydration issues
+    const tenant = JSON.parse(JSON.stringify({
       id: doc.id,
-      ...doc.data()
-    } as Tenant;
+      ...data
+    })) as Tenant;
     
     console.log('[getTenantBySlug] Found tenant:', tenant.name, tenant.slug);
     return tenant;
