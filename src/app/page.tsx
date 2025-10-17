@@ -196,10 +196,10 @@ export default function HomePage() {
             </ScrollReveal>
 
             <StaggeredCards staggerDelay={200}>
-              <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto pt-8">
+              <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto pt-16">
                 {/* Step 1 */}
                 <div className="relative group stagger-item">
-                  <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-purple-200 transform hover:-translate-y-2">
+                  <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border-4 border-transparent hover:border-purple-200 transform hover:-translate-y-2 overflow-visible">
                     {/* Number Badge */}
                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
                       <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
@@ -225,13 +225,13 @@ export default function HomePage() {
                     </div>
                     
                     {/* Bottom Accent */}
-                    <div className="h-2 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+                    <div className="h-2 bg-gradient-to-r from-purple-500 to-purple-600 rounded-b-3xl"></div>
                   </div>
                 </div>
 
                 {/* Step 2 */}
                 <div className="relative group stagger-item">
-                  <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-pink-200 transform hover:-translate-y-2">
+                  <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border-4 border-transparent hover:border-pink-200 transform hover:-translate-y-2 overflow-visible">
                     {/* Number Badge */}
                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
                       <div className="w-14 h-14 bg-gradient-to-br from-pink-600 to-pink-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
@@ -257,13 +257,13 @@ export default function HomePage() {
                     </div>
                     
                     {/* Bottom Accent */}
-                    <div className="h-2 bg-gradient-to-r from-pink-500 to-pink-600"></div>
+                    <div className="h-2 bg-gradient-to-r from-pink-500 to-pink-600 rounded-b-3xl"></div>
                   </div>
                 </div>
 
                 {/* Step 3 */}
                 <div className="relative group stagger-item">
-                <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border-4 border-transparent hover:border-orange-200 transform hover:-translate-y-2">
+                <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border-4 border-transparent hover:border-orange-200 transform hover:-translate-y-2 overflow-visible">
                   {/* Number Badge */}
                   <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
                     <div className="w-14 h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
@@ -289,7 +289,7 @@ export default function HomePage() {
                   </div>
                   
                   {/* Bottom Accent */}
-                  <div className="h-2 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+                  <div className="h-2 bg-gradient-to-r from-orange-500 to-orange-600 rounded-b-3xl"></div>
                 </div>
               </div>
             </div>
