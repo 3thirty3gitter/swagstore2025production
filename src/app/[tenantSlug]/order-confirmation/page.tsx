@@ -11,9 +11,7 @@ import { useFirebase } from '@/firebase';
 
 export default function OrderConfirmationPage() {
   const searchParams = useSearchParams();
-  const params = useParams();
   const { firestore } = useFirebase();
-  const tenantSlug = params.tenantSlug as string;
   const orderId = searchParams.get('orderId');
   
   const [order, setOrder] = useState<any>(null);
@@ -50,7 +48,7 @@ export default function OrderConfirmationPage() {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-3xl font-bold mb-4">Order Not Found</h1>
-        <Link href={`/${tenantSlug}`}>
+        <Link href="/">
           <Button>Return to Store</Button>
         </Link>
       </div>
@@ -313,7 +311,7 @@ export default function OrderConfirmationPage() {
 
         {/* Action Buttons - Hidden in print */}
         <div className="flex flex-col sm:flex-row gap-3 no-print">
-          <Link href={`/${tenantSlug}`} className="flex-1">
+          <Link href="/" className="flex-1">
             <Button size="lg" className="w-full">
               Continue Shopping
             </Button>

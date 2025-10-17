@@ -10,8 +10,6 @@ import { Trash2, Plus, Minus } from 'lucide-react';
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total, itemCount } = useCart();
-  const params = useParams();
-  const tenantSlug = params.tenantSlug as string;
 
   const getImageSrc = (image: string | undefined) => {
     if (!image) return '/placeholder.png';
@@ -24,7 +22,7 @@ export default function CartPage() {
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-3xl font-bold mb-4">Your Cart is Empty</h1>
         <p className="text-muted-foreground mb-8">Add some products to get started!</p>
-        <Link href={`/${tenantSlug}`}>
+        <Link href="/">
           <Button size="lg">Continue Shopping</Button>
         </Link>
       </div>
@@ -119,13 +117,13 @@ export default function CartPage() {
                 </div>
               </div>
               
-              <Link href={`/${tenantSlug}/checkout`} className="block">
+              <Link href="/checkout" className="block">
                 <Button size="lg" className="w-full">
                   Proceed to Checkout
                 </Button>
               </Link>
               
-              <Link href={`/${tenantSlug}`}>
+              <Link href="/">
                 <Button variant="outline" className="w-full">
                   Continue Shopping
                 </Button>

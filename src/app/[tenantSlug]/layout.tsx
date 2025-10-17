@@ -16,11 +16,9 @@ import { Button } from "@/components/ui/button";
 
 function CartIcon() {
   const { itemCount } = useCart();
-  const params = useParams();
-  const tenantSlug = params.tenantSlug as string;
 
   return (
-    <Link href={`/${tenantSlug}/cart`}>
+    <Link href="/cart">
       <Button variant="ghost" size="icon" className="relative">
         <ShoppingCart className="h-5 w-5" />
         {itemCount > 0 && (
