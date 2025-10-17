@@ -10,26 +10,80 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   metadataBase: new URL('https://swagstore.ca'),
   title: {
-    default: 'SwagStore - Custom Team Stores for Canadian Organizations',
+    default: 'Custom Team Stores & Apparel | Free Setup | SwagStore Canada',
     template: '%s | SwagStore Canada'
   },
-  description: 'Professional custom team stores for Canadian hockey teams, dance studios, bands & organizations. Free setup, SwagBucks rewards, custom subdomains. Get your store in 24 hours!',
+  description: 'Free custom team stores for schools, sports teams, clubs & organizations across Canada. We build your store, you earn rewards. Custom apparel, merchandise & branded gear in 24 hours.',
   keywords: [
+    // Primary Keywords - Team Stores
     'custom team stores canada',
+    'team merchandise store',
+    'online team store platform',
+    'custom team apparel store',
+    'team store builder',
+    
+    // Sports Teams
     'hockey team merchandise',
-    'canadian team apparel',
-    'dance studio merchandise',
-    'band merchandise canada',
-    'team store creation',
-    'swagbucks rewards',
-    'canadian team gear',
-    'custom team jerseys',
-    'team merchandise platform',
+    'hockey team apparel',
     'sports team stores',
-    'organization merchandise',
-    'canadian small business',
-    'team fundraising',
-    'branded merchandise canada'
+    'sports team merchandise',
+    'youth sports apparel',
+    'minor hockey merchandise',
+    'baseball team gear',
+    'soccer team apparel',
+    'basketball team merchandise',
+    'football team gear',
+    
+    // Schools & Education
+    'school spirit wear',
+    'school merchandise store',
+    'school apparel canada',
+    'student group merchandise',
+    'school team apparel',
+    'university merchandise',
+    'college apparel store',
+    
+    // Dance & Arts
+    'dance studio merchandise',
+    'dance team apparel',
+    'dance studio apparel',
+    'performing arts merchandise',
+    'band merchandise canada',
+    'music group apparel',
+    'choir merchandise',
+    
+    // Clubs & Organizations
+    'club merchandise',
+    'organization apparel',
+    'group merchandise canada',
+    'non-profit merchandise',
+    'community group apparel',
+    'team fundraising merchandise',
+    
+    // Product Types
+    'custom team jerseys',
+    'custom hoodies canada',
+    'custom t-shirts canada',
+    'team jackets',
+    'custom hats canada',
+    'branded merchandise',
+    'promotional apparel',
+    'team uniforms',
+    
+    // Service Features
+    'free team store setup',
+    'team store rewards program',
+    'swagbucks rewards',
+    'custom subdomain store',
+    'online fundraising store',
+    'team store management',
+    
+    // Location-based
+    'canadian team apparel',
+    'canadian team gear',
+    'canadian custom merchandise',
+    'canada team stores',
+    'team merchandise canada',
   ],
   authors: [{ name: '3thirty3' }],
   creator: '3thirty3',
@@ -49,8 +103,8 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_CA',
     url: 'https://swagstore.ca',
-    title: 'SwagStore - Custom Team Stores for Canadian Organizations',
-    description: 'Professional custom team stores for Canadian hockey teams, dance studios, bands & organizations. Free setup, SwagBucks rewards, custom subdomains.',
+    title: 'Custom Team Stores & Apparel for Canadian Teams | Free Setup',
+    description: 'Free custom team stores for schools, sports teams, clubs & organizations. We build your store, you earn rewards on every purchase. Launch in 24 hours.',
     siteName: 'SwagStore',
     images: [
       {
@@ -63,8 +117,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SwagStore - Custom Team Stores for Canadian Organizations',
-    description: 'Professional custom team stores for Canadian teams. Free setup, SwagBucks rewards, custom subdomains.',
+    title: 'Custom Team Stores & Apparel for Canadian Teams | Free Setup',
+    description: 'Free custom team stores for schools, sports teams, clubs & organizations. We build your store, you earn rewards. Launch in 24 hours.',
     images: ['/twitter-image.jpg'],
   },
   alternates: {
@@ -90,9 +144,10 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'SwagStore',
+    alternateName: 'SwagStore Canada',
     url: 'https://swagstore.ca',
     logo: 'https://swagstore.ca/logo.png',
-    description: 'Custom team stores for Canadian organizations',
+    description: 'Free custom team stores for schools, sports teams, clubs & organizations across Canada. We build your store, you earn rewards on every purchase.',
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'CA'
@@ -102,7 +157,58 @@ export default function RootLayout({
       contactType: 'customer service',
       areaServed: 'CA'
     },
-    sameAs: []
+    sameAs: [],
+    service: {
+      '@type': 'Service',
+      name: 'Custom Team Store Creation',
+      description: 'Free professional team store setup with custom subdomain, merchandise management, and rewards program',
+      provider: {
+        '@type': 'Organization',
+        name: 'SwagStore'
+      },
+      areaServed: {
+        '@type': 'Country',
+        name: 'Canada'
+      },
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Team Merchandise Services',
+        itemListElement: [
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Custom Team Stores for Sports Teams',
+              description: 'Hockey, soccer, baseball, basketball, football team merchandise stores'
+            }
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'School Spirit Wear Stores',
+              description: 'Custom apparel stores for schools, colleges, and universities'
+            }
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Dance Studio Merchandise',
+              description: 'Custom dance team and studio apparel stores'
+            }
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Club & Organization Stores',
+              description: 'Custom merchandise for clubs, groups, and non-profits'
+            }
+          }
+        ]
+      }
+    }
   };
 
   return (
