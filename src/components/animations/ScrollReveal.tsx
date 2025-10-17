@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, ReactNode } from 'react';
-import { animate } from 'animejs';
+import { animate, utils } from 'animejs';
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -26,8 +26,12 @@ export function ScrollReveal({
           if (entry.isIntersecting && !hasAnimated.current && elementRef.current) {
             hasAnimated.current = true;
             
-            const animations: any = {
-              opacity: [0, 1],
+            // Set up CSS variables based on direction
+            const initialVars: any = {
+              '--opacity': '0',
+            };
+            const animateVars: any = {
+              '--opacity': '1',
               easing: 'outExpo',
               duration: 1200,
               delay: delay
@@ -35,23 +39,36 @@ export function ScrollReveal({
 
             switch (direction) {
               case 'up':
-                animations.translateY = [50, 0];
+                initialVars['--y'] = '50px';
+                initialVars.transform = () => 'translateY(var(--y))';
+                animateVars['--y'] = '0px';
                 break;
               case 'down':
-                animations.translateY = [-50, 0];
+                initialVars['--y'] = '-50px';
+                initialVars.transform = () => 'translateY(var(--y))';
+                animateVars['--y'] = '0px';
                 break;
               case 'left':
-                animations.translateX = [50, 0];
+                initialVars['--x'] = '50px';
+                initialVars.transform = () => 'translateX(var(--x))';
+                animateVars['--x'] = '0px';
                 break;
               case 'right':
-                animations.translateX = [-50, 0];
+                initialVars['--x'] = '-50px';
+                initialVars.transform = () => 'translateX(var(--x))';
+                animateVars['--x'] = '0px';
                 break;
               case 'scale':
-                animations.scale = [0.8, 1];
+                initialVars['--scale'] = '0.8';
+                initialVars.transform = () => 'scale(var(--scale))';
+                animateVars['--scale'] = '1';
                 break;
             }
 
-            animate(elementRef.current, animations);
+            initialVars.opacity = () => 'var(--opacity)';
+            
+            utils.set(elementRef.current, initialVars);
+            animate(elementRef.current, animateVars);
           }
         });
       },
@@ -66,7 +83,7 @@ export function ScrollReveal({
   }, [delay, direction]);
 
   return (
-    <div ref={elementRef} className={className} style={{ opacity: 0 }}>
+    <div ref={elementRef} className={className}>
       {children}
     </div>
   );

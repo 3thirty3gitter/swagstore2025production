@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, ReactNode } from 'react';
-import { animate } from 'animejs';
+import { animate, utils } from 'animejs';
 
 interface PulseIconProps {
   children: ReactNode;
@@ -14,8 +14,14 @@ export function PulseIcon({ children, className = '' }: PulseIconProps) {
   useEffect(() => {
     if (!iconRef.current) return;
 
+    // Set up CSS variable for scale
+    utils.set(iconRef.current, {
+      '--scale': '1',
+      transform: () => 'scale(var(--scale))',
+    });
+
     const animation = animate(iconRef.current, {
-      scale: [1, 1.15, 1],
+      '--scale': ['1', '1.15', '1'],
       easing: 'inOutSine',
       duration: 2000,
       loop: true
