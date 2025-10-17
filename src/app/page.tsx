@@ -27,7 +27,7 @@ export default function HomePage() {
             <div className="container mx-auto px-4 text-center relative z-10">
               <div className="flex items-center justify-center gap-2 text-sm md:text-base font-semibold animate-pulse">
                 <Sparkles className="h-5 w-5" />
-                <span>🔥 Overwhelming response! Limited spots available — Secure your team's store today</span>
+                <span>🔥 Overwhelming response! We're processing requests as fast as we can!</span>
                 <Sparkles className="h-5 w-5" />
               </div>
             </div>
@@ -366,10 +366,10 @@ export default function HomePage() {
               {/* CTA Card */}
               <div className="bg-white rounded-3xl shadow-2xl p-12 border-4 border-purple-100">
                 <h2 className="text-4xl md:text-5xl font-black font-headline mb-6 text-gray-900">
-                  Ready to Launch Your Team Store?
+                  Ready for Your Free Team Store?
                 </h2>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed font-medium">
-                  Join hundreds of Canadian teams already earning free gear. Setup takes 5 minutes, launch happens in 24 hours.
+                  We build it. You profit. Your store launches in 24 hours.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
