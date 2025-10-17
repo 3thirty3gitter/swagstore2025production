@@ -7,6 +7,7 @@ type Settings = { logoUrl?: string };
 export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
   const [logo, setLogo] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -15,7 +16,10 @@ export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
         const res = await fetch('/api/site-settings');
         const json = await res.json();
         const raw = json?.settings?.logoUrl || fallbackSrc || null;
-        if (!raw) return;
+        if (!raw) {
+          if (mounted) setLoading(false);
+          return;
+        }
 
         // try signed URL first
         try {
@@ -43,11 +47,32 @@ export default function SiteLogo({ fallbackSrc }: { fallbackSrc?: string }) {
     };
   }, [fallbackSrc]);
 
-  if (!logo) return null;
+  // Show skeleton while loading or if no logo
+  if (loading || !logo) {
+    return (
+      <div className="h-10 w-[220px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-pulse" 
+           style={{ 
+             backgroundSize: '200% 100%',
+             animation: 'shimmer 1.5s ease-in-out infinite'
+           }}>
+      </div>
+    );
+  }
 
   return (
-    <div className="h-10 w-auto">
-      <Image src={logo} alt="Site logo" width={220} height={40} style={{ objectFit: 'contain' }} />
+    <div 
+      className="h-10 w-auto transition-opacity duration-500 ease-in-out"
+      style={{ opacity: imageLoaded ? 1 : 0 }}
+    >
+      <Image 
+        src={logo} 
+        alt="Site logo" 
+        width={220} 
+        height={40} 
+        style={{ objectFit: 'contain' }} 
+        priority
+        onLoad={() => setImageLoaded(true)}
+      />
     </div>
   );
 }
