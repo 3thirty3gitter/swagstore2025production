@@ -9,8 +9,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useParams, useRouter } from 'next/navigation';
 import { Truck, Store, CreditCard, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { useFirebase } from '@/firebase';
 import SquarePaymentForm from '@/components/store/square-payment-form';
 import { calculateCanadianTax, formatCurrency } from '@/lib/tax-calculator';
 
@@ -19,7 +17,6 @@ export default function CheckoutPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
-  const { firestore } = useFirebase();
   const tenantSlug = params.tenantSlug as string;
   
   const [step, setStep] = useState<'details' | 'payment'>('details');
@@ -53,8 +50,6 @@ export default function CheckoutPage() {
 
   const handlePaymentSuccess = async (paymentId: string) => {
     try {
-      if (!firestore) throw new Error('Firestore not initialized');
-
       const orderData = {
         tenantSlug,
         fulfillmentMethod,
@@ -81,17 +76,29 @@ export default function CheckoutPage() {
         paymentId,
         paymentStatus: 'completed',
         status: 'pending',
-        createdAt: serverTimestamp(),
       };
 
-      const docRef = await addDoc(collection(firestore, 'orders'), orderData);
+      console.log('Creating order via API...');
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to create order');
+      }
+
+      console.log('Order created:', result.orderId);
 
       toast({
         title: 'Order placed successfully!',
-        description: `Order #${docRef.id.slice(0, 8)} has been created`,
+        description: `Order #${result.orderId.slice(0, 8)} has been created`,
       });
 
-      router.push(`/order-confirmation?orderId=${docRef.id}`);
+      router.push(`/order-confirmation?orderId=${result.orderId}`);
       
       setTimeout(() => {
         clearCart();
