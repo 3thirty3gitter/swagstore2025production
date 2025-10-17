@@ -74,9 +74,9 @@ export default function TenantLayout({
   }, [firestore, tenantSlug, serverTenant]);
 
   const effectiveTenant = tenant || serverTenant || null;
-  // Don't block on loading - let page content render immediately
-  // Only consider it "loading" if we're actively fetching from server AND have no data yet
-  const effectiveLoading = !firestore && isLoadingServerTenant && !serverTenant;
+  // Don't block on loading at all - let page content render
+  // The page component has its own tenant data from server
+  const effectiveLoading = false; // Never block - page will handle its own loading
   
   const [logoWidth, setLogoWidth] = useState(96); // Default logo width
   const [isEditor, setIsEditor] = useState(false);
@@ -159,37 +159,13 @@ export default function TenantLayout({
   }, [isEditor, logoWidth]);
 
 
-  if (effectiveLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  if (!effectiveTenant) {
-    return (
-      <div className="min-h-screen bg-background text-foreground">
-        <header className="border-b bg-card sticky top-0 z-50">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex min-h-16 items-center justify-center relative">
-              <span className="text-xl font-bold font-headline">Store not found</span>
-            </div>
-          </div>
-        </header>
-        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-16">
-            <h1 className="text-4xl font-bold">404</h1>
-            <p className="text-muted-foreground mt-2">The requested storefront could not be found.</p>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  const headerLayout = effectiveTenant.website?.header?.layout || 'centered';
-  const menuItems = effectiveTenant.website?.header?.menuItems || [];
-  const logoUrl = effectiveTenant.website?.header?.logoUrl;
+  // Don't show loading spinner - let page content render immediately
+  // Don't show 404 - the page component will handle that if needed
+  // Just render the layout chrome and let children display
+  
+  const headerLayout = effectiveTenant?.website?.header?.layout || 'centered';
+  const menuItems = effectiveTenant?.website?.header?.menuItems || [];
+  const logoUrl = effectiveTenant?.website?.header?.logoUrl;
   
   const navAlignment = headerLayout === 'left-aligned' ? 'ml-6' : 'justify-center';
   const logoAlignment = headerLayout === 'centered' ? 'absolute left-1/2 -translate-x-1/2' : '';
@@ -201,6 +177,7 @@ export default function TenantLayout({
       <header className="border-b bg-card sticky top-0 z-50 backdrop-blur-sm bg-background/80">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex min-h-16 relative py-2">
+            {effectiveTenant && (
             <div className={`flex items-center ${headerLayout === 'left-aligned' ? '' : 'flex-1'}`}>
                 <Link href={`/${effectiveTenant.slug}`} className={cn(`flex items-center gap-2 ${logoAlignment}`, isEditor && 'pointer-events-none')}>
                   {logoUrl ? (
@@ -221,11 +198,12 @@ export default function TenantLayout({
                       <div className="bg-primary text-primary-foreground p-2 rounded-lg">
                         <Store className="h-6 w-6" />
                       </div>
-                      <span className="text-xl font-bold font-headline">{effectiveTenant.storeName}</span>
+                      <span className="text-xl font-bold font-headline">{effectiveTenant?.storeName || 'Store'}</span>
                     </>
                   )}
                 </Link>
             </div>
+            )}
 
             {headerLayout !== 'minimal' && menuItems.length > 0 && (
               <nav className={`flex-1 flex items-center ${navAlignment}`}>
@@ -252,7 +230,7 @@ export default function TenantLayout({
       </main>
       <footer className="border-t">
         <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} {effectiveTenant.storeName}. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {effectiveTenant?.storeName || 'Store'}. All rights reserved.</p>
         </div>
       </footer>
     </div>
