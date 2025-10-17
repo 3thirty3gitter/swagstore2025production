@@ -139,13 +139,6 @@ const getDefaultWebsiteData = (): Website => ({
                     imageWidth: 80,
                     imageHeight: 60,
                 }
-              },
-              {
-                id: `section-${Date.now() + 1}`,
-                type: 'Product List',
-                props: {
-                    title: "Featured Products",
-                }
               }
             ]
         }
