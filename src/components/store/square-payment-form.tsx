@@ -4,8 +4,6 @@ import { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CreditCard, Shield, Lock } from 'lucide-react';
-import { doc, getDoc } from 'firebase/firestore';
-import { useFirebase } from '@/firebase';
 
 interface SquarePaymentFormProps {
   amount: number;
@@ -20,7 +18,6 @@ export default function SquarePaymentForm({
   onPaymentError,
   tenantSlug,
 }: SquarePaymentFormProps) {
-  const { firestore } = useFirebase();
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [card, setCard] = useState<any>(null);
@@ -45,20 +42,30 @@ export default function SquarePaymentForm({
   }, []);
 
   const loadSquareSettings = async () => {
-    if (!firestore) return;
-
     try {
-      const settingsDoc = await getDoc(doc(firestore, 'settings', 'payment'));
-      if (settingsDoc.exists()) {
-        const { square } = settingsDoc.data();
-        if (square && square.enabled) {
+      console.log('Loading Square settings from API...');
+      const response = await fetch('/api/admin/settings/payment');
+      
+      if (!response.ok) {
+        throw new Error('Failed to load payment settings');
+      }
+
+      const result = await response.json();
+      console.log('Payment settings loaded:', result);
+
+      if (result.success && result.data && result.data.square) {
+        const square = result.data.square;
+        if (square.enabled) {
+          console.log('Square is enabled, initializing...');
           setSquareSettings(square);
           await initializeSquare(square);
         } else {
+          console.log('Square is not enabled');
           setIsLoading(false);
           onPaymentError('Square payment is not configured. Please contact the store administrator.');
         }
       } else {
+        console.log('No Square settings found');
         setIsLoading(false);
         onPaymentError('Payment settings not found. Please contact the store administrator.');
       }
