@@ -61,11 +61,11 @@ export default function HomePage() {
                   
                   <h1 className="text-5xl md:text-7xl font-black font-headline leading-tight hero-title">
                     <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
-                      Build Your Team's
+                      We Build Your Store Free.
                     </span>
                     <br />
                     <span className="text-gray-900">
-                      Dream Store
+                      Your Team Earns Rewards.
                     </span>
                   </h1>
                   
