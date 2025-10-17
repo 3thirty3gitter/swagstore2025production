@@ -91,7 +91,7 @@ export default function CheckoutPage() {
         description: `Order #${docRef.id.slice(0, 8)} has been created`,
       });
 
-      router.push(`/${tenantSlug}/order-confirmation?orderId=${docRef.id}`);
+      router.push(`/order-confirmation?orderId=${docRef.id}`);
       
       setTimeout(() => {
         clearCart();
