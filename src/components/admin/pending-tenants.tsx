@@ -46,13 +46,19 @@ export function PendingTenants() {
   const { data: declinedTenants, isLoading: declinedLoading } = useCollection<Tenant>(declinedQuery);
 
   const handleApprove = async (tenant: Tenant) => {
-    if (!firestore) return;
+    if (!firestore) {
+      console.error('Firestore not initialized');
+      return;
+    }
     
     setApprovingIds(prev => new Set(prev).add(tenant.id));
     
     try {
+      console.log('Approving tenant:', tenant);
+      
       // Generate default website data
       const defaultWebsite = generateDefaultWebsiteData(tenant);
+      console.log('Generated default website:', defaultWebsite);
       
       // Create new active tenant in the tenants collection
       const activeTenant = {
@@ -60,16 +66,21 @@ export function PendingTenants() {
         status: 'active' as const,
         isActive: true,
         website: defaultWebsite,
-        approvedAt: new Date(),
+        approvedAt: new Date().toISOString(),
         approvedBy: 'admin', // You could pass in current user ID
-        createdAt: new Date(),
+        createdAt: tenant.createdAt || new Date().toISOString(),
+        submittedAt: tenant.submittedAt || new Date().toISOString(),
       };
 
+      console.log('Writing active tenant to Firestore:', activeTenant);
+      
       // Add to tenants collection
       await setDoc(doc(firestore, 'tenants', tenant.id), activeTenant);
+      console.log('Successfully wrote to tenants collection');
       
       // Remove from pendingTenants collection
       await deleteDoc(doc(firestore, 'pendingTenants', tenant.id));
+      console.log('Successfully deleted from pendingTenants collection');
 
       toast({
         title: 'Tenant Approved!',
@@ -77,10 +88,11 @@ export function PendingTenants() {
       });
     } catch (error) {
       console.error('Error approving tenant:', error);
+      console.error('Error details:', error instanceof Error ? error.message : String(error));
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to approve tenant. Please try again.',
+        description: `Failed to approve tenant: ${error instanceof Error ? error.message : 'Please try again.'}`,
       });
     } finally {
       setApprovingIds(prev => {

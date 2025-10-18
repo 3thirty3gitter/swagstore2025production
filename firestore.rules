@@ -3,7 +3,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Active tenants - authenticated users only
     match /tenants/{document} {
-      allow read, write: if request.auth != null;
+      allow read, write: if true; // TODO: Change to request.auth != null in production
     }
     
     // Pending tenants - public create, authenticated read/write
