@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-3 mb-6 md:mb-0">
-            <div className="h-12 flex items-center -mt-1">
+            <div className="flex items-center">
               <SiteLogo />
             </div>
             <div className="flex flex-col">
