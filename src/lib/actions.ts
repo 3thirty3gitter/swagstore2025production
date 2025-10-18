@@ -139,6 +139,13 @@ const getDefaultWebsiteData = (): Website => ({
                     imageWidth: 80,
                     imageHeight: 60,
                 }
+              },
+              {
+                id: `section-${Date.now() + 1}`,
+                type: 'Product List',
+                props: {
+                    title: "Featured Products",
+                }
               }
             ]
         }
@@ -184,32 +191,22 @@ export async function saveTenant(prevState: any, formData: FormData) {
 }
 
 export async function saveWebsite(tenantId: string, websiteData: Website) {
-  console.log('🔵 saveWebsite called with tenantId:', tenantId);
-  console.log('🔵 websiteData:', JSON.stringify(websiteData, null, 2));
-  
   const { db } = getAdminApp();
   try {
     const tenantRef = db.collection('tenants').doc(tenantId);
-    console.log('🔵 Saving to Firestore...');
     await tenantRef.set({ website: websiteData }, { merge: true });
-    console.log('✅ Firestore save successful');
     
     const tenantDoc = await tenantRef.get();
     const slug = tenantDoc.data()?.slug;
-    console.log('🔵 Tenant slug:', slug);
 
     if (slug) {
-        console.log('🔵 Revalidating path:', `/${slug}`);
         revalidatePath(`/${slug}`);
     }
-    console.log('🔵 Revalidating path:', `/admin/tenants/${tenantId}/editor`);
     revalidatePath(`/admin/tenants/${tenantId}/editor`);
     
-    console.log('✅ saveWebsite completed successfully');
     return { success: true };
   } catch (e: any) {
-    console.error("❌ Error saving website:", e);
-    console.error("❌ Error stack:", e.stack);
+    console.error("Error saving website:", e);
     return { success: false, error: e.message || 'Failed to save website config.' };
   }
 }

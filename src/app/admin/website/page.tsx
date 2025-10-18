@@ -60,7 +60,7 @@ export default async function WebsiteAdminPage() {
                       Edit Website
                     </Button>
                   </Link>
-                  <Link href={`https://${tenant.subdomain || tenant.slug}.swagstore.ca`} target="_blank">
+                  <Link href={`https://${tenant.subdomain}.swagstore.ca`} target="_blank">
                     <Button
                       variant="outline"
                       size="sm"

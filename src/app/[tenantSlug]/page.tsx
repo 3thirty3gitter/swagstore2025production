@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import type { Tenant, Product } from "@/lib/types";
+import type { Tenant } from "@/lib/types";
 import { getAdminApp } from "@/lib/firebase-admin";
 import { TenantPageContent } from "@/components/store/tenant-page-content";
 
@@ -33,42 +33,16 @@ async function getTenantBySlug(slug: string): Promise<Tenant | null> {
     }
 
     const doc = snapshot.docs[0];
-    const data = doc.data();
-    
-    // Properly serialize to avoid React hydration issues
-    const tenant = JSON.parse(JSON.stringify({
+    const tenant = {
       id: doc.id,
-      ...data
-    })) as Tenant;
+      ...doc.data()
+    } as Tenant;
     
     console.log('[getTenantBySlug] Found tenant:', tenant.name, tenant.slug);
     return tenant;
   } catch (error) {
     console.error('[getTenantBySlug] Error fetching tenant:', error);
     return null;
-  }
-}
-
-async function getTenantProducts(tenantId: string): Promise<Product[]> {
-  try {
-    console.log('[getTenantProducts] Fetching products for tenant:', tenantId);
-    const { db } = getAdminApp();
-    const productsRef = db.collection('products');
-    const snapshot = await productsRef.where('tenantIds', 'array-contains', tenantId).get();
-    
-    const products = snapshot.docs.map(doc => {
-      const data = doc.data();
-      return JSON.parse(JSON.stringify({
-        id: doc.id,
-        ...data
-      })) as Product;
-    });
-    
-    console.log('[getTenantProducts] Found products:', products.length);
-    return products;
-  } catch (error) {
-    console.error('[getTenantProducts] Error fetching products:', error);
-    return [];
   }
 }
 
@@ -86,9 +60,6 @@ export default async function TenantPage({ params }: PageProps) {
     </div>;
   }
 
-  // Fetch products for this tenant
-  const tenantProducts = await getTenantProducts(tenant.id);
-
   console.log('[TenantPage] Rendering content for tenant:', tenant.name);
-  return <TenantPageContent tenant={tenant} tenantProducts={tenantProducts} />;
+  return <TenantPageContent tenant={tenant} />;
 }

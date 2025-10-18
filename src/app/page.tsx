@@ -27,7 +27,7 @@ export default function HomePage() {
             <div className="container mx-auto px-4 text-center relative z-10">
               <div className="flex items-center justify-center gap-2 text-sm md:text-base font-semibold animate-pulse">
                 <Sparkles className="h-5 w-5" />
-                <span>🔥 Overwhelming response! We're processing requests as fast as we can!</span>
+                <span>🔥 Overwhelming response! Limited spots available — Secure your team's store today</span>
                 <Sparkles className="h-5 w-5" />
               </div>
             </div>
@@ -37,7 +37,9 @@ export default function HomePage() {
           <div className="absolute top-16 left-0 right-0 z-30">
             <div className="container mx-auto px-4">
               <div className="max-w-7xl mx-auto flex items-center">
-                <SiteLogo />
+                <FloatingCard delay={600}>
+                  <SiteLogo />
+                </FloatingCard>
               </div>
             </div>
           </div>
@@ -61,16 +63,16 @@ export default function HomePage() {
                   
                   <h1 className="text-5xl md:text-7xl font-black font-headline leading-tight hero-title">
                     <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
-                      We Build Your Store Free.
+                      Build Your Team's
                     </span>
                     <br />
                     <span className="text-gray-900">
-                      Your Team Earns Rewards.
+                      Dream Store
                     </span>
                   </h1>
                   
                   <p className="text-xl md:text-2xl text-gray-600 leading-relaxed font-medium hero-subtitle">
-                    Free professional storefronts + SwagBucks rewards on every purchase. Your team earns apparel, accessories, and promotional items while supporters get awesome merch!
+                    Free professional storefronts + SwagBucks rewards on every purchase. Your team earns free gear while supporters get awesome merch!
                   </p>
 
                   {/* Stats Row */}
@@ -277,9 +279,9 @@ export default function HomePage() {
                       <Gift className="h-12 w-12 text-orange-600" />
                     </div>
                     
-                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Earn Rewards</h3>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Get Free Gear</h3>
                     <p className="text-gray-600 leading-relaxed font-medium mb-4">
-                      Watch your milestone meter fill up and redeem SwagBucks for apparel, accessories, and promotional items!
+                      Watch your milestone meter fill up and redeem SwagBucks for team equipment, jerseys, and more!
                     </p>
                     
                     <div className="flex items-center justify-center gap-2 text-sm text-orange-600 font-semibold">
@@ -366,10 +368,10 @@ export default function HomePage() {
               {/* CTA Card */}
               <div className="bg-white rounded-3xl shadow-2xl p-12 border-4 border-purple-100">
                 <h2 className="text-4xl md:text-5xl font-black font-headline mb-6 text-gray-900">
-                  Ready for Your Free Team Store?
+                  Ready to Launch Your Team Store?
                 </h2>
                 <p className="text-xl text-gray-600 mb-8 leading-relaxed font-medium">
-                  We build it. You profit. Your store launches in 24 hours.
+                  Join hundreds of Canadian teams already earning free gear. Setup takes 5 minutes, launch happens in 24 hours.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">

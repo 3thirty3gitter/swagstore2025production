@@ -15,24 +15,17 @@ export default async function EditorPage({ params }: Props) {
     const tenantRef = db.collection('tenants').doc(tenantId);
     const tenantDoc = await tenantRef.get();
     if (!tenantDoc.exists) return notFound();
+    const tenant = { id: tenantDoc.id, ...(tenantDoc.data() as any) } as Tenant;
     
     // Fetch products assigned to this tenant
     const productsSnapshot = await db.collection('products')
       .where('tenantIds', 'array-contains', tenantId)
       .get();
     
-    // Properly serialize data to avoid React serialization issues
-    const tenant = JSON.parse(JSON.stringify({
-      id: tenantDoc.id,
-      ...tenantDoc.data()
-    })) as Tenant;
-    
-    const tenantProducts = JSON.parse(JSON.stringify(
-      productsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-    )) as Product[];
+    const tenantProducts: Product[] = productsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Product));
     
     return <TenantEditor tenant={tenant} tenantProducts={tenantProducts} />;
   } catch (e) {
