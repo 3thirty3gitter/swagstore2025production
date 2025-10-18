@@ -34,7 +34,7 @@ export default function HomePage() {
           </div>
 
           {/* Logo - positioned at top with high z-index */}
-          <div className="fixed top-16 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 py-4 transition-all duration-300">
+          <div className="fixed top-16 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 py-6 transition-all duration-300">
             <div className="container mx-auto px-4">
               <div className="max-w-7xl mx-auto flex items-center">
                 <FloatingCard delay={600}>
