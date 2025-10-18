@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, doc, setDoc, deleteDoc } from 'firebase/firestore';
-import { useFirebase } from '@/firebase';
+import { useFirebase } from '@/firebase/provider';
 import type { Tenant } from '@/lib/types';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';

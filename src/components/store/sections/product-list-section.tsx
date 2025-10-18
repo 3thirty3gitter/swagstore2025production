@@ -6,7 +6,7 @@ import type { Product } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 import { useCollection } from "@/firebase/firestore/use-collection";
 import { collection, query, where, documentId } from "firebase/firestore";
-import { useFirebase } from "@/firebase";
+import { useFirebase } from "@/firebase/provider";
 
 type ProductListSectionProps = {
     tenantId: string;

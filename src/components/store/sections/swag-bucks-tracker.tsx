@@ -1,6 +1,6 @@
 'use client';
 
-import { useFirebase } from "@/firebase";
+import { useFirebase } from "@/firebase/provider";
 import { useCollection } from "@/firebase/firestore/use-collection";
 import { getTenantBalance } from "@/lib/services/swagbucks-service";
 import type { Order, SwagBucksGate } from "@/lib/types";

@@ -9,7 +9,7 @@ export type Tenant = {
   isActive?: boolean;
   
   // Store request form fields
-  status?: 'pending' | 'active' | 'suspended';
+  status?: 'pending' | 'active' | 'suspended' | 'declined';
   teamType?: string;
   organizationLevel?: string; // e.g., "Minor/Youth", "High School", "College/University", "Professional/Adult"
   city?: string;
@@ -24,8 +24,13 @@ export type Tenant = {
   description?: string;
   logoUrl?: string;
   submittedAt?: Date;
+  
+  // Audit fields
   approvedAt?: Date;
   approvedBy?: string;
+  declinedAt?: Date;
+  declinedBy?: string;
+  declineReason?: string;
 };
 
 export type MenuItem = {

@@ -22,7 +22,7 @@ import {
   Gift,
   Clock
 } from "lucide-react";
-import { useFirebase } from "@/firebase";
+import { useFirebase } from "@/firebase/provider";
 import { signOut } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 

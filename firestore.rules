@@ -1,15 +1,25 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow unauthenticated users to submit store requests
+    // Active tenants - authenticated users only
     match /tenants/{document} {
       allow read, write: if request.auth != null;
-      allow create: if true; // Allow anyone to create pending tenants
     }
     
-    // Allow unauthenticated users to submit store requests (backup)
-    match /store-requests/{document} {
+    // Pending tenants - public create, authenticated read/write
+    match /pendingTenants/{document} {
       allow create: if true; // Allow anyone to submit store requests
+      allow read, write, delete: if request.auth != null;
+    }
+    
+    // Declined tenants - authenticated users only
+    match /declinedTenants/{document} {
+      allow read, write, delete: if request.auth != null;
+    }
+    
+    // Store requests (legacy backup) - public create
+    match /store-requests/{document} {
+      allow create: if true;
       allow read, write: if request.auth != null;
     }
     
@@ -18,14 +28,23 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
     
-    // Products collection - only authenticated users
+    // Products collection - public read, authenticated write
     match /products/{document} {
-      allow read: if true; // Public read for products
+      allow read: if true;
       allow write: if request.auth != null;
     }
     
     // Orders collection - only authenticated users
     match /orders/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // SwagBucks collections - authenticated users only
+    match /swagbucks/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    match /redemptions/{document} {
       allow read, write: if request.auth != null;
     }
     

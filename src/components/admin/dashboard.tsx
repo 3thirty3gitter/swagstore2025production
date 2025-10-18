@@ -14,7 +14,7 @@ import {
   CheckCircle,
   LogOut
 } from 'lucide-react';
-import { useFirebase } from '@/firebase';
+import { useFirebase } from '@/firebase/provider';
 import { signOut } from 'firebase/auth';
 import { PendingTenants } from './pending-tenants';
 import { useToast } from '@/hooks/use-toast';
