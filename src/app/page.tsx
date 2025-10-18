@@ -22,7 +22,7 @@ export default function HomePage() {
         {/* Hero Section - Completely Redesigned */}
         <section className="relative py-3 md:py-20 overflow-hidden">
           {/* High Demand Notice */}
-          <div className="absolute top-0 left-0 right-0 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white overflow-hidden z-20">
+          <div className="fixed top-0 left-0 right-0 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white overflow-hidden z-50">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIuNSIgb3BhY2l0eT0iLjEiLz48L2c+PC9zdmc+')] opacity-20"></div>
             <div className="container mx-auto px-4 text-center relative z-10">
               <div className="flex items-center justify-center gap-2 text-sm md:text-base font-semibold animate-pulse">
@@ -34,7 +34,7 @@ export default function HomePage() {
           </div>
 
           {/* Logo - positioned at top with high z-index */}
-          <div className="absolute top-16 left-0 right-0 z-30">
+          <div className="fixed top-16 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 py-2 transition-all duration-300">
             <div className="container mx-auto px-4">
               <div className="max-w-7xl mx-auto flex items-center">
                 <FloatingCard delay={600}>
@@ -50,7 +50,7 @@ export default function HomePage() {
           <div className="absolute top-40 left-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
           <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
           
-          <div className="container mx-auto px-4 relative z-10 pt-32">
+          <div className="container mx-auto px-4 relative z-10 pt-40">
             <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
               {/* Left Column - Text Content */}
               <AnimatedHero>
