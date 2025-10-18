@@ -27,7 +27,7 @@ export default function HomePage() {
             <div className="container mx-auto px-4 text-center relative z-10">
               <div className="flex items-center justify-center gap-2 text-sm md:text-base font-semibold animate-pulse">
                 <Sparkles className="h-5 w-5" />
-                <span>🔥 Overwhelming response! Limited spots available — Secure your team's store today</span>
+                <span>🔥 Overwhelming response! Launch your team's store today and start earning</span>
                 <Sparkles className="h-5 w-5" />
               </div>
             </div>
