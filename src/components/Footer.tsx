@@ -8,8 +8,8 @@ export default function Footer() {
   <footer className="border-t bg-muted/30 py-12">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-start space-x-3 mb-6 md:mb-0">
-            <div className="h-12 flex items-start">
+          <div className="flex items-center space-x-3 mb-6 md:mb-0">
+            <div className="h-12 flex items-center -mt-1">
               <SiteLogo />
             </div>
             <div className="flex flex-col">
